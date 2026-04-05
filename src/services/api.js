@@ -1,6 +1,6 @@
 const API = process.env.REACT_APP_API_URL || (
   process.env.NODE_ENV === 'production'
-    ? '/api'
+    ? 'http://aljawhara.matix.one:3001'
     : 'http://localhost:3001'
 );
 const h = { 'Content-Type': 'application/json' };
