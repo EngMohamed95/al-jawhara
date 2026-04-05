@@ -1,0 +1,152 @@
+/* ── Login Page ── */
+.login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 60%, var(--primary-light) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+}
+.login-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* ── Card ── */
+.login-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 45px 40px;
+  width: 100%;
+  max-width: 430px;
+  box-shadow: var(--shadow-xl);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Logo ── */
+.login-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 25px;
+}
+.login-logo-icon {
+  width: 52px;
+  height: 52px;
+  background: var(--primary);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: white;
+}
+.login-logo-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1.2;
+}
+.login-logo-sub {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+/* ── Headings ── */
+.login-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 6px;
+}
+.login-subtitle {
+  text-align: center;
+  color: var(--text-light);
+  margin-bottom: 25px;
+  font-size: 0.9rem;
+}
+
+/* ── Input with icon ── */
+.input-icon-wrap { position: relative; }
+.input-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-light);
+  font-size: 15px;
+  pointer-events: none;
+}
+.input-padded       { padding-right: 42px; }
+.input-padded-left  { padding-left: 42px; }
+
+.toggle-pass {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 15px;
+  padding: 4px;
+  transition: color 0.2s;
+}
+.toggle-pass:hover { color: var(--primary); }
+
+/* ── Login button ── */
+.login-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 14px;
+  margin-top: 6px;
+  font-size: 16px;
+}
+
+/* ── Hint ── */
+.login-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 10px 14px;
+  background: var(--primary-xlight);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-light);
+}
+.login-hint i { color: var(--primary); flex-shrink: 0; }
+.login-hint code {
+  background: var(--primary);
+  color: white;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+}
+
+/* ── Back link ── */
+.login-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  color: var(--text-light);
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.login-back:hover { color: var(--primary); }
+
+@media (max-width: 480px) {
+  .login-card { padding: 30px 24px; }
+}

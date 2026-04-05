@@ -1,0 +1,73 @@
+/* ── Clients Stats ── */
+.clients-stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 50px;
+}
+.clients-stat-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 20px 30px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  min-width: 140px;
+  transition: transform var(--transition);
+}
+.clients-stat-card:hover { transform: translateY(-4px); }
+.clients-stat-icon {
+  font-size: 1.8rem;
+  color: var(--primary);
+  margin-bottom: 8px;
+  display: block;
+}
+.clients-stat-num {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+.clients-stat-label {
+  font-size: 0.82rem;
+  color: var(--text-light);
+}
+
+/* ── Filters centered ── */
+.filters-center {
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+/* ── CTA Block ── */
+.clients-cta {
+  text-align: center;
+  margin-top: 60px;
+  background: var(--primary-xlight);
+  border-radius: var(--radius-lg);
+  padding: 50px 30px;
+}
+.clients-cta-icon {
+  font-size: 3rem;
+  color: var(--primary);
+  margin-bottom: 20px;
+  display: block;
+}
+.clients-cta-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 12px;
+}
+.clients-cta-text {
+  color: var(--text-light);
+  margin-bottom: 25px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 0.97rem;
+}
+
+@media (max-width: 768px) {
+  .clients-stats { gap: 12px; }
+  .clients-stat-card { min-width: 120px; padding: 15px 20px; }
+}
