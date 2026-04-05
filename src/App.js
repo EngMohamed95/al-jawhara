@@ -8,8 +8,11 @@ import About    from './pages/About';
 import Products from './pages/Products';
 import Clients  from './pages/Clients';
 import Contact  from './pages/Contact';
-import Dashboard from './pages/Dashboard';
-import Login    from './pages/Login';
+import Dashboard    from './pages/Dashboard';
+import Login        from './pages/Login';
+import Cart         from './pages/Cart';
+import Checkout     from './pages/Checkout';
+import OrderSuccess from './pages/OrderSuccess';
 
 const ProtectedRoute = ({ children }) => {
   const { auth } = useApp();
@@ -30,9 +33,12 @@ const AppContent = () => {
           <Route path="/products"  element={<Products />} />
           <Route path="/clients"   element={<Clients />} />
           <Route path="/contact"   element={<Contact />} />
-          <Route path="/login"     element={<Login />} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="*"          element={<Navigate to="/" replace />} />
+          <Route path="/login"         element={<Login />} />
+          <Route path="/cart"          element={<Cart />} />
+          <Route path="/checkout"      element={<Checkout />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
+          <Route path="/dashboard"     element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="*"              element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       {!isLogin && <Footer />}

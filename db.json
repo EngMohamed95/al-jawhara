@@ -119,6 +119,18 @@
       "specs": [],
       "stock": 800,
       "status": "pending"
+    },
+    {
+      "name": "مناديل العرق",
+      "category": "facial",
+      "price": 12,
+      "stock": 20,
+      "status": "active",
+      "icon": "📦",
+      "desc": "مناديل  عرق عرق عرق",
+      "badge": "عرض خاص",
+      "specs": [],
+      "id": 9
     }
   ],
   "orders": [

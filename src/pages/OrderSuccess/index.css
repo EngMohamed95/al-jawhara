@@ -1,0 +1,28 @@
+.success-card {
+  max-width: 560px; margin: 0 auto; text-align: center;
+  background: white; border-radius: var(--radius-lg);
+  padding: 50px 40px; box-shadow: var(--shadow-xl);
+}
+.success-icon-wrap {
+  width: 90px; height: 90px; background: #d1fae5;
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; margin: 0 auto 24px;
+}
+.success-icon { font-size: 3rem; color: #059669; }
+
+.success-title    { font-size: 1.7rem; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+.success-subtitle { color: var(--text-light); line-height: 1.7; margin-bottom: 30px; font-size: 0.95rem; }
+
+.success-order-info {
+  background: var(--bg); border-radius: var(--radius);
+  padding: 20px; margin-bottom: 30px; text-align: right;
+}
+.success-order-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem;
+}
+.success-order-row:last-child { border-bottom: none; }
+.success-order-ref   { font-weight: 700; color: var(--primary); font-family: monospace; }
+.success-order-total { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+
+.success-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }

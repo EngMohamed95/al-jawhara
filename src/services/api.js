@@ -20,8 +20,10 @@ const api = {
   deleteProduct:  (id)     => req(`products/${id}`,{ method: 'DELETE' }),
 
   // Orders
-  getOrders:   ()      => req('orders'),
-  updateOrder: (id, d) => req(`orders/${id}`, { method: 'PUT', body: JSON.stringify(d) }),
+  getOrders:    ()      => req('orders'),
+  createOrder:  (data)  => req('orders',       { method: 'POST', body: JSON.stringify(data) }),
+  updateOrder:  (id, d) => req(`orders/${id}`, { method: 'PUT',  body: JSON.stringify(d) }),
+  deleteOrder:  (id)    => req(`orders/${id}`, { method: 'DELETE' }),
 
   // Users
   getUsers:    ()      => req('users'),

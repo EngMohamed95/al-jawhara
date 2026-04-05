@@ -16,6 +16,7 @@ export const AppProvider = ({ children }) => {
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState(null);
   const [auth, setAuth]               = useState(getStoredAuth);
+  const [cart, setCart]               = useState([]);
 
   /* ── Fetch all data ── */
   const fetchAll = useCallback(async () => {
@@ -74,6 +75,45 @@ export const AppProvider = ({ children }) => {
     return updated;
   };
 
+  /* ── Cart ── */
+  const addToCart = (product) =>
+    setCart(prev => {
+      const ex = prev.find(i => i.id === product.id);
+      return ex
+        ? prev.map(i => i.id === product.id ? { ...i, qty: i.qty + 1 } : i)
+        : [...prev, { ...product, qty: 1 }];
+    });
+
+  const removeFromCart = (id) => setCart(prev => prev.filter(i => i.id !== id));
+
+  const updateCartQty = (id, qty) =>
+    setCart(prev => qty <= 0
+      ? prev.filter(i => i.id !== id)
+      : prev.map(i => i.id === id ? { ...i, qty } : i)
+    );
+
+  const clearCart = () => setCart([]);
+
+  const cartTotal    = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const cartTotalQty = cart.reduce((s, i) => s + i.qty, 0);
+
+  /* ── Submit Order ── */
+  const submitOrder = async (orderData) => {
+    const ref = 'ORD-' + Date.now();
+    const order = {
+      ref,
+      ...orderData,
+      items: cart,
+      total: cartTotal.toFixed(3),
+      status: 'pending',
+      date: new Date().toLocaleDateString('ar-EG'),
+    };
+    const saved = await api.createOrder(order);
+    setOrders(prev => [...prev, saved]);
+    clearCart();
+    return saved;
+  };
+
   return (
     <AppContext.Provider value={{
       products, orders, users, siteContent, loading, error, auth,
@@ -81,6 +121,9 @@ export const AppProvider = ({ children }) => {
       addProduct, updateProduct, deleteProduct,
       addUser, updateUser, deleteUser,
       saveSiteContent,
+      cart, addToCart, removeFromCart, updateCartQty, clearCart,
+      cartTotal, cartTotalQty,
+      submitOrder,
       refresh: fetchAll,
     }}>
       {children}

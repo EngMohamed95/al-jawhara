@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import Seo from '../../components/Seo';
 import './index.css';
@@ -14,37 +15,26 @@ const categories = [
 ];
 
 const Products = () => {
-  const { products, loading, error } = useApp();
-  const [activeCat, setActiveCat]   = useState('all');
-  const [cart, setCart]             = useState([]);
-  const [cartOpen, setCartOpen]     = useState(false);
-  const [addedId, setAddedId]       = useState(null);
+  const { products, loading, error, addToCart, cartTotalQty } = useApp();
+  const [activeCat, setActiveCat] = useState('all');
+  const [addedId,   setAddedId]   = useState(null);
 
   const filtered = activeCat === 'all'
     ? products
     : products.filter(p => p.category === activeCat);
 
-  const addToCart = (product) => {
-    setCart(prev => {
-      const ex = prev.find(i => i.id === product.id);
-      return ex
-        ? prev.map(i => i.id === product.id ? { ...i, qty: i.qty + 1 } : i)
-        : [...prev, { ...product, qty: 1 }];
-    });
+  const handleAdd = (product) => {
+    addToCart(product);
     setAddedId(product.id);
     setTimeout(() => setAddedId(null), 1200);
   };
-
-  const removeFromCart = (id) => setCart(prev => prev.filter(i => i.id !== id));
-  const total    = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const totalQty = cart.reduce((s, i) => s + i.qty, 0);
 
   return (
     <>
       <Seo
         title="المنتجات"
         description="تشكيلة متكاملة من المناديل الورقية — مناديل وجه، رولات مطبخ، محارم جيب، مناشف ورق، مناديل مائدة."
-        keywords="منتجات الجوهرة، مناديل وجه، رولات مطبخ، محارم جيب، مناشف ورق، tissue paper"
+        keywords="منتجات الجوهرة، مناديل وجه، رولات مطبخ، محارم جيب، مناشف ورق"
       />
 
       <header className="page-header">
@@ -61,9 +51,9 @@ const Products = () => {
         <div className="container">
 
           {loading && (
-            <div className="products-loading" role="status" aria-live="polite">
+            <div className="products-loading" role="status">
               <i className="fas fa-spinner fa-spin" aria-hidden="true"></i>
-              <span>جاري تحميل المنتجات من قاعدة البيانات...</span>
+              <span>جاري تحميل المنتجات...</span>
             </div>
           )}
 
@@ -90,7 +80,7 @@ const Products = () => {
                 ))}
               </div>
 
-              <div className="products-grid" role="list" aria-label="قائمة المنتجات">
+              <div className="products-grid" role="list">
                 {filtered.length === 0 ? (
                   <div className="no-products">
                     <i className="fas fa-box-open" aria-hidden="true"></i>
@@ -105,7 +95,7 @@ const Products = () => {
                     <div className="product-card-body">
                       <h2 className="product-name">{p.name}</h2>
                       <p className="product-description">{p.desc}</p>
-                      <div className="product-specs" aria-label="مواصفات المنتج">
+                      <div className="product-specs">
                         {p.specs?.map((s, i) => <span key={i} className="product-spec">{s}</span>)}
                       </div>
                       <div className="product-footer">
@@ -114,12 +104,13 @@ const Products = () => {
                         </div>
                         <button
                           className={`btn btn-sm ${addedId === p.id ? 'btn-green' : 'btn-primary'}`}
-                          onClick={() => addToCart(p)}
+                          onClick={() => handleAdd(p)}
                           aria-label={`إضافة ${p.name} إلى السلة`}
                         >
                           {addedId === p.id
                             ? <><i className="fas fa-check" aria-hidden="true"></i> تمت الإضافة</>
-                            : <><i className="fas fa-cart-plus" aria-hidden="true"></i> أضف</>}
+                            : <><i className="fas fa-cart-plus" aria-hidden="true"></i> أضف</>
+                          }
                         </button>
                       </div>
                     </div>
@@ -131,57 +122,14 @@ const Products = () => {
         </div>
       </section>
 
-      {/* Cart float */}
-      {cart.length > 0 && (
-        <button className="cart-float-btn" onClick={() => setCartOpen(!cartOpen)} aria-label={`فتح السلة — ${totalQty} منتج`}>
+      {/* Cart float button */}
+      {cartTotalQty > 0 && (
+        <Link to="/cart" className="cart-float-btn" aria-label={`السلة — ${cartTotalQty} منتج`}>
           <i className="fas fa-shopping-cart" aria-hidden="true"></i>
           السلة
-          <span className="cart-count" aria-hidden="true">{totalQty}</span>
-        </button>
+          <span className="cart-count" aria-hidden="true">{cartTotalQty}</span>
+        </Link>
       )}
-
-      {/* Cart sidebar */}
-      <aside className={`cart-sidebar${cartOpen ? ' open' : ''}`} aria-label="سلة الطلبات" aria-hidden={!cartOpen}>
-        <div className="cart-header">
-          <span><i className="fas fa-shopping-cart" aria-hidden="true" style={{ marginLeft: '8px' }}></i>سلة الطلبات</span>
-          <button className="cart-close-btn" onClick={() => setCartOpen(false)} aria-label="إغلاق السلة">
-            <i className="fas fa-xmark" aria-hidden="true"></i>
-          </button>
-        </div>
-        <div className="cart-items">
-          {cart.length === 0 ? (
-            <div className="cart-empty">
-              <i className="fas fa-cart-shopping cart-empty-icon" aria-hidden="true"></i>
-              السلة فارغة
-            </div>
-          ) : cart.map(item => (
-            <div key={item.id} className="cart-item">
-              <div className="cart-item-icon" aria-hidden="true">{item.icon}</div>
-              <div className="cart-item-info">
-                <div className="cart-item-name">{item.name}</div>
-                <div className="cart-item-price">{(item.price * item.qty).toFixed(3)} د.ك × {item.qty}</div>
-              </div>
-              <button className="cart-item-remove" onClick={() => removeFromCart(item.id)} aria-label={`حذف ${item.name}`}>
-                <i className="fas fa-trash-can" aria-hidden="true"></i>
-              </button>
-            </div>
-          ))}
-        </div>
-        {cart.length > 0 && (
-          <div className="cart-total">
-            <div className="cart-total-row">
-              <span>الإجمالي:</span>
-              <span className="cart-total-value">{total.toFixed(3)} د.ك</span>
-            </div>
-            <button className="btn btn-green cart-order-btn">
-              <i className="fas fa-paper-plane" aria-hidden="true"></i>إرسال الطلب
-            </button>
-            <button className="cart-clear-btn" onClick={() => setCart([])}>مسح السلة</button>
-          </div>
-        )}
-      </aside>
-
-      {cartOpen && <div className="cart-overlay" onClick={() => setCartOpen(false)} aria-hidden="true" />}
     </>
   );
 };
