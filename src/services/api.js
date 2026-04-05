@@ -1,12 +1,12 @@
-const API = process.env.REACT_APP_API_URL || (
-  process.env.NODE_ENV === 'production'
-    ? 'http://aljawhara.matix.one:3001'
-    : 'http://localhost:3001'
-);
+const IS_PROD = process.env.NODE_ENV === 'production';
 const h = { 'Content-Type': 'application/json' };
 
 const req = async (path, opts = {}) => {
-  const res = await fetch(`${API}/${path}`, { headers: h, ...opts });
+  const url = IS_PROD
+    ? `/api/?path=${encodeURIComponent(path)}`
+    : `http://localhost:3001/${path}`;
+
+  const res = await fetch(url, { headers: h, ...opts });
   if (!res.ok) throw new Error(`API ${res.status}`);
   if (opts.method === 'DELETE') return null;
   return res.json();
@@ -32,7 +32,7 @@ const api = {
   deleteUser:  (id)    => req(`users/${id}`,  { method: 'DELETE' }),
   findUser:    (uname) => req(`users?username=${encodeURIComponent(uname)}`),
 
-  // Site Content (singleton array, id=1)
+  // Site Content
   getSiteContent:    ()     => req('siteContent/1'),
   updateSiteContent: (data) => req('siteContent/1', { method: 'PUT', body: JSON.stringify(data) }),
 };
