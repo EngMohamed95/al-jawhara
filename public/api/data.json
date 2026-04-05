@@ -183,37 +183,6 @@
       "total": "540.000",
       "date": "2024-01-25",
       "status": "pending"
-    },
-    {
-      "ref": "ORD-1775405755826",
-      "client": "",
-      "company": "",
-      "phone": "",
-      "email": "",
-      "address": "",
-      "notes": "",
-      "payment": "cash",
-      "product": "مناديل العرق",
-      "qty": 1,
-      "items": [
-        {
-          "name": "مناديل العرق",
-          "category": "facial",
-          "price": 12,
-          "stock": 20,
-          "status": "active",
-          "icon": "📦",
-          "desc": "مناديل  عرق عرق عرق",
-          "badge": "عرض خاص",
-          "specs": [],
-          "id": 9,
-          "qty": 1
-        }
-      ],
-      "total": "12.000",
-      "status": "pending",
-      "date": "٥‏/٤‏/٢٠٢٦",
-      "id": 6
     }
   ],
   "users": [

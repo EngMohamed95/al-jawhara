@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AppProvider, useApp } from './context/AppContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Navbar  from './components/Navbar';
 import Footer  from './components/Footer';
 import Home     from './pages/Home';
@@ -49,11 +50,13 @@ const AppContent = () => {
 function App() {
   return (
     <HelmetProvider>
-      <AppProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </AppProvider>
+      <LanguageProvider>
+        <AppProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </AppProvider>
+      </LanguageProvider>
     </HelmetProvider>
   );
 }

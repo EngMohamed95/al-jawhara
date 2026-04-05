@@ -1,23 +1,35 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import './index.css';
 
-const categories = [
-  { id: 'all',     label: 'الكل',            icon: 'fa-border-all' },
-  { id: 'facial',  label: 'مناديل الوجه',    icon: 'fa-face-smile' },
-  { id: 'rolls',   label: 'الرولات',          icon: 'fa-scroll' },
-  { id: 'pocket',  label: 'محارم الجيب',      icon: 'fa-briefcase' },
-  { id: 'towels',  label: 'المناشف',          icon: 'fa-hand-sparkles' },
-  { id: 'napkins', label: 'مناديل المائدة',   icon: 'fa-utensils' },
-  { id: 'family',  label: 'عروض العائلة',     icon: 'fa-box-open' },
-];
+const CAT_ICONS = {
+  all:     'fa-border-all',
+  facial:  'fa-face-smile',
+  rolls:   'fa-scroll',
+  pocket:  'fa-briefcase',
+  towels:  'fa-hand-sparkles',
+  napkins: 'fa-utensils',
+  family:  'fa-box-open',
+};
 
 const Products = () => {
   const { products, loading, error, addToCart, cartTotalQty } = useApp();
+  const { t, lang } = useLanguage();
   const [activeCat, setActiveCat] = useState('all');
   const [addedId,   setAddedId]   = useState(null);
+
+  const categories = [
+    { id: 'all',     label: t('products.all') },
+    { id: 'facial',  label: t('products.cats.facial') },
+    { id: 'rolls',   label: t('products.cats.rolls') },
+    { id: 'pocket',  label: t('products.cats.pocket') },
+    { id: 'towels',  label: t('products.cats.towels') },
+    { id: 'napkins', label: t('products.cats.napkins') },
+    { id: 'family',  label: t('products.cats.family') },
+  ];
 
   const filtered = activeCat === 'all'
     ? products
@@ -32,8 +44,10 @@ const Products = () => {
   return (
     <>
       <Seo
-        title="المنتجات"
-        description="تشكيلة متكاملة من المناديل الورقية — مناديل وجه، رولات مطبخ، محارم جيب، مناشف ورق، مناديل مائدة."
+        title={t('products.title')}
+        description={lang === 'ar'
+          ? 'تشكيلة متكاملة من المناديل الورقية — مناديل وجه، رولات مطبخ، محارم جيب، مناشف ورق، مناديل مائدة.'
+          : 'A complete range of tissue paper products — facial tissues, kitchen rolls, pocket tissues, paper towels, napkins.'}
         keywords="منتجات الجوهرة، مناديل وجه، رولات مطبخ، محارم جيب، مناشف ورق"
       />
 
@@ -41,8 +55,8 @@ const Products = () => {
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-box-open"></i></div>
-            <h1>منتجاتنا</h1>
-            <p>تشكيلة متكاملة من المناديل الورقية عالية الجودة</p>
+            <h1>{t('products.title')}</h1>
+            <p>{t('products.sub')}</p>
           </div>
         </div>
       </header>
@@ -53,20 +67,20 @@ const Products = () => {
           {loading && (
             <div className="products-loading" role="status">
               <i className="fas fa-spinner fa-spin" aria-hidden="true"></i>
-              <span>جاري تحميل المنتجات...</span>
+              <span>{t('products.loading')}</span>
             </div>
           )}
 
           {error && !loading && (
             <div className="products-error" role="alert">
               <i className="fas fa-circle-exclamation" aria-hidden="true"></i>
-              <p>{error}</p>
+              <p>{t('products.error')}</p>
             </div>
           )}
 
           {!loading && !error && (
             <>
-              <div className="filters" role="group" aria-label="تصفية حسب الفئة">
+              <div className="filters" role="group" aria-label={t('products.title')}>
                 {categories.map(c => (
                   <button
                     key={c.id}
@@ -74,7 +88,7 @@ const Products = () => {
                     onClick={() => setActiveCat(c.id)}
                     aria-pressed={activeCat === c.id}
                   >
-                    <i className={`fas ${c.icon}`} aria-hidden="true" style={{ marginLeft: '6px' }}></i>
+                    <i className={`fas ${CAT_ICONS[c.id]}`} aria-hidden="true" style={{ marginInlineEnd: '6px' }}></i>
                     {c.label}
                   </button>
                 ))}
@@ -84,7 +98,7 @@ const Products = () => {
                 {filtered.length === 0 ? (
                   <div className="no-products">
                     <i className="fas fa-box-open" aria-hidden="true"></i>
-                    <p>لا توجد منتجات في هذه الفئة</p>
+                    <p>{t('products.empty')}</p>
                   </div>
                 ) : filtered.map(p => (
                   <article key={p.id} className="product-card" role="listitem">
@@ -100,16 +114,16 @@ const Products = () => {
                       </div>
                       <div className="product-footer">
                         <div className="product-price">
-                          {Number(p.price).toFixed(3)} <span>د.ك</span>
+                          {Number(p.price).toFixed(3)} <span>{t('products.currency')}</span>
                         </div>
                         <button
                           className={`btn btn-sm ${addedId === p.id ? 'btn-green' : 'btn-primary'}`}
                           onClick={() => handleAdd(p)}
-                          aria-label={`إضافة ${p.name} إلى السلة`}
+                          aria-label={`${t('products.add')} ${p.name}`}
                         >
                           {addedId === p.id
-                            ? <><i className="fas fa-check" aria-hidden="true"></i> تمت الإضافة</>
-                            : <><i className="fas fa-cart-plus" aria-hidden="true"></i> أضف</>
+                            ? <><i className="fas fa-check" aria-hidden="true"></i> {t('products.added')}</>
+                            : <><i className="fas fa-cart-plus" aria-hidden="true"></i> {t('products.add')}</>
                           }
                         </button>
                       </div>
@@ -124,9 +138,9 @@ const Products = () => {
 
       {/* Cart float button */}
       {cartTotalQty > 0 && (
-        <Link to="/cart" className="cart-float-btn" aria-label={`السلة — ${cartTotalQty} منتج`}>
+        <Link to="/cart" className="cart-float-btn" aria-label={`${t('nav.cart')} — ${cartTotalQty}`}>
           <i className="fas fa-shopping-cart" aria-hidden="true"></i>
-          السلة
+          {t('nav.cart')}
           <span className="cart-count" aria-hidden="true">{cartTotalQty}</span>
         </Link>
       )}

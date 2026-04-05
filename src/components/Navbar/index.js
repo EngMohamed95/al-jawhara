@@ -1,21 +1,25 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 import './index.css';
 
-const navLinks = [
-  { path: '/',         label: 'الرئيسية',   icon: 'fa-house' },
-  { path: '/about',    label: 'من نحن',      icon: 'fa-circle-info' },
-  { path: '/products', label: 'المنتجات',    icon: 'fa-box' },
-  { path: '/clients',  label: 'عملاؤنا',     icon: 'fa-handshake' },
-  { path: '/contact',  label: 'تواصل معنا',  icon: 'fa-envelope' },
-];
+const LOGO_URL = 'https://al-jawhara.co/wp-content/uploads/2021/02/MobileJawharaLogo.png';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const location = useLocation();
+  const location  = useLocation();
   const navigate  = useNavigate();
-  const { auth, logout } = useApp();
+  const { auth, logout, cartTotalQty } = useApp();
+  const { lang, setLang, t } = useLanguage();
+
+  const navLinks = [
+    { path: '/',         label: t('nav.home'),     icon: 'fa-house' },
+    { path: '/about',    label: t('nav.about'),    icon: 'fa-circle-info' },
+    { path: '/products', label: t('nav.products'), icon: 'fa-box' },
+    { path: '/clients',  label: t('nav.clients'),  icon: 'fa-handshake' },
+    { path: '/contact',  label: t('nav.contact'),  icon: 'fa-envelope' },
+  ];
 
   const handleLogout = () => {
     logout();
@@ -31,13 +35,7 @@ const Navbar = () => {
 
         {/* Logo */}
         <Link to="/" className="nav-logo" aria-label="الجوهرة — الصفحة الرئيسية">
-          <div className="nav-logo-icon" aria-hidden="true">
-            <i className="fas fa-gem"></i>
-          </div>
-          <div className="nav-logo-text">
-            <span className="nav-logo-name">الجوهرة</span>
-            <span className="nav-logo-sub">للمناديل الورقية</span>
-          </div>
+          <img src={LOGO_URL} alt="الجوهرة" className="nav-logo-img" />
         </Link>
 
         {/* Desktop links */}
@@ -54,29 +52,48 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Auth section */}
-        <div className="nav-auth">
-          {auth ? (
-            <div className="nav-user-group">
-              <span className="nav-user-name">
-                <i className="fas fa-user-circle" aria-hidden="true"></i>
-                {auth.name.split(' ')[0]}
-              </span>
-              <Link to="/dashboard" className={`nav-link nav-dash-link${isActive('/dashboard') ? ' active' : ''}`}>
-                <i className="fas fa-chart-pie" aria-hidden="true"></i>
-                لوحة التحكم
+        {/* Right controls */}
+        <div className="nav-controls">
+
+          {/* Language toggle */}
+          <button
+            className="nav-lang-btn"
+            onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
+            aria-label="تغيير اللغة"
+          >
+            {lang === 'ar' ? 'EN' : 'عر'}
+          </button>
+
+          {/* Cart */}
+          <Link to="/cart" className="nav-cart-btn" aria-label="عربة التسوق">
+            <i className="fas fa-cart-shopping" aria-hidden="true"></i>
+            {cartTotalQty > 0 && <span className="nav-cart-count">{cartTotalQty}</span>}
+          </Link>
+
+          {/* Auth */}
+          <div className="nav-auth">
+            {auth ? (
+              <div className="nav-user-group">
+                <span className="nav-user-name">
+                  <i className="fas fa-user-circle" aria-hidden="true"></i>
+                  {auth.name.split(' ')[0]}
+                </span>
+                <Link to="/dashboard" className={`nav-link nav-dash-link${isActive('/dashboard') ? ' active' : ''}`}>
+                  <i className="fas fa-chart-pie" aria-hidden="true"></i>
+                  {t('nav.dashboard')}
+                </Link>
+                <button className="nav-logout-btn" onClick={handleLogout} aria-label="تسجيل خروج">
+                  <i className="fas fa-right-from-bracket" aria-hidden="true"></i>
+                  {t('nav.logout')}
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="nav-login-btn">
+                <i className="fas fa-right-to-bracket" aria-hidden="true"></i>
+                {t('nav.login')}
               </Link>
-              <button className="nav-logout-btn" onClick={handleLogout} aria-label="تسجيل خروج">
-                <i className="fas fa-right-from-bracket" aria-hidden="true"></i>
-                خروج
-              </button>
-            </div>
-          ) : (
-            <Link to="/login" className="nav-login-btn">
-              <i className="fas fa-right-to-bracket" aria-hidden="true"></i>
-              دخول
-            </Link>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Hamburger */}
@@ -101,10 +118,26 @@ const Navbar = () => {
               className={`mobile-nav-link${isActive(l.path) ? ' active' : ''}`}
               onClick={() => setMenuOpen(false)}
             >
-              <i className={`fas ${l.icon}`} aria-hidden="true" style={{ marginLeft: '10px' }}></i>
+              <i className={`fas ${l.icon}`} aria-hidden="true" style={{ marginLeft: '10px', marginRight: '10px' }}></i>
               {l.label}
             </Link>
           ))}
+
+          {/* Mobile cart link */}
+          <Link to="/cart" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
+            <i className="fas fa-cart-shopping" aria-hidden="true" style={{ marginLeft: '10px', marginRight: '10px' }}></i>
+            {t('nav.cart')}
+            {cartTotalQty > 0 && <span className="mobile-cart-badge">{cartTotalQty}</span>}
+          </Link>
+
+          {/* Mobile lang toggle */}
+          <div className="mobile-toggles">
+            <button className="mobile-toggle-btn" onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}>
+              <i className="fas fa-language"></i>
+              {lang === 'ar' ? 'English' : 'العربية'}
+            </button>
+          </div>
+
           {auth ? (
             <>
               <Link
@@ -112,18 +145,18 @@ const Navbar = () => {
                 className={`mobile-nav-link${isActive('/dashboard') ? ' active' : ''}`}
                 onClick={() => setMenuOpen(false)}
               >
-                <i className="fas fa-chart-pie" aria-hidden="true" style={{ marginLeft: '10px' }}></i>
-                لوحة التحكم
+                <i className="fas fa-chart-pie" aria-hidden="true" style={{ marginLeft: '10px', marginRight: '10px' }}></i>
+                {t('nav.dashboard')}
               </Link>
               <button className="mobile-logout-btn" onClick={handleLogout}>
-                <i className="fas fa-right-from-bracket" aria-hidden="true" style={{ marginLeft: '10px' }}></i>
-                تسجيل خروج
+                <i className="fas fa-right-from-bracket" aria-hidden="true" style={{ marginLeft: '10px', marginRight: '10px' }}></i>
+                {t('nav.logout')}
               </button>
             </>
           ) : (
             <Link to="/login" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-              <i className="fas fa-right-to-bracket" aria-hidden="true" style={{ marginLeft: '10px' }}></i>
-              تسجيل دخول
+              <i className="fas fa-right-to-bracket" aria-hidden="true" style={{ marginLeft: '10px', marginRight: '10px' }}></i>
+              {t('nav.login')}
             </Link>
           )}
         </div>

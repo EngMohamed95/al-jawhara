@@ -1,0 +1,240 @@
+const t = {
+  // ── Nav ──────────────────────────────────────────────
+  nav: {
+    brand:     { ar: 'الجوهرة',     en: 'Al-Jawhara' },
+    brandSub:  { ar: 'للمناديل الورقية', en: 'Tissue Paper Co.' },
+    home:      { ar: 'الرئيسية',    en: 'Home' },
+    about:     { ar: 'من نحن',      en: 'About' },
+    products:  { ar: 'المنتجات',    en: 'Products' },
+    clients:   { ar: 'عملاؤنا',     en: 'Clients' },
+    contact:   { ar: 'تواصل معنا',  en: 'Contact' },
+    dashboard: { ar: 'لوحة التحكم', en: 'Dashboard' },
+    login:     { ar: 'تسجيل دخول', en: 'Login' },
+    logout:    { ar: 'خروج',        en: 'Logout' },
+    cart:      { ar: 'السلة',        en: 'Cart' },
+  },
+
+  // ── Home ─────────────────────────────────────────────
+  home: {
+    heroBadge:    { ar: 'الرائد في صناعة المناديل الورقية بالكويت', en: 'Kuwait\'s Leading Tissue Paper Manufacturer' },
+    heroTitle:    { ar: 'شركة الجوهرة للمناديل الورقية',            en: 'Al-Jawhara Tissue Paper Co.' },
+    heroSubtitle: { ar: 'جودة استثنائية في كل ورقة — نصنع منتجات ورقية عالية المستوى تخدم الأسر والمؤسسات في الكويت والخليج منذ 1998', en: 'Exceptional quality in every sheet — manufacturing premium paper products serving families and institutions across Kuwait and the Gulf since 1998' },
+    browseProducts: { ar: 'تصفح منتجاتنا',    en: 'Browse Products' },
+    contactUs:      { ar: 'تواصل معنا',        en: 'Contact Us' },
+    featuredTitle:  { ar: 'منتجاتنا المميزة', en: 'Featured Products' },
+    featuredSub:    { ar: 'مجموعة متكاملة من المنتجات الورقية المصنوعة بأعلى معايير الجودة', en: 'A complete range of paper products manufactured to the highest quality standards' },
+    viewAll:        { ar: 'عرض جميع المنتجات', en: 'View All Products' },
+    whyTitle:       { ar: 'لماذا تختار الجوهرة؟', en: 'Why Choose Al-Jawhara?' },
+    whySub:         { ar: 'نقدم لك أفضل تجربة من الجودة والخدمة', en: 'We deliver the best experience in quality and service' },
+    clientsTitle:   { ar: 'عملاؤنا المميزون',   en: 'Our Valued Clients' },
+    clientsSub:     { ar: 'نفخر بثقة كبرى الشركات والمؤسسات في منتجاتنا', en: 'We are proud of the trust of leading companies in our products' },
+    viewClients:    { ar: 'عرض جميع العملاء',   en: 'View All Clients' },
+    loading:        { ar: 'جاري تحميل المنتجات...', en: 'Loading products...' },
+    statsYear:      { ar: 'سنة التأسيس',       en: 'Founded' },
+    statsFactory:   { ar: 'م² مساحة المصنع',   en: 'm² Factory Area' },
+    statsProd:      { ar: 'طن إنتاج سنوي',     en: 'Tons/Year Production' },
+    statsClients:   { ar: 'عميل معتمد',         en: 'Trusted Clients' },
+  },
+
+  // ── Why features ─────────────────────────────────────
+  why: [
+    { icon: 'fa-medal',      title: { ar: 'جودة معتمدة',  en: 'Certified Quality'  }, desc: { ar: 'منتجاتنا تستوفي أعلى معايير الجودة الخليجية والدولية', en: 'Our products meet the highest Gulf and international quality standards' } },
+    { icon: 'fa-leaf',       title: { ar: 'صديق للبيئة',  en: 'Eco-Friendly'       }, desc: { ar: 'نستخدم مواد خام قابلة للتدوير ونلتزم بمعايير الاستدامة البيئية', en: 'We use recyclable raw materials and comply with environmental sustainability standards' } },
+    { icon: 'fa-truck-fast', title: { ar: 'توصيل سريع',   en: 'Fast Delivery'      }, desc: { ar: 'شبكة توزيع واسعة تضمن وصول منتجاتنا في الوقت المحدد', en: 'A wide distribution network ensuring timely delivery of our products' } },
+    { icon: 'fa-headset',    title: { ar: 'دعم 24/7',      en: '24/7 Support'       }, desc: { ar: 'فريق متخصص لخدمة العملاء على مدار الساعة طوال أيام الأسبوع', en: 'A dedicated customer service team available around the clock seven days a week' } },
+  ],
+
+  // ── About ─────────────────────────────────────────────
+  about: {
+    title:      { ar: 'من نحن',               en: 'About Us' },
+    subtitle:   { ar: 'تعرف على شركة الجوهرة — قصة نجاح كويتية منذ 1998', en: 'Discover Al-Jawhara — A Kuwaiti success story since 1998' },
+    storyBadge: { ar: 'قصتنا',                en: 'Our Story' },
+    storyTitle: { ar: 'رحلة الجودة منذ',      en: 'A Journey of Quality Since' },
+    story1:     { ar: 'بدأت شركة الجوهرة للمناديل الورقية مسيرتها في الثامن عشر من فبراير 1998 بهدف واحد واضح: توفير منتجات ورقية عالية الجودة تلبي احتياجات السوق الكويتي والخليجي بأسعار تنافسية.', en: 'Al-Jawhara Tissue Paper Co. began its journey on February 18, 1998, with one clear goal: to provide high-quality paper products that meet the needs of the Kuwaiti and Gulf markets at competitive prices.' },
+    story2:     { ar: 'اليوم، نخدم أكثر من 25 عميلاً من كبرى الشركات والمؤسسات، ونواصل مسيرة التطوير والابتكار لتقديم الأفضل دائماً.', en: 'Today, we serve more than 25 clients from major companies and institutions, continuing our journey of development and innovation to always deliver the best.' },
+    infoTitle:  { ar: 'بيانات الشركة',        en: 'Company Information' },
+    infoSub:    { ar: 'معلومات تفصيلية عن شركة الجوهرة', en: 'Detailed information about Al-Jawhara Co.' },
+    mission:    { ar: 'رسالتنا',              en: 'Our Mission' },
+    vision:     { ar: 'رؤيتنا',               en: 'Our Vision' },
+    missionText:{ ar: 'تصنيع وتوريد منتجات ورقية عالية الجودة تلبي احتياجات عملائنا بأسعار تنافسية.', en: 'To manufacture and supply high-quality paper products that meet our customers\' needs at competitive prices.' },
+    visionText: { ar: 'أن نكون الخيار الأول للمنتجات الورقية في الكويت والخليج العربي.', en: 'To be the first choice for paper products in Kuwait and the Arabian Gulf.' },
+    timeline:   { ar: 'محطاتنا عبر الزمن',   en: 'Our Timeline' },
+    timelineSub:{ ar: 'أبرز المحطات في مسيرة شركة الجوهرة', en: 'Key milestones in Al-Jawhara\'s journey' },
+    ceoWord:    { ar: 'كلمة المدير العام',    en: 'CEO\'s Message' },
+  },
+
+  // ── Products ──────────────────────────────────────────
+  products: {
+    title:   { ar: 'منتجاتنا',    en: 'Our Products' },
+    sub:     { ar: 'تشكيلة متكاملة من المناديل الورقية عالية الجودة', en: 'A complete range of high-quality tissue paper products' },
+    all:     { ar: 'الكل',         en: 'All' },
+    add:     { ar: 'أضف',          en: 'Add' },
+    added:   { ar: 'تمت الإضافة',  en: 'Added' },
+    empty:   { ar: 'لا توجد منتجات في هذه الفئة', en: 'No products in this category' },
+    loading: { ar: 'جاري تحميل المنتجات...', en: 'Loading products...' },
+    error:   { ar: 'تعذر الاتصال بالخادم', en: 'Could not connect to server' },
+    currency:{ ar: 'د.ك', en: 'KWD' },
+    cats: {
+      facial:  { ar: 'مناديل الوجه',    en: 'Facial Tissue' },
+      rolls:   { ar: 'الرولات',          en: 'Rolls' },
+      pocket:  { ar: 'محارم الجيب',      en: 'Pocket' },
+      towels:  { ar: 'المناشف',          en: 'Towels' },
+      napkins: { ar: 'مناديل المائدة',   en: 'Napkins' },
+      family:  { ar: 'عروض العائلة',     en: 'Family Packs' },
+    },
+  },
+
+  // ── Clients ───────────────────────────────────────────
+  clients: {
+    title:     { ar: 'عملاؤنا',      en: 'Our Clients' },
+    sub:       { ar: 'نخدم أكثر من 20 عميلاً من كبرى الشركات والمؤسسات في الكويت والخليج', en: 'Serving 20+ leading companies and institutions across Kuwait and the Gulf' },
+    all:       { ar: 'الكل',          en: 'All' },
+    ctaTitle:  { ar: 'كن شريكنا القادم', en: 'Become Our Next Partner' },
+    ctaText:   { ar: 'انضم إلى عائلة الجوهرة المتنامية واستمتع بجودة عالمية وخدمة استثنائية', en: 'Join Al-Jawhara\'s growing family and enjoy world-class quality and exceptional service' },
+    ctaBtn:    { ar: 'تواصل معنا الآن', en: 'Contact Us Now' },
+    sectors: {
+      retail:    { ar: 'تجزئة',       en: 'Retail' },
+      cafes:     { ar: 'كافيهات',     en: 'Cafes' },
+      restaurants:{ ar: 'مطاعم',      en: 'Restaurants' },
+      delivery:  { ar: 'توصيل طعام', en: 'Food Delivery' },
+      hotels:    { ar: 'فنادق',       en: 'Hotels' },
+      health:    { ar: 'رعاية صحية', en: 'Healthcare' },
+      education: { ar: 'تعليم',       en: 'Education' },
+      government:{ ar: 'حكومي',       en: 'Government' },
+      oil:       { ar: 'نفط وطاقة',  en: 'Oil & Energy' },
+    },
+    stats: [
+      { icon: 'fa-users',  num: '20+', label: { ar: 'عميل معتمد',     en: 'Trusted Clients' } },
+      { icon: 'fa-store',  num: '7',   label: { ar: 'قطاعات مختلفة',  en: 'Sectors' } },
+      { icon: 'fa-globe',  num: '3',   label: { ar: 'دول خليجية',     en: 'Gulf Countries' } },
+      { icon: 'fa-star',   num: '26+', label: { ar: 'عام من الشراكة', en: 'Years of Partnership' } },
+    ],
+  },
+
+  // ── Contact ───────────────────────────────────────────
+  contact: {
+    title:       { ar: 'تواصل معنا',   en: 'Contact Us' },
+    sub:         { ar: 'نسعد بسماع استفساراتكم وطلباتكم', en: 'We\'d love to hear your inquiries and requests' },
+    infoTitle:   { ar: 'معلومات التواصل', en: 'Contact Information' },
+    formTitle:   { ar: 'أرسل رسالة',   en: 'Send a Message' },
+    formSub:     { ar: 'سنرد عليك في أقرب وقت ممكن خلال ساعات العمل', en: 'We\'ll respond as soon as possible during business hours' },
+    name:        { ar: 'الاسم الكامل *', en: 'Full Name *' },
+    company:     { ar: 'اسم الشركة',    en: 'Company Name' },
+    phone:       { ar: 'رقم الهاتف *',  en: 'Phone Number *' },
+    email:       { ar: 'البريد الإلكتروني', en: 'Email Address' },
+    subject:     { ar: 'موضوع الرسالة *', en: 'Subject *' },
+    message:     { ar: 'الرسالة *',      en: 'Message *' },
+    send:        { ar: 'إرسال الرسالة',  en: 'Send Message' },
+    sending:     { ar: 'جارٍ الإرسال...', en: 'Sending...' },
+    sent:        { ar: 'تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.', en: 'Your message was sent successfully! We\'ll be in touch soon.' },
+    subjects: [
+      { val: '',            label: { ar: 'اختر موضوع الرسالة',          en: 'Select a subject' } },
+      { val: 'sales',       label: { ar: 'استفسار عن المنتجات والأسعار', en: 'Products & Pricing Inquiry' } },
+      { val: 'order',       label: { ar: 'طلب شراء',                    en: 'Purchase Order' } },
+      { val: 'partnership', label: { ar: 'طلب شراكة',                   en: 'Partnership Request' } },
+      { val: 'complaint',   label: { ar: 'شكوى أو اقتراح',              en: 'Complaint or Suggestion' } },
+      { val: 'other',       label: { ar: 'أخرى',                        en: 'Other' } },
+    ],
+    followUs:    { ar: 'تابعونا على', en: 'Follow Us' },
+    map:         { ar: 'موقعنا على الخريطة', en: 'Our Location' },
+    labels: {
+      phone:    { ar: 'الهاتف',            en: 'Phone' },
+      whatsapp: { ar: 'واتساب',            en: 'WhatsApp' },
+      email:    { ar: 'البريد الإلكتروني', en: 'Email' },
+      address:  { ar: 'العنوان',           en: 'Address' },
+      hours:    { ar: 'ساعات العمل',       en: 'Business Hours' },
+    },
+  },
+
+  // ── Cart ──────────────────────────────────────────────
+  cart: {
+    title:      { ar: 'سلة التسوق',       en: 'Shopping Cart' },
+    sub:        { ar: 'مراجعة المنتجات قبل إتمام الطلب', en: 'Review products before completing your order' },
+    empty:      { ar: 'السلة فارغة',      en: 'Cart is Empty' },
+    emptyDesc:  { ar: 'لم تقم بإضافة أي منتجات بعد', en: 'You haven\'t added any products yet' },
+    browse:     { ar: 'تصفح المنتجات',    en: 'Browse Products' },
+    items:      { ar: 'المنتجات',         en: 'Products' },
+    clearAll:   { ar: 'مسح الكل',         en: 'Clear All' },
+    summary:    { ar: 'ملخص الطلب',       en: 'Order Summary' },
+    total:      { ar: 'الإجمالي',         en: 'Total' },
+    checkout:   { ar: 'إتمام الطلب',      en: 'Proceed to Checkout' },
+    continue:   { ar: 'متابعة التسوق',    en: 'Continue Shopping' },
+    unit:       { ar: 'وحدة',             en: 'unit' },
+  },
+
+  // ── Checkout ──────────────────────────────────────────
+  checkout: {
+    title:       { ar: 'إتمام الطلب',     en: 'Checkout' },
+    sub:         { ar: 'أدخل بياناتك لإتمام عملية الطلب', en: 'Enter your details to complete your order' },
+    clientInfo:  { ar: 'بيانات العميل',   en: 'Customer Details' },
+    name:        { ar: 'الاسم الكامل *',  en: 'Full Name *' },
+    company:     { ar: 'اسم الشركة / المؤسسة', en: 'Company / Organization' },
+    phone:       { ar: 'رقم الهاتف *',   en: 'Phone Number *' },
+    email:       { ar: 'البريد الإلكتروني', en: 'Email' },
+    address:     { ar: 'عنوان التسليم *', en: 'Delivery Address *' },
+    notes:       { ar: 'ملاحظات إضافية',  en: 'Additional Notes' },
+    payment:     { ar: 'طريقة الدفع',     en: 'Payment Method' },
+    cash:        { ar: 'كاش عند الاستلام', en: 'Cash on Delivery' },
+    transfer:    { ar: 'تحويل بنكي',       en: 'Bank Transfer' },
+    knet:        { ar: 'K-Net',            en: 'K-Net' },
+    confirm:     { ar: 'تأكيد وإرسال الطلب', en: 'Confirm & Send Order' },
+    sending:     { ar: 'جاري إرسال الطلب...', en: 'Sending Order...' },
+    yourOrder:   { ar: 'ملخص طلبك',       en: 'Your Order' },
+    editCart:    { ar: 'تعديل السلة',      en: 'Edit Cart' },
+    stepCart:    { ar: 'السلة',            en: 'Cart' },
+    stepDetails: { ar: 'بيانات الطلب',    en: 'Order Details' },
+    stepConfirm: { ar: 'التأكيد',          en: 'Confirmation' },
+  },
+
+  // ── Order Success ────────────────────────────────────
+  success: {
+    title:    { ar: 'تم استلام طلبك بنجاح!', en: 'Order Received Successfully!' },
+    sub:      { ar: 'سيتواصل معك فريق المبيعات خلال ساعات العمل لتأكيد الطلب والترتيب للتسليم.', en: 'Our sales team will contact you during business hours to confirm your order and arrange delivery.' },
+    orderNum: { ar: 'رقم الطلب',   en: 'Order Number' },
+    total:    { ar: 'الإجمالي',     en: 'Total' },
+    payment:  { ar: 'طريقة الدفع', en: 'Payment Method' },
+    date:     { ar: 'التاريخ',      en: 'Date' },
+    shop:     { ar: 'متابعة التسوق',   en: 'Continue Shopping' },
+    home:     { ar: 'الصفحة الرئيسية', en: 'Home Page' },
+    cash:     { ar: 'كاش عند الاستلام', en: 'Cash on Delivery' },
+    transfer: { ar: 'تحويل بنكي',       en: 'Bank Transfer' },
+    knet:     { ar: 'K-Net',            en: 'K-Net' },
+  },
+
+  // ── Footer ───────────────────────────────────────────
+  footer: {
+    desc:     { ar: 'شركة الجوهرة للمناديل الورقية — رائدة في تصنيع وتوزيع منتجات الورق عالية الجودة في الكويت منذ عام 1998.', en: 'Al-Jawhara Tissue Paper Co. — Leading manufacturer and distributor of quality paper products in Kuwait since 1998.' },
+    links:    { ar: 'روابط سريعة',  en: 'Quick Links' },
+    ourProds: { ar: 'منتجاتنا',     en: 'Our Products' },
+    reach:    { ar: 'تواصل معنا',   en: 'Reach Us' },
+    rights:   { ar: 'جميع الحقوق محفوظة', en: 'All Rights Reserved' },
+    founded:  { ar: 'تأسست',        en: 'Founded' },
+  },
+
+  // ── Login ────────────────────────────────────────────
+  login: {
+    title:    { ar: 'تسجيل الدخول',  en: 'Sign In' },
+    sub:      { ar: 'أدخل بياناتك للوصول إلى لوحة التحكم', en: 'Enter your credentials to access the dashboard' },
+    username: { ar: 'اسم المستخدم',  en: 'Username' },
+    password: { ar: 'كلمة المرور',   en: 'Password' },
+    submit:   { ar: 'دخول',          en: 'Sign In' },
+    loading:  { ar: 'جاري التحقق...', en: 'Verifying...' },
+    backSite: { ar: 'العودة إلى الموقع', en: 'Back to Website' },
+    hint:     { ar: 'بيانات تجريبية:', en: 'Demo credentials:' },
+  },
+
+  // ── Common ───────────────────────────────────────────
+  common: {
+    loading:   { ar: 'جاري التحميل...', en: 'Loading...' },
+    error:     { ar: 'حدث خطأ',         en: 'An error occurred' },
+    save:      { ar: 'حفظ',              en: 'Save' },
+    cancel:    { ar: 'إلغاء',            en: 'Cancel' },
+    delete:    { ar: 'حذف',              en: 'Delete' },
+    edit:      { ar: 'تعديل',            en: 'Edit' },
+    add:       { ar: 'إضافة',            en: 'Add' },
+    search:    { ar: 'بحث',              en: 'Search' },
+    currency:  { ar: 'د.ك',              en: 'KWD' },
+  },
+};
+
+export default t;

@@ -1,3 +1,74 @@
+/* ── Logo image ── */
+.nav-logo-img {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  flex-shrink: 0;
+}
+
+/* ── Controls group ── */
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Language button ── */
+.nav-lang-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.85);
+  border-radius: 8px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Tajawal', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.nav-lang-btn:hover {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+/* ── Cart button ── */
+.nav-cart-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.85);
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.nav-cart-btn:hover {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+.nav-cart-count {
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  background: var(--secondary);
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+}
+
 /* ── Auth section ── */
 .nav-auth { display: flex; align-items: center; }
 
@@ -13,8 +84,8 @@
   color: rgba(255,255,255,0.7);
   font-size: 13px;
   padding: 0 8px;
-  border-left: 1px solid rgba(255,255,255,0.2);
-  margin-left: 4px;
+  border-inline-start: 1px solid rgba(255,255,255,0.2);
+  margin-inline-start: 4px;
 }
 .nav-dash-link { display: flex; align-items: center; gap: 5px; }
 .nav-logout-btn {
@@ -67,13 +138,53 @@
   font-size: 15px;
   font-family: 'Tajawal', sans-serif;
   font-weight: 600;
-  text-align: right;
+  text-align: inherit;
   cursor: pointer;
   transition: all 0.2s;
   margin-top: 5px;
 }
 .mobile-logout-btn:hover { background: rgba(239,68,68,0.3); }
 
+.mobile-cart-badge {
+  margin-inline-start: auto;
+  background: var(--secondary);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.mobile-toggles {
+  display: flex;
+  gap: 8px;
+  padding: 6px 0;
+}
+.mobile-toggle-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.8);
+  font-size: 13px;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.mobile-toggle-btn:hover { background: rgba(255,255,255,0.15); color: white; }
+
 @media (max-width: 768px) {
   .nav-auth { display: none; }
+  .nav-controls { gap: 4px; }
+  .nav-user-group { display: none; }
 }
