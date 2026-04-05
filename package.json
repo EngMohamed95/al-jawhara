@@ -19,6 +19,7 @@
     "client": "react-scripts start",
     "server": "json-server --watch db.json --port 3001",
     "build": "react-scripts build",
+    "deploy": "react-scripts build && node scripts/deploy.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -41,6 +42,7 @@
     ]
   },
   "devDependencies": {
+    "basic-ftp": "^5.2.0",
     "concurrently": "^9.2.1",
     "json-server": "^0.17.4"
   }
