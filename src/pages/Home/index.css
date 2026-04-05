@@ -18,9 +18,9 @@
 }
 .home-why-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-xl); }
 .home-why-icon {
-  width: 64px; height: 64px; background: var(--primary-xlight); border-radius: 16px;
+  width: 64px; height: 64px; background: var(--primary); border-radius: 16px;
   display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;
-  font-size: 1.7rem; color: var(--primary);
+  font-size: 1.7rem; color: white;
 }
 .home-why-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
 .home-why-desc  { font-size: 0.86rem; color: var(--text-light); line-height: 1.6; }
