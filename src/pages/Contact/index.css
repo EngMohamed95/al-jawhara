@@ -29,12 +29,12 @@
 .contact-submit-btn { width: 100%; justify-content: center; padding: 14px; }
 
 .map-placeholder {
-  margin-top: 50px; background: var(--primary-xlight); border-radius: var(--radius-lg);
-  padding: 40px; text-align: center; border: 2px dashed var(--primary); opacity: 0.8;
+  margin-top: 50px; background: var(--primary); border-radius: var(--radius-lg);
+  padding: 40px; text-align: center; border: 2px dashed rgba(255,255,255,0.3);
 }
-.map-placeholder-icon { font-size: 3rem; color: var(--primary); margin-bottom: 15px; display: block; }
-.map-placeholder-title { font-weight: 700; font-size: 1.1rem; color: var(--primary); margin-bottom: 5px; }
-.map-placeholder-address { color: var(--text-light); font-size: 0.9rem; }
+.map-placeholder-icon { font-size: 3rem; color: white; margin-bottom: 15px; display: block; }
+.map-placeholder-title { font-weight: 700; font-size: 1.1rem; color: white; margin-bottom: 5px; }
+.map-placeholder-address { color: rgba(255,255,255,0.75); font-size: 0.9rem; }
 
 @media (max-width: 480px) {
   .form-row { grid-template-columns: 1fr; }

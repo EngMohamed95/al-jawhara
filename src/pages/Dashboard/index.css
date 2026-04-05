@@ -39,7 +39,7 @@
 .td-light    { color: var(--text-light); font-size: 13px; }
 .td-icon     { margin-left: 8px; }
 .badge-cat   {
-  background: var(--primary-xlight); color: var(--primary);
+  background: var(--primary); color: white;
   padding: 3px 10px; border-radius: var(--radius-full); font-size: 12px; font-weight: 600;
 }
 
@@ -96,7 +96,7 @@
   padding: 3px 10px; border-radius: var(--radius-full); font-size: 12px; font-weight: 600;
 }
 .role-admin  { background: #fef3c7; color: #d97706; }
-.role-editor { background: var(--primary-xlight); color: var(--primary); }
+.role-editor { background: var(--primary); color: white; }
 .role-viewer { background: var(--bg); color: var(--text-light); border: 1px solid var(--border); }
 
 /* ── Password input ── */

@@ -21,7 +21,7 @@
   border-color: var(--primary); background: var(--primary); color: white;
 }
 .checkout-step.done .step-circle {
-  border-color: var(--primary); background: var(--primary-xlight); color: var(--primary);
+  border-color: var(--primary); background: var(--primary); color: white;
 }
 .checkout-step-line {
   width: 80px; height: 2px; background: var(--border); margin-bottom: 22px;
@@ -62,7 +62,7 @@
 .payment-option i { font-size: 1.4rem; }
 .payment-option:hover { border-color: var(--primary); color: var(--primary); }
 .payment-option.selected {
-  border-color: var(--primary); background: var(--primary-xlight); color: var(--primary);
+  border-color: var(--primary); background: var(--primary); color: white;
 }
 
 /* ── Submit ── */
