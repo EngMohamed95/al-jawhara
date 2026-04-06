@@ -146,7 +146,10 @@ const About = () => {
         <section className="section about-ceo-section" aria-label={t('about.ceoWord')}>
           <div className="container">
             <div className="ceo-card">
-              <div className="ceo-avatar" aria-hidden="true"><i className="fas fa-user-tie"></i></div>
+              <div className="ceo-avatar" aria-hidden="true">
+                <img src="/ceo.jpg" alt={ceoName} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
+                <i className="fas fa-user-tie" style={{ display: 'none' }}></i>
+              </div>
               <div>
                 <div aria-hidden="true" style={{ fontSize: '2.5rem', opacity: 0.25, lineHeight: 1, marginBottom: '-8px' }}>
                   <i className="fas fa-quote-right"></i>
