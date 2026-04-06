@@ -254,8 +254,6 @@ const Dashboard = () => {
   };
 
   /* ── Invoice ── */
-  const [invoiceOrder, setInvoiceOrder] = useState(null);
-
   const printInvoice = (order) => {
     const sc = siteContent || {};
     const items = order.items && order.items.length > 0
@@ -579,32 +577,49 @@ const Dashboard = () => {
           {/* ══ INVOICES ══ */}
           {view === 'invoices' && (
             <div>
-              <div className="dash-header-row">
-                <div className="dashboard-title">الفواتير ({orders.length})</div>
-              </div>
+              <div className="dashboard-title">الفواتير ({orders.length})</div>
               <p className="dash-section-desc">عرض وطباعة فاتورة لكل طلب بتصميم احترافي.</p>
-              <div className="invoices-grid">
-                {orders.length === 0 && <p className="td-light">لا توجد طلبات بعد.</p>}
-                {orders.map(o => {
-                  const total = Number(o.grandTotal || o.total || 0).toFixed(3);
-                  return (
-                    <div key={o.id} className="invoice-card">
-                      <div className="invoice-card-top">
-                        <div className="invoice-ref">{o.ref}</div>
-                        <span className={`status-badge status-${o.status}`}>{orderStatusLabels[o.status] || o.status}</span>
-                      </div>
-                      <div className="invoice-client"><i className="fas fa-user"></i> {o.client || '—'}</div>
-                      {o.governorate && <div className="invoice-meta"><i className="fas fa-location-dot"></i> {o.governorate}{o.block ? ` — ${o.block}` : ''}</div>}
-                      {o.phone && <div className="invoice-meta"><i className="fas fa-phone"></i> {o.phone}</div>}
-                      <div className="invoice-meta"><i className="fas fa-calendar"></i> {o.date}</div>
-                      {o.payment && <div className="invoice-meta"><i className="fas fa-wallet"></i> {o.payment}</div>}
-                      <div className="invoice-total">{total} <span>د.ك</span></div>
-                      <button className="btn btn-green invoice-print-btn" onClick={() => printInvoice(o)}>
-                        <i className="fas fa-print"></i> طباعة الفاتورة
-                      </button>
-                    </div>
-                  );
-                })}
+              <div className="data-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>رقم الطلب</th>
+                      <th>العميل</th>
+                      <th>الهاتف</th>
+                      <th>المحافظة</th>
+                      <th>المنتجات</th>
+                      <th>الدفع</th>
+                      <th>التاريخ</th>
+                      <th>الإجمالي</th>
+                      <th>الحالة</th>
+                      <th>طباعة</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.length === 0 && <tr><td colSpan="10" className="td-light" style={{textAlign:'center',padding:'30px'}}>لا توجد طلبات بعد.</td></tr>}
+                    {orders.map(o => (
+                      <tr key={o.id}>
+                        <td className="td-primary">{o.ref}</td>
+                        <td>
+                          <div className="td-bold">{o.client || '—'}</div>
+                          {o.company && <div className="td-light" style={{fontSize:'11px'}}>{o.company}</div>}
+                        </td>
+                        <td className="td-light" dir="ltr">{o.phone || '—'}</td>
+                        <td className="td-light">{o.governorate ? `${o.governorate}${o.block ? ` — ${o.block}` : ''}` : '—'}</td>
+                        <td className="td-light">{o.product}</td>
+                        <td><span className="badge-pay">{o.payment || '—'}</span></td>
+                        <td className="td-light" dir="ltr">{o.date}</td>
+                        <td className="td-bold">{Number(o.grandTotal || o.total || 0).toFixed(3)} د.ك</td>
+                        <td><span className={`status-badge status-${o.status}`}>{orderStatusLabels[o.status] || o.status}</span></td>
+                        <td>
+                          <button className="action-btn action-btn-edit" onClick={() => printInvoice(o)}>
+                            <i className="fas fa-print"></i> طباعة
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           )}
