@@ -8,11 +8,7 @@
       "price": 1.5,
       "desc": "مناديل ناعمة ثلاثية الطبقات للاستخدام اليومي — رقيقة على البشرة",
       "badge": "الأكثر مبيعاً",
-      "specs": [
-        "3 طبقات",
-        "200 ورقة",
-        "21×21 سم"
-      ],
+      "specs": ["3 طبقات","200 ورقة","21×21 سم"],
       "stock": 5000,
       "status": "active"
     },
@@ -24,11 +20,7 @@
       "price": 2.2,
       "desc": "مناديل فاخرة برائحة لطيفة — مثالية للضيافة والهدايا المميزة",
       "badge": "جديد",
-      "specs": [
-        "4 طبقات",
-        "150 ورقة",
-        "22×22 سم"
-      ],
+      "specs": ["4 طبقات","150 ورقة","22×22 سم"],
       "stock": 2000,
       "status": "active"
     },
@@ -40,11 +32,7 @@
       "price": 0.75,
       "desc": "رولات قوية مناسبة للمطبخ والتنظيف العام — عالية الامتصاص",
       "badge": null,
-      "specs": [
-        "2 طبقة",
-        "300 ورقة",
-        "22×25 سم"
-      ],
+      "specs": ["2 طبقة","300 ورقة","22×25 سم"],
       "stock": 8000,
       "status": "active"
     },
@@ -56,11 +44,7 @@
       "price": 0.5,
       "desc": "رولات الحمام الأكثر مبيعاً — جودة ممتازة بسعر اقتصادي",
       "badge": null,
-      "specs": [
-        "2 طبقة",
-        "400 ورقة",
-        "10×10 سم"
-      ],
+      "specs": ["2 طبقة","400 ورقة","10×10 سم"],
       "stock": 12000,
       "status": "active"
     },
@@ -72,11 +56,7 @@
       "price": 0.35,
       "desc": "علب صغيرة مريحة للحمل في الحقيبة — مثالية للسفر والتنقل",
       "badge": null,
-      "specs": [
-        "3 طبقات",
-        "10 مناديل",
-        "21×21 سم"
-      ],
+      "specs": ["3 طبقات","10 مناديل","21×21 سم"],
       "stock": 3000,
       "status": "active"
     },
@@ -100,11 +80,7 @@
       "price": 1.2,
       "desc": "مناديل مائدة للمطاعم والمناسبات — أناقة في كل تفصيلة",
       "badge": null,
-      "specs": [
-        "2 طبقة",
-        "200 ورقة",
-        "33×33 سم"
-      ],
+      "specs": ["2 طبقة","200 ورقة","33×33 سم"],
       "stock": 4000,
       "status": "active"
     },
@@ -121,16 +97,16 @@
       "status": "pending"
     },
     {
+      "id": 9,
       "name": "مناديل العرق",
       "category": "facial",
       "price": 12,
       "stock": 20,
       "status": "active",
       "icon": "📦",
-      "desc": "مناديل  عرق عرق عرق",
+      "desc": "مناديل عرق عرق عرق",
       "badge": "عرض خاص",
-      "specs": [],
-      "id": 9
+      "specs": []
     }
   ],
   "orders": [
@@ -192,6 +168,8 @@
       "password": "admin123",
       "name": "بلال محمد غدار",
       "role": "admin",
+      "status": "active",
+      "phone": "(965) 96625306",
       "email": "admin@al-jawhara.com",
       "createdAt": "2024-01-01"
     }
@@ -215,7 +193,39 @@
       "factoryArea": "4,500",
       "productionCapacity": "20,000",
       "statsYear": "1998",
-      "statsClients": "+25"
+      "statsClients": "+25",
+      "paymentSettings": {
+        "cash":       { "enabled": true },
+        "transfer":   { "enabled": true, "bankName": "بنك الكويت الوطني", "iban": "KW81NBKU0000000000001000372151" },
+        "knet":       { "enabled": true,  "apiKey": "", "testMode": true },
+        "myfatoorah": { "enabled": false, "apiKey": "", "testMode": true },
+        "tap":        { "enabled": false, "apiKey": "", "testMode": true },
+        "stcpay":     { "enabled": false },
+        "zaincash":   { "enabled": false },
+        "benefitpay": { "enabled": false }
+      },
+      "shippingZones": [
+        { "id": "capital",   "ar": "محافظة العاصمة",      "en": "Capital Governorate",    "fee": 0.750, "enabled": true },
+        { "id": "hawalli",   "ar": "محافظة حولي",          "en": "Hawalli Governorate",    "fee": 0.750, "enabled": true },
+        { "id": "farwaniya", "ar": "محافظة الفروانية",     "en": "Farwaniya Governorate",  "fee": 0.750, "enabled": true },
+        { "id": "mubarak",   "ar": "محافظة مبارك الكبير", "en": "Mubarak Al-Kabeer Gov.", "fee": 0.750, "enabled": true },
+        { "id": "ahmadi",    "ar": "محافظة الأحمدي",       "en": "Ahmadi Governorate",     "fee": 1.000, "enabled": true },
+        { "id": "jahra",     "ar": "محافظة الجهراء",       "en": "Jahra Governorate",      "fee": 1.000, "enabled": true }
+      ]
+    }
+  ],
+  "coupons": [
+    {
+      "id": 1,
+      "code": "WELCOME10",
+      "type": "percent",
+      "value": 10,
+      "minOrder": 5.000,
+      "maxUses": 100,
+      "usedCount": 0,
+      "expiry": "2026-12-31",
+      "status": "active",
+      "desc": "خصم 10% للعملاء الجدد"
     }
   ]
 }

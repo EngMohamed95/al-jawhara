@@ -214,6 +214,62 @@
       "status": "pending",
       "date": "٥‏/٤‏/٢٠٢٦",
       "id": 6
+    },
+    {
+      "ref": "ORD-1775468017197",
+      "client": "",
+      "company": "",
+      "phone": "",
+      "email": "",
+      "governorate": "محافظة العاصمة",
+      "block": "",
+      "address": "",
+      "notes": "",
+      "payment": "cash",
+      "deliveryFee": "0.750",
+      "product": "مناديل الوجه الفاخرة، رولات المطبخ المتينة",
+      "qty": 2,
+      "grandTotal": "3.700",
+      "items": [
+        {
+          "id": 2,
+          "icon": "✨",
+          "name": "مناديل الوجه الفاخرة",
+          "category": "facial",
+          "price": 2.2,
+          "desc": "مناديل فاخرة برائحة لطيفة — مثالية للضيافة والهدايا المميزة",
+          "badge": "جديد",
+          "specs": [
+            "4 طبقات",
+            "150 ورقة",
+            "22×22 سم"
+          ],
+          "stock": 2000,
+          "status": "active",
+          "qty": 1
+        },
+        {
+          "id": 3,
+          "icon": "🧻",
+          "name": "رولات المطبخ المتينة",
+          "category": "rolls",
+          "price": 0.75,
+          "desc": "رولات قوية مناسبة للمطبخ والتنظيف العام — عالية الامتصاص",
+          "badge": null,
+          "specs": [
+            "2 طبقة",
+            "300 ورقة",
+            "22×25 سم"
+          ],
+          "stock": 8000,
+          "status": "active",
+          "qty": 1
+        }
+      ],
+      "total": "2.950",
+      "status": "pending",
+      "date": "٦‏/٤‏/٢٠٢٦",
+      "id": 7
     }
   ],
   "users": [
@@ -250,22 +306,82 @@
       "statsYear": "1998",
       "statsClients": "+25",
       "paymentSettings": {
-        "cash":       { "enabled": true },
-        "transfer":   { "enabled": true, "bankName": "بنك الكويت الوطني", "iban": "KW81NBKU0000000000001000372151" },
-        "knet":       { "enabled": true,  "apiKey": "", "testMode": true },
-        "myfatoorah": { "enabled": false, "apiKey": "", "testMode": true },
-        "tap":        { "enabled": false, "apiKey": "", "testMode": true },
-        "stcpay":     { "enabled": false },
-        "zaincash":   { "enabled": false },
-        "benefitpay": { "enabled": false }
+        "cash": {
+          "enabled": true
+        },
+        "transfer": {
+          "enabled": true,
+          "bankName": "بنك الكويت الوطني",
+          "iban": "KW81NBKU0000000000001000372151"
+        },
+        "knet": {
+          "enabled": true,
+          "apiKey": "",
+          "testMode": true
+        },
+        "myfatoorah": {
+          "enabled": false,
+          "apiKey": "",
+          "testMode": true
+        },
+        "tap": {
+          "enabled": false,
+          "apiKey": "",
+          "testMode": true
+        },
+        "stcpay": {
+          "enabled": false
+        },
+        "zaincash": {
+          "enabled": false
+        },
+        "benefitpay": {
+          "enabled": false
+        }
       },
       "shippingZones": [
-        { "id": "capital",   "ar": "محافظة العاصمة",      "en": "Capital Governorate",       "fee": 0.750, "enabled": true },
-        { "id": "hawalli",   "ar": "محافظة حولي",          "en": "Hawalli Governorate",        "fee": 0.750, "enabled": true },
-        { "id": "farwaniya", "ar": "محافظة الفروانية",     "en": "Farwaniya Governorate",      "fee": 0.750, "enabled": true },
-        { "id": "mubarak",   "ar": "محافظة مبارك الكبير", "en": "Mubarak Al-Kabeer Gov.",    "fee": 0.750, "enabled": true },
-        { "id": "ahmadi",    "ar": "محافظة الأحمدي",       "en": "Ahmadi Governorate",         "fee": 1.000, "enabled": true },
-        { "id": "jahra",     "ar": "محافظة الجهراء",       "en": "Jahra Governorate",          "fee": 1.000, "enabled": true }
+        {
+          "id": "capital",
+          "ar": "محافظة العاصمة",
+          "en": "Capital Governorate",
+          "fee": 0.75,
+          "enabled": true
+        },
+        {
+          "id": "hawalli",
+          "ar": "محافظة حولي",
+          "en": "Hawalli Governorate",
+          "fee": 0.75,
+          "enabled": true
+        },
+        {
+          "id": "farwaniya",
+          "ar": "محافظة الفروانية",
+          "en": "Farwaniya Governorate",
+          "fee": 0.75,
+          "enabled": true
+        },
+        {
+          "id": "mubarak",
+          "ar": "محافظة مبارك الكبير",
+          "en": "Mubarak Al-Kabeer Gov.",
+          "fee": 0.75,
+          "enabled": true
+        },
+        {
+          "id": "ahmadi",
+          "ar": "محافظة الأحمدي",
+          "en": "Ahmadi Governorate",
+          "fee": 1,
+          "enabled": true
+        },
+        {
+          "id": "jahra",
+          "ar": "محافظة الجهراء",
+          "en": "Jahra Governorate",
+          "fee": 1,
+          "enabled": true
+        }
       ]
     }
   ],
@@ -275,7 +391,7 @@
       "code": "WELCOME10",
       "type": "percent",
       "value": 10,
-      "minOrder": 5.000,
+      "minOrder": 5,
       "maxUses": 100,
       "usedCount": 0,
       "expiry": "2026-12-31",
