@@ -60,6 +60,8 @@ const Checkout = () => {
     e.preventDefault();
     if (!form.client.trim())     { setError(lang === 'ar' ? 'الرجاء إدخال الاسم الكامل' : 'Please enter your full name'); return; }
     if (!form.phone.trim())      { setError(lang === 'ar' ? 'الرجاء إدخال رقم الهاتف' : 'Please enter your phone number'); return; }
+    if (form.phone.replace(/\D/g, '').length < 11) { setError(lang === 'ar' ? 'رقم الهاتف يجب أن يكون 11 رقماً على الأقل' : 'Phone number must be at least 11 digits'); return; }
+    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { setError(lang === 'ar' ? 'البريد الإلكتروني غير صحيح' : 'Invalid email address'); return; }
     if (!form.governorate)       { setError(lang === 'ar' ? 'الرجاء اختيار المحافظة' : 'Please select a governorate'); return; }
     if (!form.block.trim())      { setError(lang === 'ar' ? 'الرجاء إدخال المنطقة / القطعة' : 'Please enter your block/area'); return; }
     if (!form.address.trim())    { setError(lang === 'ar' ? 'الرجاء إدخال العنوان التفصيلي' : 'Please enter your detailed address'); return; }
