@@ -14,6 +14,7 @@ import Login        from './pages/Login';
 import Cart         from './pages/Cart';
 import Checkout     from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
+import NotFound    from './pages/NotFound';
 
 const ProtectedRoute = ({ children }) => {
   const { auth } = useApp();
@@ -39,7 +40,7 @@ const AppContent = () => {
           <Route path="/checkout"      element={<Checkout />} />
           <Route path="/order-success" element={<OrderSuccess />} />
           <Route path="/dashboard"     element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="*"              element={<Navigate to="/" replace />} />
+          <Route path="*"              element={<NotFound />} />
         </Routes>
       </main>
       {!isLogin && <Footer />}
