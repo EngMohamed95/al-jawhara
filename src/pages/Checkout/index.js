@@ -61,6 +61,7 @@ const Checkout = () => {
     if (!form.client.trim())     { setError(lang === 'ar' ? 'الرجاء إدخال الاسم الكامل' : 'Please enter your full name'); return; }
     if (!form.phone.trim())      { setError(lang === 'ar' ? 'الرجاء إدخال رقم الهاتف' : 'Please enter your phone number'); return; }
     if (!form.governorate)       { setError(lang === 'ar' ? 'الرجاء اختيار المحافظة' : 'Please select a governorate'); return; }
+    if (!form.block.trim())      { setError(lang === 'ar' ? 'الرجاء إدخال المنطقة / القطعة' : 'Please enter your block/area'); return; }
     if (!form.address.trim())    { setError(lang === 'ar' ? 'الرجاء إدخال العنوان التفصيلي' : 'Please enter your detailed address'); return; }
     setError('');
     setLoading(true);
@@ -182,7 +183,7 @@ const Checkout = () => {
                     </select>
                   </div>
                   <div className="form-group">
-                    <label className="form-label">{t('checkout.block')}</label>
+                    <label className="form-label">{t('checkout.block')} <span style={{color:'#dc2626'}}>*</span></label>
                     <input className="form-input" name="block" value={form.block} onChange={handleChange} placeholder={lang === 'ar' ? 'مثال: قطعة 5، شارع 12' : 'e.g. Block 5, Street 12'} />
                   </div>
                 </div>
