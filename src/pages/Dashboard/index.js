@@ -20,7 +20,7 @@ const ROLE_PERMISSIONS = {
   viewer: { products: false, orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false },
 };
 
-const emptyProduct = { name: '', category: 'facial', price: '', stock: '', status: 'active', icon: '📦', desc: '', badge: '' };
+const emptyProduct = { name: '', nameEn: '', category: 'facial', price: '', stock: '', status: 'active', icon: '📦', desc: '', descEn: '', badge: '' };
 const emptyUser    = { username: '', password: '', name: '', email: '', phone: '', role: 'viewer', status: 'active' };
 const emptyCoupon  = { code: '', type: 'percent', value: '', minOrder: '', maxUses: '', expiry: '', status: 'active', desc: '' };
 
@@ -93,7 +93,7 @@ const Dashboard = () => {
 
   const openAddProduct  = () => { setProductForm(emptyProduct); setProductErr(''); setProductSaved(false); setProductModal('add'); };
   const openEditProduct = (p) => {
-    setProductForm({ name: p.name, category: p.category, price: p.price, stock: p.stock, status: p.status, icon: p.icon || '📦', desc: p.desc || '', badge: p.badge || '' });
+    setProductForm({ name: p.name, nameEn: p.nameEn || '', category: p.category, price: p.price, stock: p.stock, status: p.status, icon: p.icon || '📦', desc: p.desc || '', descEn: p.descEn || '', badge: p.badge || '' });
     setEditProduct(p); setProductErr(''); setProductSaved(false); setProductModal('edit');
   };
   const closeProductModal = () => { setProductModal(null); setEditProduct(null); };
@@ -933,7 +933,17 @@ const Dashboard = () => {
               {productSaved && <AlertSuccess msg="تم الحفظ بنجاح!" />}
               {productErr   && <AlertError  msg={productErr} />}
               <form onSubmit={handleProductSave}>
-                <div className="form-group"><label className="form-label">اسم المنتج *</label><input className="form-input" name="name" value={productForm.name} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required /></div>
+                <div className="product-lang-divider">🇸🇦 عربي</div>
+                <div className="modal-grid2">
+                  <div className="form-group"><label className="form-label">اسم المنتج (عربي) *</label><input className="form-input" name="name" value={productForm.name} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required /></div>
+                  <div className="form-group"><label className="form-label">الوصف (عربي)</label><input className="form-input" name="desc" value={productForm.desc} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
+                </div>
+                <div className="product-lang-divider">🇬🇧 English</div>
+                <div className="modal-grid2">
+                  <div className="form-group"><label className="form-label">Product Name (English)</label><input className="form-input" name="nameEn" value={productForm.nameEn} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="e.g. Classic Facial Tissues" /></div>
+                  <div className="form-group"><label className="form-label">Description (English)</label><input className="form-input" name="descEn" value={productForm.descEn} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="e.g. Soft 3-layer tissues..." /></div>
+                </div>
+                <div className="product-lang-divider">⚙️ بيانات المنتج</div>
                 <div className="modal-grid2">
                   <div className="form-group"><label className="form-label">الأيقونة</label><input className="form-input" name="icon" value={productForm.icon} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" /></div>
                   <div className="form-group"><label className="form-label">الشارة (اختياري)</label><input className="form-input" name="badge" value={productForm.badge} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
@@ -946,7 +956,6 @@ const Dashboard = () => {
                   <div className="form-group"><label className="form-label">السعر (د.ك) *</label><input className="form-input" type="number" step="0.001" min="0" name="price" value={productForm.price} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
                   <div className="form-group"><label className="form-label">المخزون *</label><input className="form-input" type="number" min="0" name="stock" value={productForm.stock} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
                 </div>
-                <div className="form-group"><label className="form-label">وصف المنتج</label><textarea className="form-textarea" name="desc" value={productForm.desc} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} style={{ minHeight: '70px' }} /></div>
                 <div className="modal-actions">
                   <button type="button" onClick={closeProductModal} className="btn btn-outline">إلغاء</button>
                   <button type="submit" className="btn btn-green"><i className="fas fa-save"></i> حفظ</button>

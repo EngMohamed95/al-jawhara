@@ -107,8 +107,8 @@ const Products = () => {
                       {p.icon}
                     </div>
                     <div className="product-card-body">
-                      <h2 className="product-name">{p.name}</h2>
-                      <p className="product-description">{p.desc}</p>
+                      <h2 className="product-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</h2>
+                      <p className="product-description">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
                       <div className="product-specs">
                         {p.specs?.map((s, i) => <span key={i} className="product-spec">{s}</span>)}
                       </div>
