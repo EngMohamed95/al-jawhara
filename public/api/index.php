@@ -31,16 +31,26 @@ function respond($data, $code = 200) {
 }
 
 // ── Parse request ────────────────────────────────────────
-$path   = isset($_GET['path']) ? trim($_GET['path'], '/') : '';
-$method = $_SERVER['REQUEST_METHOD'];
-$body   = json_decode(file_get_contents('php://input'), true) ?: [];
-$parts  = explode('/', $path);
+$rawPath = isset($_GET['path']) ? trim($_GET['path'], '/') : '';
+$method  = $_SERVER['REQUEST_METHOD'];
+$body    = json_decode(file_get_contents('php://input'), true) ?: [];
+
+// فصل query string عن الـ path (مثال: "users?username=admin")
+$qPos     = strpos($rawPath, '?');
+$path     = $qPos !== false ? substr($rawPath, 0, $qPos) : $rawPath;
+$pathQS   = $qPos !== false ? substr($rawPath, $qPos + 1) : '';
+
+$parts    = explode('/', $path);
 $resource = $parts[0] ?? '';
 $id       = isset($parts[1]) ? (int)$parts[1] : null;
 
-// Query params (excluding 'path')
+// Query params: من الـ URL الأصلي + من داخل path
 $query = $_GET;
 unset($query['path']);
+if ($pathQS !== '') {
+    parse_str($pathQS, $pathQuery);
+    $query = array_merge($pathQuery, $query);
+}
 
 $db = loadDB($dataFile);
 
