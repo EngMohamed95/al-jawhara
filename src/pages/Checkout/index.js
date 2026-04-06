@@ -19,8 +19,6 @@ const WALLETS = [
   { val: 'knet',       icon: 'fa-credit-card',      color: '#003087', label: 'checkout.knet',       badge: 'KNET',        badgeColor: '#003087' },
   { val: 'myfatoorah', icon: 'fa-wallet',           color: '#e67e22', label: 'checkout.myfatoorah', badge: 'MyFatoorah',  badgeColor: '#e67e22' },
   { val: 'tap',        icon: 'fa-mobile-screen',    color: '#000',    label: 'checkout.tap',        badge: 'tap',         badgeColor: '#000' },
-  { val: 'stcpay',     icon: 'fa-mobile-screen',    color: '#a31c2e', label: 'checkout.stcpay',     badge: 'STC',         badgeColor: '#a31c2e' },
-  { val: 'zaincash',   icon: 'fa-mobile-screen',    color: '#c00',    label: 'checkout.zaincash',   badge: 'Zain',        badgeColor: '#c00' },
   { val: 'benefitpay', icon: 'fa-mobile-screen',    color: '#00843d', label: 'checkout.benefitpay', badge: 'Benefit',     badgeColor: '#00843d' },
 ];
 

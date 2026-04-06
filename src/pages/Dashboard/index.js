@@ -659,11 +659,9 @@ const Dashboard = () => {
                   )}
                 </div>
 
-                {/* STC Pay, Zain Cash, Benefit Pay */}
+                {/* Benefit Pay */}
                 {[
-                  { key: 'stcpay',     name: 'STC Pay',     sub: 'اس تي سي باي', color: '#a31c2e', bg: '#fee2e2' },
-                  { key: 'zaincash',   name: 'Zain Cash',   sub: 'زين كاش',       color: '#c00',    bg: '#fee2e2' },
-                  { key: 'benefitpay', name: 'Benefit Pay', sub: 'بيفيت باي',     color: '#00843d', bg: '#dcfce7' },
+                  { key: 'benefitpay', name: 'Benefit Pay', sub: 'بيفيت باي', color: '#00843d', bg: '#dcfce7' },
                 ].map(gw => (
                   <div key={gw.key} className="gateway-card">
                     <div className="gateway-header">
