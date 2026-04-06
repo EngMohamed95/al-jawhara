@@ -1,41 +1,45 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import './index.css';
 
 const socialLinks = [
-  { icon: 'fa-instagram', label: 'Instagram',  href: '#' },
-  { icon: 'fa-x-twitter', label: 'X (Twitter)', href: '#' },
-  { icon: 'fa-linkedin-in', label: 'LinkedIn',  href: '#' },
-  { icon: 'fa-whatsapp',  label: 'WhatsApp',    href: '#' },
+  { icon: 'fa-instagram',   label: 'Instagram',   href: '#' },
+  { icon: 'fa-x-twitter',   label: 'X (Twitter)', href: '#' },
+  { icon: 'fa-linkedin-in', label: 'LinkedIn',     href: '#' },
+  { icon: 'fa-whatsapp',    label: 'WhatsApp',     href: '#' },
 ];
 
 const emptyForm = { name: '', company: '', phone: '', email: '', subject: '', message: '' };
 
 const Contact = () => {
   const { siteContent: sc } = useApp();
-  const [form, setForm]       = useState(emptyForm);
-  const [sent, setSent]       = useState(false);
+  const { t, lang } = useLanguage();
+  const [form, setForm]           = useState(emptyForm);
+  const [sent, setSent]           = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const phone     = sc?.companyPhone    || '(965) 23263824';
   const whatsapp  = sc?.companyWhatsapp || '(965) 96625306';
   const email     = sc?.companyEmail    || 'info@al-jawhara.com';
-  const address   = sc?.companyAddress  || 'المنطقة الصناعية — الشعيبة، الكويت';
-  const workHours = sc?.workHours       || 'الأحد – الخميس: 8 ص – 5 م';
+  const address   = sc?.companyAddress  || t('contact.addressFallback');
+  const workHours = sc?.workHours       || t('contact.workHoursFallback');
 
-  const waNum     = whatsapp.replace(/\D/g, '');
-  const phoneNum  = phone.replace(/\D/g, '');
+  const waNum    = whatsapp.replace(/\D/g, '');
+  const phoneNum = phone.replace(/\D/g, '');
 
   const contactItems = [
-    { icon: 'fa-phone',    label: 'الهاتف',            value: phone,     dir: 'ltr', href: `tel:+${phoneNum}` },
-    { icon: 'fa-whatsapp fab', label: 'واتساب',        value: whatsapp,  dir: 'ltr', href: `https://wa.me/${waNum}` },
-    { icon: 'fa-envelope', label: 'البريد الإلكتروني', value: email,     dir: 'ltr', href: `mailto:${email}` },
-    { icon: 'fa-location-dot', label: 'العنوان',       value: address,   dir: 'rtl', href: null },
-    { icon: 'fa-clock',    label: 'ساعات العمل',       value: workHours, dir: 'rtl', href: null },
+    { icon: 'fa-phone',          label: t('contact.labels.phone'),    value: phone,     dir: 'ltr', href: `tel:+${phoneNum}` },
+    { icon: 'fa-whatsapp fab',   label: t('contact.labels.whatsapp'), value: whatsapp,  dir: 'ltr', href: `https://wa.me/${waNum}` },
+    { icon: 'fa-envelope',       label: t('contact.labels.email'),    value: email,     dir: 'ltr', href: `mailto:${email}` },
+    { icon: 'fa-location-dot',   label: t('contact.labels.address'),  value: address,   dir: lang === 'ar' ? 'rtl' : 'ltr', href: null },
+    { icon: 'fa-clock',          label: t('contact.labels.hours'),    value: workHours, dir: lang === 'ar' ? 'rtl' : 'ltr', href: null },
   ];
 
-  const handleChange  = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const subjects = t('contact.subjects');
+
+  const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -50,8 +54,10 @@ const Contact = () => {
   return (
     <>
       <Seo
-        title="تواصل معنا"
-        description={`تواصل مع شركة الجوهرة للمناديل الورقية — ${phone} — ${address}`}
+        title={t('contact.title')}
+        description={lang === 'ar'
+          ? `تواصل مع شركة الجوهرة للمناديل الورقية — ${phone} — ${address}`
+          : `Contact Al-Jawhara Tissue Paper Co. — ${phone} — ${address}`}
         keywords="تواصل الجوهرة، هاتف الجوهرة، عنوان الشعيبة، طلب عرض سعر"
       />
 
@@ -59,8 +65,8 @@ const Contact = () => {
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-envelope"></i></div>
-            <h1>تواصل معنا</h1>
-            <p>نسعد بسماع استفساراتكم وطلباتكم — فريقنا جاهز لخدمتكم</p>
+            <h1>{t('contact.title')}</h1>
+            <p>{t('contact.sub')}</p>
           </div>
         </div>
       </header>
@@ -71,8 +77,8 @@ const Contact = () => {
 
             {/* ── Info Panel ── */}
             <div className="contact-info-card">
-              <h2>معلومات التواصل</h2>
-              <p>يسعدنا التواصل معكم عبر أي من القنوات التالية</p>
+              <h2>{t('contact.infoTitle')}</h2>
+              <p>{t('contact.infoSub')}</p>
 
               {contactItems.map((item, i) => {
                 const isFab = item.icon.includes('fab');
@@ -105,7 +111,7 @@ const Contact = () => {
               })}
 
               <div className="contact-socials-divider">
-                <div className="contact-socials-label">تابعونا على</div>
+                <div className="contact-socials-label">{t('contact.followUs')}</div>
                 <div className="contact-social-links">
                   {socialLinks.map((s, i) => (
                     <a key={i} href={s.href} className="contact-social-link" aria-label={s.label}>
@@ -118,60 +124,57 @@ const Contact = () => {
 
             {/* ── Form ── */}
             <div className="contact-form-card">
-              <h2 className="contact-form-title">أرسل رسالة</h2>
-              <p className="contact-form-subtitle">سنرد عليك في أقرب وقت ممكن خلال ساعات العمل</p>
+              <h2 className="contact-form-title">{t('contact.formTitle')}</h2>
+              <p className="contact-form-subtitle">{t('contact.formSub')}</p>
 
               {sent && (
                 <div className="alert alert-success" role="alert">
                   <i className="fas fa-circle-check" aria-hidden="true"></i>
-                  تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.
+                  {t('contact.sent')}
                 </div>
               )}
 
               <form onSubmit={handleSubmit} noValidate>
                 <div className="form-row">
                   <div className="form-group">
-                    <label className="form-label">الاسم الكامل *</label>
-                    <input className="form-input" name="name" value={form.name} onChange={handleChange} placeholder="اسمك الكريم" required />
+                    <label className="form-label">{t('contact.name')}</label>
+                    <input className="form-input" name="name" value={form.name} onChange={handleChange} placeholder={t('contact.namePlaceholder')} required />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">اسم الشركة</label>
-                    <input className="form-input" name="company" value={form.company} onChange={handleChange} placeholder="اسم شركتك (اختياري)" />
+                    <label className="form-label">{t('contact.company')}</label>
+                    <input className="form-input" name="company" value={form.company} onChange={handleChange} placeholder={t('contact.companyPlaceholder')} />
                   </div>
                 </div>
 
                 <div className="form-row">
                   <div className="form-group">
-                    <label className="form-label">رقم الهاتف *</label>
+                    <label className="form-label">{t('contact.phone')}</label>
                     <input className="form-input" name="phone" value={form.phone} onChange={handleChange} placeholder="+965XXXXXXXX" dir="ltr" required />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">البريد الإلكتروني</label>
+                    <label className="form-label">{t('contact.email')}</label>
                     <input className="form-input" type="email" name="email" value={form.email} onChange={handleChange} placeholder="email@example.com" dir="ltr" />
                   </div>
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">موضوع الرسالة *</label>
+                  <label className="form-label">{t('contact.subject')}</label>
                   <select className="form-select" name="subject" value={form.subject} onChange={handleChange} required>
-                    <option value="">اختر موضوع الرسالة</option>
-                    <option value="sales">استفسار عن المنتجات والأسعار</option>
-                    <option value="order">طلب شراء</option>
-                    <option value="partnership">طلب شراكة</option>
-                    <option value="complaint">شكوى أو اقتراح</option>
-                    <option value="other">أخرى</option>
+                    {Array.isArray(subjects) && subjects.map((s, i) => (
+                      <option key={i} value={s.val}>{typeof s.label === 'object' ? (s.label[lang] || s.label.ar) : s.label}</option>
+                    ))}
                   </select>
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">الرسالة *</label>
-                  <textarea className="form-textarea" name="message" value={form.message} onChange={handleChange} placeholder="اكتب رسالتك هنا..." required />
+                  <label className="form-label">{t('contact.message')}</label>
+                  <textarea className="form-textarea" name="message" value={form.message} onChange={handleChange} placeholder={t('contact.messagePlaceholder')} required />
                 </div>
 
                 <button type="submit" className="btn btn-green contact-submit-btn" disabled={submitting}>
                   {submitting
-                    ? <><i className="fas fa-spinner fa-spin" aria-hidden="true"></i> جارٍ الإرسال...</>
-                    : <><i className="fas fa-paper-plane" aria-hidden="true"></i> إرسال الرسالة</>
+                    ? <><i className="fas fa-spinner fa-spin" aria-hidden="true"></i> {t('contact.sending')}</>
+                    : <><i className="fas fa-paper-plane" aria-hidden="true"></i> {t('contact.send')}</>
                   }
                 </button>
               </form>
@@ -181,7 +184,7 @@ const Contact = () => {
 
           <div className="map-placeholder" aria-hidden="true">
             <i className="fas fa-map-location-dot map-placeholder-icon"></i>
-            <div className="map-placeholder-title">موقعنا على الخريطة</div>
+            <div className="map-placeholder-title">{t('contact.map')}</div>
             <div className="map-placeholder-address">{address}</div>
           </div>
 

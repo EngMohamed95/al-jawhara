@@ -26,7 +26,7 @@ const Home = () => {
   const heroTitle = lang === 'ar' ? (sc?.heroTitle   || t('home.heroTitle'))    : t('home.heroTitle');
   const heroSub   = lang === 'ar' ? (sc?.heroSubtitle|| t('home.heroSubtitle')) : t('home.heroSubtitle');
 
-  const ceoName      = sc?.ceoName  || 'بلال محمد غدار';
+  const ceoName      = sc?.ceoName  || 'Bilal Mohammad Ghadar';
   const ceoTitle     = sc?.ceoTitle || (lang === 'ar' ? 'المدير العام' : 'General Manager');
   const ceoQuote     = sc?.ceoQuote || '';
   const statsYear    = sc?.statsYear            || '1998';

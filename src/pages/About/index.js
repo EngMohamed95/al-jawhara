@@ -1,49 +1,42 @@
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
+import translations from '../../translations';
 import Seo from '../../components/Seo';
 import './index.css';
 
-const milestones = [
-  { year: '1998', title: 'التأسيس',        desc: 'تأسيس الشركة في الشعيبة الصناعية', last: false },
-  { year: '2003', title: 'التوسع الأول',   desc: 'توسعة خطوط الإنتاج وإضافة منتجات جديدة', last: false },
-  { year: '2010', title: 'شهادة الجودة',   desc: 'الحصول على شهادة ISO 9001 لضمان الجودة', last: false },
-  { year: '2018', title: 'الاحتفال بـ 20 عاماً', desc: 'عشرون عاماً ناجحاً في خدمة العملاء', last: false },
-  { year: '2024', title: 'قفزة نوعية',     desc: 'استثمارات جديدة في خطوط إنتاج حديثة', last: true },
-];
-
 const About = () => {
   const { siteContent: sc } = useApp();
+  const { t, lang } = useLanguage();
 
-  const story   = sc?.aboutStory   || 'بدأت شركة الجوهرة مسيرتها في 1998...';
-  const ceoName  = sc?.ceoName     || 'بلال محمد غدار';
-  const ceoTitle = sc?.ceoTitle    || 'المدير العام';
-  const ceoQuote = sc?.ceoQuote    || '';
-  const area     = sc?.factoryArea || '4,500';
-  const prod     = sc?.productionCapacity || '20,000';
-  const founded  = sc?.founded     || '18/2/1998';
-  const phone    = sc?.companyPhone|| '(965) 23263824';
-  const email    = sc?.companyEmail|| 'info@al-jawhara.com';
+  const story    = lang === 'ar' ? (sc?.aboutStory || t('about.storyFallback')) : t('about.story1');
+  const ceoName  = sc?.ceoName  || 'Bilal Mohammad Ghadar';
+  const ceoTitle = sc?.ceoTitle || t('about.ceoTitleFallback');
+  const ceoQuote = sc?.ceoQuote || '';
+  const area     = sc?.factoryArea           || '4,500';
+  const prod     = sc?.productionCapacity    || '20,000';
+  const founded  = sc?.founded               || '18/2/1998';
+  const phone    = sc?.companyPhone          || '(965) 23263824';
+  const email    = sc?.companyEmail          || 'info@al-jawhara.com';
 
-  const infoCards = [
-    { icon: 'fa-calendar-check', title: 'تاريخ التأسيس',    value: founded,       desc: 'أكثر من 26 عاماً من الخبرة في الصناعة' },
-    { icon: 'fa-industry',       title: 'مساحة المصنع',     value: `${area} م²`,  desc: 'منشأة إنتاجية متكاملة بأحدث المعدات' },
-    { icon: 'fa-weight-hanging', title: 'الطاقة الإنتاجية', value: `${prod} طن/سنة`, desc: 'إنتاج سنوي ضخم يلبي احتياجات السوق' },
-    { icon: 'fa-location-dot',   title: 'الموقع',            value: 'الشعيبة الصناعية', desc: 'المنطقة الصناعية بالشعيبة — الكويت' },
-    { icon: 'fa-phone',          title: 'الهاتف',            value: phone,          desc: 'متاحون خلال ساعات العمل الرسمية' },
-    { icon: 'fa-envelope',       title: 'البريد الإلكتروني', value: email,          desc: 'راسلونا وسنرد في أقرب وقت ممكن' },
-  ];
+  const milestones = translations.about.milestones;
 
-  const storyStats = [
-    { num: '26+', label: 'عاماً من الخبرة', icon: 'fa-clock',    bg: 'var(--primary-xlight)' },
-    { num: prod,  label: 'طن/سنة',          icon: 'fa-industry',  bg: '#fdf0e6' },
-    { num: area,  label: 'م² مساحة',         icon: 'fa-warehouse', bg: 'var(--primary-xlight)' },
-    { num: '25+', label: 'عميل مميز',        icon: 'fa-users',     bg: '#fdf0e6' },
-  ];
+  const infoCards = translations.about.infoCards.map((c, i) => ({
+    ...c,
+    value: [founded, `${area} ${lang === 'ar' ? 'م²' : 'm²'}`, `${prod} ${lang === 'ar' ? 'طن/سنة' : 'tons/yr'}`, t('about.location'), phone, email][i],
+  }));
+
+  const storyStats = translations.about.storyStats.map((s, i) => ({
+    ...s,
+    num: s.num || [null, prod, area, null][i],
+  }));
 
   return (
     <>
       <Seo
-        title="من نحن"
-        description={`شركة الجوهرة للمناديل الورقية — تأسست ${founded}. مصنع في الشعيبة، طاقة إنتاجية ${prod} طن/سنة.`}
+        title={t('about.title')}
+        description={lang === 'ar'
+          ? `شركة الجوهرة للمناديل الورقية — تأسست ${founded}. مصنع في الشعيبة، طاقة إنتاجية ${prod} طن/سنة.`
+          : `Al-Jawhara Tissue Paper Co. — Founded ${founded}. Factory in Shuaiba, ${prod} tons/year capacity.`}
         keywords="عن الجوهرة، تأسيس 1998، مصنع الكويت، مناديل ورقية الشعيبة"
       />
 
@@ -52,30 +45,30 @@ const About = () => {
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-circle-info"></i></div>
-            <h1>من نحن</h1>
-            <p>تعرف على شركة الجوهرة — قصة نجاح كويتية منذ 1998</p>
+            <h1>{t('about.title')}</h1>
+            <p>{t('about.subtitle')}</p>
           </div>
         </div>
       </header>
 
       {/* Story */}
-      <section className="section about-story-section" aria-label="قصتنا">
+      <section className="section about-story-section" aria-label={t('about.storyBadge')}>
         <div className="container">
           <div className="story-grid">
             <div>
               <span className="story-badge">
-                <i className="fas fa-star" aria-hidden="true"></i> قصتنا
+                <i className="fas fa-star" aria-hidden="true"></i> {t('about.storyBadge')}
               </span>
-              <h2 className="story-title">رحلة الجودة منذ <span>{founded.split('/')[2] || '1998'}</span></h2>
+              <h2 className="story-title">{t('about.storyTitle')} <span>{founded.split('/')[2] || '1998'}</span></h2>
               <p className="story-text">{story}</p>
-              <p className="story-text">اليوم، نخدم أكثر من 25 عميلاً من كبرى الشركات والمؤسسات، ونواصل مسيرة التطوير والابتكار لتقديم الأفضل دائماً.</p>
+              <p className="story-text">{t('about.story2')}</p>
             </div>
             <div className="story-stats-grid">
               {storyStats.map((s, i) => (
                 <div key={i} className="story-stat" style={{ background: s.bg }}>
                   <i className={`fas ${s.icon} story-stat-icon`} aria-hidden="true"></i>
                   <div className="story-stat-num">{s.num}</div>
-                  <div className="story-stat-label">{s.label}</div>
+                  <div className="story-stat-label">{s.label[lang] || s.label.ar}</div>
                 </div>
               ))}
             </div>
@@ -84,19 +77,19 @@ const About = () => {
       </section>
 
       {/* Info Cards */}
-      <section className="section about-info-section" aria-label="بيانات الشركة">
+      <section className="section about-info-section" aria-label={t('about.infoTitle')}>
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">بيانات الشركة</h2>
-            <p className="section-subtitle">معلومات تفصيلية عن شركة الجوهرة للمناديل الورقية</p>
+            <h2 className="section-title">{t('about.infoTitle')}</h2>
+            <p className="section-subtitle">{t('about.infoSub')}</p>
           </div>
           <div className="info-grid">
             {infoCards.map((c, i) => (
               <div key={i} className="info-card">
                 <div className="info-card-icon" aria-hidden="true"><i className={`fas ${c.icon}`}></i></div>
-                <h3>{c.title}</h3>
+                <h3>{c.title[lang] || c.title.ar}</h3>
                 <div className="info-card-value">{c.value}</div>
-                <p>{c.desc}</p>
+                <p>{c.desc[lang] || c.desc.ar}</p>
               </div>
             ))}
           </div>
@@ -104,29 +97,29 @@ const About = () => {
       </section>
 
       {/* Mission & Vision */}
-      <section className="section about-mv-section" aria-label="رسالتنا ورؤيتنا">
+      <section className="section about-mv-section" aria-label={`${t('about.mission')} & ${t('about.vision')}`}>
         <div className="container">
           <div className="mv-grid">
             <div className="mv-card mv-card-green">
               <span className="mv-icon" aria-hidden="true">🎯</span>
-              <h3 className="mv-title mv-title-green">رسالتنا</h3>
-              <p className="mv-text">تصنيع وتوريد منتجات ورقية عالية الجودة تلبي احتياجات عملائنا بأسعار تنافسية، مع الحفاظ على بيئة عمل آمنة ومستدامة.</p>
+              <h3 className="mv-title mv-title-green">{t('about.mission')}</h3>
+              <p className="mv-text">{t('about.missionText')}</p>
             </div>
             <div className="mv-card mv-card-orange">
               <span className="mv-icon" aria-hidden="true">🔭</span>
-              <h3 className="mv-title mv-title-orange">رؤيتنا</h3>
-              <p className="mv-text">أن نكون الخيار الأول للمنتجات الورقية في الكويت والخليج العربي من خلال الابتكار والالتزام بأعلى معايير الجودة والخدمة.</p>
+              <h3 className="mv-title mv-title-orange">{t('about.vision')}</h3>
+              <p className="mv-text">{t('about.visionText')}</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Timeline */}
-      <section className="section about-timeline-section" aria-label="محطاتنا عبر الزمن">
+      <section className="section about-timeline-section" aria-label={t('about.timeline')}>
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">محطاتنا عبر الزمن</h2>
-            <p className="section-subtitle">أبرز المحطات في مسيرة شركة الجوهرة</p>
+            <h2 className="section-title">{t('about.timeline')}</h2>
+            <p className="section-subtitle">{t('about.timelineSub')}</p>
           </div>
           <div className="timeline-wrap">
             <div className="timeline-line" aria-hidden="true"></div>
@@ -138,9 +131,9 @@ const About = () => {
                 <div className="timeline-content">
                   <div className="timeline-header">
                     <span className="timeline-year-badge">{m.year}</span>
-                    <span className="timeline-title">{m.title}</span>
+                    <span className="timeline-title">{m.title[lang] || m.title.ar}</span>
                   </div>
-                  <p className="timeline-desc">{m.desc}</p>
+                  <p className="timeline-desc">{m.desc[lang] || m.desc.ar}</p>
                 </div>
               </div>
             ))}
@@ -150,7 +143,7 @@ const About = () => {
 
       {/* CEO Card */}
       {ceoQuote && (
-        <section className="section about-ceo-section" aria-label="كلمة المدير العام">
+        <section className="section about-ceo-section" aria-label={t('about.ceoWord')}>
           <div className="container">
             <div className="ceo-card">
               <div className="ceo-avatar" aria-hidden="true"><i className="fas fa-user-tie"></i></div>

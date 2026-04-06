@@ -308,10 +308,11 @@ h1,h2,h3,h4,h5,h6 { font-weight: 700; line-height: 1.3; }
 .client-logo-wrap {
   height: 80px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px;
 }
-.client-logo-img { max-height: 70px; max-width: 150px; object-fit: contain; }
+.client-logo-img { width: 80px; height: 80px; object-fit: contain; border-radius: 16px; background: #f8f8f8; padding: 8px; border: 1px solid var(--border); }
 .client-logo-fallback {
-  width: 90px; height: 60px; border-radius: 8px; display: flex; align-items: center;
-  justify-content: center; font-weight: 800; font-size: 1.1rem; letter-spacing: 0.5px; color: white;
+  width: 80px; height: 80px; border-radius: 16px; display: flex; align-items: center;
+  justify-content: center; font-weight: 800; font-size: 1.1rem; letter-spacing: 0.5px;
+  color: white; background: var(--primary);
 }
 .client-name { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 4px; }
 .client-sector { font-size: 0.78rem; color: var(--text-light); }
