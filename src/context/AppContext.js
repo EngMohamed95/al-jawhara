@@ -12,6 +12,7 @@ export const AppProvider = ({ children }) => {
   const [products, setProducts]       = useState([]);
   const [orders, setOrders]           = useState([]);
   const [users, setUsers]             = useState([]);
+  const [coupons, setCoupons]         = useState([]);
   const [siteContent, setSiteContent] = useState(null);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState(null);
@@ -23,16 +24,18 @@ export const AppProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const [prods, ords, usrs, content] = await Promise.all([
+      const [prods, ords, usrs, content, coups] = await Promise.all([
         api.getProducts(),
         api.getOrders(),
         api.getUsers(),
         api.getSiteContent(),
+        api.getCoupons(),
       ]);
       setProducts(prods);
       setOrders(ords);
       setUsers(usrs);
       setSiteContent(content);
+      setCoupons(coups);
     } catch {
       setError('تعذر الاتصال بالخادم. تأكد من تشغيل قاعدة البيانات (npm start).');
     } finally {
@@ -67,6 +70,20 @@ export const AppProvider = ({ children }) => {
   const addUser    = async (d)     => { const n = await api.createUser(d);      setUsers(u => [...u, n]); return n; };
   const updateUser = async (id, d) => { const u = await api.updateUser(id, d);  setUsers(p => p.map(x => x.id === id ? u : x)); return u; };
   const deleteUser = async (id)    => { await api.deleteUser(id);                setUsers(p => p.filter(x => x.id !== id)); };
+
+  /* ── Coupons ── */
+  const addCoupon    = async (d)     => { const n = await api.createCoupon(d);      setCoupons(p => [...p, n]); return n; };
+  const updateCoupon = async (id, d) => { const u = await api.updateCoupon(id, d);  setCoupons(p => p.map(x => x.id === id ? u : x)); return u; };
+  const deleteCoupon = async (id)    => { await api.deleteCoupon(id);                setCoupons(p => p.filter(x => x.id !== id)); };
+
+  /* ── Orders ── */
+  const updateOrderStatus = async (id, status) => {
+    const ord = orders.find(o => o.id === id);
+    if (!ord) return;
+    const updated = await api.updateOrder(id, { ...ord, status });
+    setOrders(p => p.map(x => x.id === id ? updated : x));
+    return updated;
+  };
 
   /* ── Site Content ── */
   const saveSiteContent = async (data) => {
@@ -116,10 +133,12 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{
-      products, orders, users, siteContent, loading, error, auth,
+      products, orders, users, coupons, siteContent, loading, error, auth,
       login, logout,
       addProduct, updateProduct, deleteProduct,
       addUser, updateUser, deleteUser,
+      addCoupon, updateCoupon, deleteCoupon,
+      updateOrderStatus,
       saveSiteContent,
       cart, addToCart, removeFromCart, updateCartQty, clearCart,
       cartTotal, cartTotalQty,

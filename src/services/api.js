@@ -35,6 +35,15 @@ const api = {
   // Site Content
   getSiteContent:    ()     => req('siteContent/1'),
   updateSiteContent: (data) => req('siteContent/1', { method: 'PUT', body: JSON.stringify(data) }),
+
+  // Coupons
+  getCoupons:    ()       => req('coupons'),
+  createCoupon:  (data)   => req('coupons',       { method: 'POST',   body: JSON.stringify(data) }),
+  updateCoupon:  (id, d)  => req(`coupons/${id}`, { method: 'PUT',    body: JSON.stringify(d) }),
+  deleteCoupon:  (id)     => req(`coupons/${id}`, { method: 'DELETE' }),
+
+  // Orders status update
+  updateOrderStatus: (id, status) => req(`orders/${id}`, { method: 'PUT', body: JSON.stringify({ status }) }),
 };
 
 export default api;

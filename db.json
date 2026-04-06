@@ -223,6 +223,8 @@
       "password": "admin123",
       "name": "بلال محمد غدار",
       "role": "admin",
+      "status": "active",
+      "phone": "(965) 96625306",
       "email": "admin@al-jawhara.com",
       "createdAt": "2024-01-01"
     }
@@ -246,7 +248,39 @@
       "factoryArea": "4,500",
       "productionCapacity": "20,000",
       "statsYear": "1998",
-      "statsClients": "+25"
+      "statsClients": "+25",
+      "paymentSettings": {
+        "cash":       { "enabled": true },
+        "transfer":   { "enabled": true, "bankName": "بنك الكويت الوطني", "iban": "KW81NBKU0000000000001000372151" },
+        "knet":       { "enabled": true,  "apiKey": "", "testMode": true },
+        "myfatoorah": { "enabled": false, "apiKey": "", "testMode": true },
+        "tap":        { "enabled": false, "apiKey": "", "testMode": true },
+        "stcpay":     { "enabled": false },
+        "zaincash":   { "enabled": false },
+        "benefitpay": { "enabled": false }
+      },
+      "shippingZones": [
+        { "id": "capital",   "ar": "محافظة العاصمة",      "en": "Capital Governorate",       "fee": 0.750, "enabled": true },
+        { "id": "hawalli",   "ar": "محافظة حولي",          "en": "Hawalli Governorate",        "fee": 0.750, "enabled": true },
+        { "id": "farwaniya", "ar": "محافظة الفروانية",     "en": "Farwaniya Governorate",      "fee": 0.750, "enabled": true },
+        { "id": "mubarak",   "ar": "محافظة مبارك الكبير", "en": "Mubarak Al-Kabeer Gov.",    "fee": 0.750, "enabled": true },
+        { "id": "ahmadi",    "ar": "محافظة الأحمدي",       "en": "Ahmadi Governorate",         "fee": 1.000, "enabled": true },
+        { "id": "jahra",     "ar": "محافظة الجهراء",       "en": "Jahra Governorate",          "fee": 1.000, "enabled": true }
+      ]
+    }
+  ],
+  "coupons": [
+    {
+      "id": 1,
+      "code": "WELCOME10",
+      "type": "percent",
+      "value": 10,
+      "minOrder": 5.000,
+      "maxUses": 100,
+      "usedCount": 0,
+      "expiry": "2026-12-31",
+      "status": "active",
+      "desc": "خصم 10% للعملاء الجدد"
     }
   ]
 }

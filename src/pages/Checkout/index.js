@@ -2,21 +2,40 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
+import translations from '../../translations';
 import Seo from '../../components/Seo';
 import './index.css';
 
 const emptyForm = {
   client: '', company: '', phone: '', email: '',
-  address: '', notes: '', payment: 'cash',
+  governorate: '', block: '', address: '', notes: '',
+  payment: 'cash',
 };
+
+/* ── Kuwait payment wallets ── */
+const WALLETS = [
+  { val: 'cash',       icon: 'fa-money-bills',     color: '#16a34a', label: 'checkout.cash',       badge: null },
+  { val: 'transfer',   icon: 'fa-building-columns', color: '#1d4ed8', label: 'checkout.transfer',   badge: null },
+  { val: 'knet',       icon: 'fa-credit-card',      color: '#003087', label: 'checkout.knet',       badge: 'KNET',        badgeColor: '#003087' },
+  { val: 'myfatoorah', icon: 'fa-wallet',           color: '#e67e22', label: 'checkout.myfatoorah', badge: 'MyFatoorah',  badgeColor: '#e67e22' },
+  { val: 'tap',        icon: 'fa-mobile-screen',    color: '#000',    label: 'checkout.tap',        badge: 'tap',         badgeColor: '#000' },
+  { val: 'stcpay',     icon: 'fa-mobile-screen',    color: '#a31c2e', label: 'checkout.stcpay',     badge: 'STC',         badgeColor: '#a31c2e' },
+  { val: 'zaincash',   icon: 'fa-mobile-screen',    color: '#c00',    label: 'checkout.zaincash',   badge: 'Zain',        badgeColor: '#c00' },
+  { val: 'benefitpay', icon: 'fa-mobile-screen',    color: '#00843d', label: 'checkout.benefitpay', badge: 'Benefit',     badgeColor: '#00843d' },
+];
 
 const Checkout = () => {
   const { cart, cartTotal, submitOrder } = useApp();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const navigate  = useNavigate();
   const [form,    setForm]    = useState(emptyForm);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
+
+  const zones = translations.kuwaitZones;
+  const selectedZone = zones.find(z => z.id === form.governorate);
+  const deliveryFee  = selectedZone ? selectedZone.fee : 0;
+  const grandTotal   = cartTotal + deliveryFee;
 
   if (cart.length === 0) {
     return (
@@ -39,19 +58,24 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.governorate) { setError(lang === 'ar' ? 'الرجاء اختيار المحافظة' : 'Please select a governorate'); return; }
     setError('');
     setLoading(true);
     try {
       const order = await submitOrder({
-        client:  form.client,
-        company: form.company,
-        phone:   form.phone,
-        email:   form.email,
-        address: form.address,
-        notes:   form.notes,
-        payment: form.payment,
-        product: cart.map(i => i.name).join('، '),
-        qty:     cart.reduce((s, i) => s + i.qty, 0),
+        client:       form.client,
+        company:      form.company,
+        phone:        form.phone,
+        email:        form.email,
+        governorate:  selectedZone ? (lang === 'ar' ? selectedZone.ar : selectedZone.en) : '',
+        block:        form.block,
+        address:      form.address,
+        notes:        form.notes,
+        payment:      form.payment,
+        deliveryFee:  deliveryFee.toFixed(3),
+        product:      cart.map(i => i.name).join('، '),
+        qty:          cart.reduce((s, i) => s + i.qty, 0),
+        grandTotal:   grandTotal.toFixed(3),
       });
       navigate('/order-success', { state: { order } });
     } catch {
@@ -100,6 +124,8 @@ const Checkout = () => {
 
             {/* ── Form ── */}
             <div className="checkout-form-panel">
+
+              {/* Customer Info */}
               <h2 className="checkout-section-title">
                 <i className="fas fa-user" aria-hidden="true"></i>
                 {t('checkout.clientInfo')}
@@ -115,63 +141,85 @@ const Checkout = () => {
                 <div className="form-row">
                   <div className="form-group">
                     <label className="form-label">{t('checkout.name')}</label>
-                    <input className="form-input" name="client" value={form.client}
-                      onChange={handleChange} required />
+                    <input className="form-input" name="client" value={form.client} onChange={handleChange} required />
                   </div>
                   <div className="form-group">
                     <label className="form-label">{t('checkout.company')}</label>
-                    <input className="form-input" name="company" value={form.company}
-                      onChange={handleChange} />
+                    <input className="form-input" name="company" value={form.company} onChange={handleChange} />
                   </div>
                 </div>
 
                 <div className="form-row">
                   <div className="form-group">
                     <label className="form-label">{t('checkout.phone')}</label>
-                    <input className="form-input" name="phone" value={form.phone}
-                      onChange={handleChange} placeholder="+965XXXXXXXX" dir="ltr" required />
+                    <input className="form-input" name="phone" value={form.phone} onChange={handleChange} placeholder="+965XXXXXXXX" dir="ltr" required />
                   </div>
                   <div className="form-group">
                     <label className="form-label">{t('checkout.email')}</label>
-                    <input className="form-input" type="email" name="email" value={form.email}
-                      onChange={handleChange} placeholder="email@example.com" dir="ltr" />
+                    <input className="form-input" type="email" name="email" value={form.email} onChange={handleChange} placeholder="email@example.com" dir="ltr" />
+                  </div>
+                </div>
+
+                {/* Delivery Zone */}
+                <h2 className="checkout-section-title" style={{ marginTop: '28px' }}>
+                  <i className="fas fa-map-location-dot" aria-hidden="true"></i>
+                  {t('checkout.delivery')}
+                </h2>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">{t('checkout.governorate')}</label>
+                    <select className="form-select" name="governorate" value={form.governorate} onChange={handleChange} required>
+                      <option value="">{t('checkout.selectGov')}</option>
+                      {zones.map(z => (
+                        <option key={z.id} value={z.id}>
+                          {lang === 'ar' ? z.ar : z.en} — {z.fee.toFixed(3)} {t('products.currency')}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{t('checkout.block')}</label>
+                    <input className="form-input" name="block" value={form.block} onChange={handleChange} placeholder={lang === 'ar' ? 'مثال: قطعة 5، شارع 12' : 'e.g. Block 5, Street 12'} />
                   </div>
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">{t('checkout.address')}</label>
-                  <input className="form-input" name="address" value={form.address}
-                    onChange={handleChange} required />
+                  <input className="form-input" name="address" value={form.address} onChange={handleChange} required />
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">{t('checkout.notes')}</label>
-                  <textarea className="form-textarea" name="notes" value={form.notes}
-                    onChange={handleChange} style={{ minHeight: '80px' }} />
+                  <textarea className="form-textarea" name="notes" value={form.notes} onChange={handleChange} style={{ minHeight: '80px' }} />
                 </div>
 
+                {/* Payment */}
                 <h2 className="checkout-section-title" style={{ marginTop: '28px' }}>
                   <i className="fas fa-wallet" aria-hidden="true"></i>
                   {t('checkout.payment')}
                 </h2>
 
-                <div className="payment-options">
-                  {[
-                    { val: 'cash',     icon: 'fa-money-bills',      label: t('checkout.cash') },
-                    { val: 'transfer', icon: 'fa-building-columns',  label: t('checkout.transfer') },
-                    { val: 'knet',     icon: 'fa-credit-card',       label: t('checkout.knet') },
-                  ].map(opt => (
+                <div className="payment-wallets-grid">
+                  {WALLETS.map(opt => (
                     <label
                       key={opt.val}
-                      className={`payment-option${form.payment === opt.val ? ' selected' : ''}`}
+                      className={`payment-wallet-card${form.payment === opt.val ? ' selected' : ''}`}
                     >
                       <input
                         type="radio" name="payment" value={opt.val}
                         checked={form.payment === opt.val}
                         onChange={handleChange}
                       />
-                      <i className={`fas ${opt.icon}`} aria-hidden="true"></i>
-                      {opt.label}
+                      <div className="wallet-icon-wrap" style={{ background: opt.color + '15', borderColor: form.payment === opt.val ? opt.color : 'transparent' }}>
+                        <i className={`fas ${opt.icon}`} style={{ color: opt.color }} aria-hidden="true"></i>
+                      </div>
+                      <span className="wallet-label">{t(opt.label)}</span>
+                      {opt.badge && (
+                        <span className="wallet-badge" style={{ background: opt.badgeColor }}>
+                          {opt.badge}
+                        </span>
+                      )}
                     </label>
                   ))}
                 </div>
@@ -207,10 +255,35 @@ const Checkout = () => {
                 ))}
               </div>
 
-              <div className="checkout-summary-total">
-                <span>{t('cart.total')}</span>
-                <span className="checkout-total-val">{cartTotal.toFixed(3)} {t('products.currency')}</span>
+              {/* Totals */}
+              <div className="checkout-totals">
+                <div className="checkout-total-row">
+                  <span>{t('checkout.subtotal')}</span>
+                  <span>{cartTotal.toFixed(3)} {t('products.currency')}</span>
+                </div>
+                <div className="checkout-total-row">
+                  <span>{t('checkout.deliveryFee')}</span>
+                  <span className={deliveryFee === 0 ? 'text-muted' : ''}>
+                    {form.governorate
+                      ? `${deliveryFee.toFixed(3)} ${t('products.currency')}`
+                      : '—'}
+                  </span>
+                </div>
+                <div className="checkout-summary-total grand-total">
+                  <span>{t('checkout.grandTotal')}</span>
+                  <span className="checkout-total-val">
+                    {form.governorate ? `${grandTotal.toFixed(3)} ${t('products.currency')}` : `${cartTotal.toFixed(3)} ${t('products.currency')}`}
+                  </span>
+                </div>
               </div>
+
+              {/* Delivery zone info */}
+              {selectedZone && (
+                <div className="checkout-zone-info">
+                  <i className="fas fa-location-dot" aria-hidden="true"></i>
+                  <span>{lang === 'ar' ? selectedZone.ar : selectedZone.en}</span>
+                </div>
+              )}
 
               <Link to="/cart" className="checkout-back-link">
                 <i className="fas fa-arrow-right" aria-hidden="true"></i>
