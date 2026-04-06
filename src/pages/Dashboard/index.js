@@ -20,7 +20,7 @@ const ROLE_PERMISSIONS = {
   viewer: { products: false, orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false },
 };
 
-const emptyProduct = { name: '', nameEn: '', category: 'facial', price: '', stock: '', status: 'active', icon: '📦', desc: '', descEn: '', badge: '' };
+const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '' };
 const emptyUser    = { username: '', password: '', name: '', email: '', phone: '', role: 'viewer', status: 'active' };
 const emptyCoupon  = { code: '', type: 'percent', value: '', minOrder: '', maxUses: '', expiry: '', status: 'active', desc: '' };
 
@@ -93,10 +93,60 @@ const Dashboard = () => {
 
   const openAddProduct  = () => { setProductForm(emptyProduct); setProductErr(''); setProductSaved(false); setProductModal('add'); };
   const openEditProduct = (p) => {
-    setProductForm({ name: p.name, nameEn: p.nameEn || '', category: p.category, price: p.price, stock: p.stock, status: p.status, icon: p.icon || '📦', desc: p.desc || '', descEn: p.descEn || '', badge: p.badge || '' });
+    setProductForm({ name: p.name, nameEn: p.nameEn || '', sku: p.sku || '', category: p.category, price: p.price, stock: p.stock, status: p.status, image: p.image || '', gallery: p.gallery || [], desc: p.desc || '', descEn: p.descEn || '', badge: p.badge || '' });
     setEditProduct(p); setProductErr(''); setProductSaved(false); setProductModal('edit');
   };
-  const closeProductModal = () => { setProductModal(null); setEditProduct(null); };
+  const closeProductModal = () => { setProductModal(null); setEditProduct(null); setProductImagePreview(''); setProductGalleryPreviews([]); };
+
+  const [productImagePreview,   setProductImagePreview]   = useState('');
+  const [productGalleryPreviews,setProductGalleryPreviews]= useState([]);
+  const [uploadingImg,          setUploadingImg]          = useState(false);
+
+  const uploadFile = async (file) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    const IS_PROD = process.env.NODE_ENV === 'production';
+    const url = IS_PROD ? '/api/upload.php' : 'http://localhost:3001/api/upload.php';
+    // In dev, just return a local object URL for preview (no actual server upload)
+    if (!IS_PROD) return URL.createObjectURL(file);
+    const res = await fetch(url, { method: 'POST', body: fd });
+    const json = await res.json();
+    return json.url || null;
+  };
+
+  const uploadFiles = async (files) => {
+    const IS_PROD = process.env.NODE_ENV === 'production';
+    if (!IS_PROD) return Array.from(files).map(f => URL.createObjectURL(f));
+    const fd = new FormData();
+    Array.from(files).forEach(f => fd.append('files[]', f));
+    const res = await fetch('/api/upload.php', { method: 'POST', body: fd });
+    const json = await res.json();
+    return json.urls || (json.url ? [json.url] : []);
+  };
+
+  const handleMainImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingImg(true);
+    const url = await uploadFile(file);
+    if (url) { setProductForm(p => ({ ...p, image: url })); setProductImagePreview(url); }
+    setUploadingImg(false);
+  };
+
+  const handleGalleryChange = async (e) => {
+    const files = e.target.files;
+    if (!files.length) return;
+    setUploadingImg(true);
+    const urls = await uploadFiles(files);
+    setProductForm(p => ({ ...p, gallery: [...(p.gallery || []), ...urls] }));
+    setProductGalleryPreviews(prev => [...prev, ...urls]);
+    setUploadingImg(false);
+  };
+
+  const removeGalleryImage = (idx) => {
+    setProductForm(p => ({ ...p, gallery: p.gallery.filter((_, i) => i !== idx) }));
+    setProductGalleryPreviews(prev => prev.filter((_, i) => i !== idx));
+  };
 
   const handleProductSave = async (e) => {
     e.preventDefault(); setProductErr('');
@@ -925,7 +975,7 @@ const Dashboard = () => {
         {/* ══ Product Modal ══ */}
         {productModal && (
           <div className="modal-overlay" onClick={e => e.target === e.currentTarget && closeProductModal()}>
-            <div className="modal" role="dialog">
+            <div className="modal modal-xl" role="dialog">
               <div className="modal-header">
                 <h3>{productModal === 'add' ? 'إضافة منتج جديد' : 'تعديل المنتج'}</h3>
                 <button className="modal-close" onClick={closeProductModal}><i className="fas fa-xmark"></i></button>
@@ -933,19 +983,62 @@ const Dashboard = () => {
               {productSaved && <AlertSuccess msg="تم الحفظ بنجاح!" />}
               {productErr   && <AlertError  msg={productErr} />}
               <form onSubmit={handleProductSave}>
+
+                {/* ── Images ── */}
+                <div className="product-lang-divider">🖼️ الصور</div>
+                <div className="modal-grid2">
+                  <div className="form-group">
+                    <label className="form-label">الصورة الرئيسية</label>
+                    <label className="img-upload-box">
+                      {(productForm.image || productImagePreview)
+                        ? <img src={productForm.image || productImagePreview} alt="main" className="img-upload-preview" />
+                        : <div className="img-upload-placeholder"><i className="fas fa-image"></i><span>اختر صورة</span></div>}
+                      <input type="file" accept="image/*" onChange={handleMainImageChange} style={{display:'none'}} />
+                      {(productForm.image || productImagePreview) && (
+                        <button type="button" className="img-upload-remove" onClick={e => { e.preventDefault(); setProductForm(p=>({...p,image:''})); setProductImagePreview(''); }}>
+                          <i className="fas fa-xmark"></i>
+                        </button>
+                      )}
+                    </label>
+                    {uploadingImg && <div style={{fontSize:'11px',color:'var(--text-light)',marginTop:'4px'}}><i className="fas fa-spinner fa-spin"></i> جاري الرفع...</div>}
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">معرض الصور (Gallery)</label>
+                    <div className="gallery-upload-grid">
+                      {(productForm.gallery || []).map((url, idx) => (
+                        <div key={idx} className="gallery-thumb">
+                          <img src={url} alt={`gallery-${idx}`} />
+                          <button type="button" className="img-upload-remove" onClick={() => removeGalleryImage(idx)}><i className="fas fa-xmark"></i></button>
+                        </div>
+                      ))}
+                      {(productForm.gallery || []).length < 6 && (
+                        <label className="gallery-add-btn">
+                          <i className="fas fa-plus"></i>
+                          <input type="file" accept="image/*" multiple onChange={handleGalleryChange} style={{display:'none'}} />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Arabic ── */}
                 <div className="product-lang-divider">🇸🇦 عربي</div>
                 <div className="modal-grid2">
                   <div className="form-group"><label className="form-label">اسم المنتج (عربي) *</label><input className="form-input" name="name" value={productForm.name} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required /></div>
                   <div className="form-group"><label className="form-label">الوصف (عربي)</label><input className="form-input" name="desc" value={productForm.desc} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
                 </div>
+
+                {/* ── English ── */}
                 <div className="product-lang-divider">🇬🇧 English</div>
                 <div className="modal-grid2">
                   <div className="form-group"><label className="form-label">Product Name (English)</label><input className="form-input" name="nameEn" value={productForm.nameEn} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="e.g. Classic Facial Tissues" /></div>
                   <div className="form-group"><label className="form-label">Description (English)</label><input className="form-input" name="descEn" value={productForm.descEn} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="e.g. Soft 3-layer tissues..." /></div>
                 </div>
+
+                {/* ── Product Data ── */}
                 <div className="product-lang-divider">⚙️ بيانات المنتج</div>
                 <div className="modal-grid2">
-                  <div className="form-group"><label className="form-label">الأيقونة</label><input className="form-input" name="icon" value={productForm.icon} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" /></div>
+                  <div className="form-group"><label className="form-label">SKU (رمز المنتج)</label><input className="form-input" name="sku" value={productForm.sku} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="e.g. JAW-FAC-001" /></div>
                   <div className="form-group"><label className="form-label">الشارة (اختياري)</label><input className="form-input" name="badge" value={productForm.badge} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
                 </div>
                 <div className="modal-grid2">
@@ -958,7 +1051,7 @@ const Dashboard = () => {
                 </div>
                 <div className="modal-actions">
                   <button type="button" onClick={closeProductModal} className="btn btn-outline">إلغاء</button>
-                  <button type="submit" className="btn btn-green"><i className="fas fa-save"></i> حفظ</button>
+                  <button type="submit" className="btn btn-green" disabled={uploadingImg}><i className="fas fa-save"></i> حفظ</button>
                 </div>
               </form>
             </div>

@@ -104,7 +104,9 @@ const Products = () => {
                   <article key={p.id} className="product-card" role="listitem">
                     <div className="product-card-img" aria-hidden="true">
                       {p.badge && <span className="product-badge">{p.badge}</span>}
-                      {p.icon}
+                      {p.image
+                        ? <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} className="product-card-photo" />
+                        : p.icon || '📦'}
                     </div>
                     <div className="product-card-body">
                       <h2 className="product-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</h2>

@@ -260,7 +260,8 @@
 .td-warn { color: #d97706; font-weight: 600; font-size: 13px; }
 
 /* ── Large Modal ── */
-.modal-lg { max-width: 680px !important; }
+.modal-lg     { max-width: 680px !important; }
+.modal-xl     { max-width: 800px !important; }
 
 /* ── Product bilingual divider ── */
 .product-lang-divider {
@@ -268,6 +269,44 @@
   border-bottom: 1px solid var(--border); padding-bottom: 6px;
   margin: 14px 0 10px; letter-spacing: 0.3px;
 }
+
+/* ── Image Upload ── */
+.img-upload-box {
+  display: block; cursor: pointer; border: 2px dashed var(--border);
+  border-radius: var(--radius); overflow: hidden; position: relative;
+  height: 140px; background: var(--bg); transition: border-color 0.2s;
+}
+.img-upload-box:hover { border-color: var(--primary); }
+.img-upload-placeholder {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; gap: 8px; color: var(--text-light); font-size: 0.82rem;
+}
+.img-upload-placeholder i { font-size: 2rem; color: var(--border); }
+.img-upload-preview { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-upload-remove {
+  position: absolute; top: 6px; left: 6px; width: 22px; height: 22px;
+  background: rgba(0,0,0,0.55); border: none; border-radius: 50%;
+  color: white; font-size: 11px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+}
+.img-upload-remove:hover { background: #dc2626; }
+
+/* ── Gallery ── */
+.gallery-upload-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+.gallery-thumb {
+  position: relative; border-radius: var(--radius); overflow: hidden;
+  aspect-ratio: 1; background: var(--bg); border: 1px solid var(--border);
+}
+.gallery-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery-add-btn {
+  display: flex; align-items: center; justify-content: center;
+  aspect-ratio: 1; border: 2px dashed var(--border); border-radius: var(--radius);
+  cursor: pointer; color: var(--text-light); font-size: 1.3rem; background: var(--bg);
+  transition: all 0.2s;
+}
+.gallery-add-btn:hover { border-color: var(--primary); color: var(--primary); }
 
 /* ── Invoices Grid ── */
 .invoices-grid {
