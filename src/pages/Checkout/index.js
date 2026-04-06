@@ -58,7 +58,10 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.governorate) { setError(lang === 'ar' ? 'الرجاء اختيار المحافظة' : 'Please select a governorate'); return; }
+    if (!form.client.trim())     { setError(lang === 'ar' ? 'الرجاء إدخال الاسم الكامل' : 'Please enter your full name'); return; }
+    if (!form.phone.trim())      { setError(lang === 'ar' ? 'الرجاء إدخال رقم الهاتف' : 'Please enter your phone number'); return; }
+    if (!form.governorate)       { setError(lang === 'ar' ? 'الرجاء اختيار المحافظة' : 'Please select a governorate'); return; }
+    if (!form.address.trim())    { setError(lang === 'ar' ? 'الرجاء إدخال العنوان التفصيلي' : 'Please enter your detailed address'); return; }
     setError('');
     setLoading(true);
     try {
@@ -140,8 +143,8 @@ const Checkout = () => {
               <form onSubmit={handleSubmit} noValidate>
                 <div className="form-row">
                   <div className="form-group">
-                    <label className="form-label">{t('checkout.name')}</label>
-                    <input className="form-input" name="client" value={form.client} onChange={handleChange} required />
+                    <label className="form-label">{t('checkout.name')} <span style={{color:'#dc2626'}}>*</span></label>
+                    <input className="form-input" name="client" value={form.client} onChange={handleChange} />
                   </div>
                   <div className="form-group">
                     <label className="form-label">{t('checkout.company')}</label>
@@ -151,8 +154,8 @@ const Checkout = () => {
 
                 <div className="form-row">
                   <div className="form-group">
-                    <label className="form-label">{t('checkout.phone')}</label>
-                    <input className="form-input" name="phone" value={form.phone} onChange={handleChange} placeholder="+965XXXXXXXX" dir="ltr" required />
+                    <label className="form-label">{t('checkout.phone')} <span style={{color:'#dc2626'}}>*</span></label>
+                    <input className="form-input" name="phone" value={form.phone} onChange={handleChange} placeholder="+965XXXXXXXX" dir="ltr" />
                   </div>
                   <div className="form-group">
                     <label className="form-label">{t('checkout.email')}</label>
@@ -168,7 +171,7 @@ const Checkout = () => {
 
                 <div className="form-row">
                   <div className="form-group">
-                    <label className="form-label">{t('checkout.governorate')}</label>
+                    <label className="form-label">{t('checkout.governorate')} <span style={{color:'#dc2626'}}>*</span></label>
                     <select className="form-select" name="governorate" value={form.governorate} onChange={handleChange} required>
                       <option value="">{t('checkout.selectGov')}</option>
                       {zones.map(z => (
@@ -185,8 +188,8 @@ const Checkout = () => {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">{t('checkout.address')}</label>
-                  <input className="form-input" name="address" value={form.address} onChange={handleChange} required />
+                  <label className="form-label">{t('checkout.address')} <span style={{color:'#dc2626'}}>*</span></label>
+                  <input className="form-input" name="address" value={form.address} onChange={handleChange} />
                 </div>
 
                 <div className="form-group">
