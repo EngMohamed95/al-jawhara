@@ -873,14 +873,22 @@ const Dashboard = () => {
               {clientFilter && (() => {
                 const clientOrders = filteredOrders;
                 const totalSpent   = clientOrders.reduce((s,o) => s + parseFloat(o.grandTotal || o.total || 0), 0);
-                const lastOrder    = clientOrders[clientOrders.length - 1];
+                const withPhone    = clientOrders.find(o => o.phone);
+                const withGov     = clientOrders.find(o => o.governorate);
+                const withEmail   = clientOrders.find(o => o.email);
                 return (
                   <div className="client-summary-banner">
                     <div className="client-summary-avatar">{clientFilter[0]}</div>
                     <div className="client-summary-info">
                       <div className="client-summary-name">{clientFilter}</div>
-                      {lastOrder?.phone && <div className="client-summary-meta" dir="ltr"><i className="fas fa-phone"></i> {lastOrder.phone}</div>}
-                      {lastOrder?.governorate && <div className="client-summary-meta"><i className="fas fa-location-dot"></i> {lastOrder.governorate}</div>}
+                      <div className="client-summary-meta" dir="ltr">
+                        <i className="fas fa-phone"></i>
+                        {withPhone?.phone
+                          ? <a href={`tel:${withPhone.phone}`} style={{color:'inherit',textDecoration:'none'}}>{withPhone.phone}</a>
+                          : <span style={{opacity:0.5}}>لا يوجد رقم</span>}
+                      </div>
+                      {withGov?.governorate && <div className="client-summary-meta"><i className="fas fa-location-dot"></i> {withGov.governorate}</div>}
+                      {withEmail?.email && <div className="client-summary-meta"><i className="fas fa-envelope"></i> {withEmail.email}</div>}
                     </div>
                     <div className="client-summary-stats">
                       <div className="client-stat"><span className="client-stat-num">{clientOrders.length}</span><span className="client-stat-label">طلب</span></div>
@@ -904,10 +912,10 @@ const Dashboard = () => {
 
               <div className="data-table">
                 <table>
-                  <thead><tr><th>رقم الطلب</th><th>العميل</th><th>المحافظة</th><th>المنتج</th><th>الإجمالي</th><th>الدفع</th><th>التاريخ</th><th>الحالة</th><th></th></tr></thead>
+                  <thead><tr><th>رقم الطلب</th><th>العميل</th><th>الهاتف</th><th>المحافظة</th><th>المنتج</th><th>الإجمالي</th><th>الدفع</th><th>التاريخ</th><th>الحالة</th><th></th></tr></thead>
                   <tbody>
                     {filteredOrders.length === 0 && (
-                      <tr><td colSpan="9" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>لا توجد طلبات</td></tr>
+                      <tr><td colSpan="10" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>لا توجد طلبات</td></tr>
                     )}
                     {filteredOrders.map(o => (
                       <tr key={o.id}>
@@ -920,6 +928,11 @@ const Dashboard = () => {
                           >
                             {o.client}
                           </button>
+                        </td>
+                        <td className="td-light" dir="ltr">
+                          {o.phone
+                            ? <a href={`tel:${o.phone}`} style={{color:'var(--primary)',textDecoration:'none',fontWeight:600}}>{o.phone}</a>
+                            : <span style={{color:'var(--text-light)'}}>—</span>}
                         </td>
                         <td className="td-light">{o.governorate || '—'}</td>
                         <td className="td-light">{o.product}</td>
