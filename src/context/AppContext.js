@@ -8,13 +8,18 @@ const getStoredAuth = () => {
   catch { return null; }
 };
 
+const getStoredSiteContent = () => {
+  try { return JSON.parse(localStorage.getItem('jawhara_site_content') || 'null'); }
+  catch { return null; }
+};
+
 export const AppProvider = ({ children }) => {
   const [products, setProducts]       = useState([]);
   const [orders, setOrders]           = useState([]);
   const [users, setUsers]             = useState([]);
   const [coupons, setCoupons]         = useState([]);
   const [categories, setCategories]   = useState([]);
-  const [siteContent, setSiteContent] = useState(null);
+  const [siteContent, setSiteContent] = useState(getStoredSiteContent);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState(null);
   const [auth, setAuth]               = useState(getStoredAuth);
@@ -51,6 +56,7 @@ export const AppProvider = ({ children }) => {
       setOrders(ords);
       setUsers(usrs);
       setSiteContent(content);
+      try { localStorage.setItem('jawhara_site_content', JSON.stringify(content)); } catch {}
       setCoupons(coups);
       setCategories(cats);
     } catch {
@@ -113,6 +119,7 @@ export const AppProvider = ({ children }) => {
   const saveSiteContent = async (data) => {
     const updated = await api.updateSiteContent({ id: 1, ...data });
     setSiteContent(updated);
+    try { localStorage.setItem('jawhara_site_content', JSON.stringify(updated)); } catch {}
     return updated;
   };
 
