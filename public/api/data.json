@@ -57,6 +57,65 @@
       "status": "active"
     },
     {
+      "id": 10,
+      "icon": "🤧",
+      "name": "مناديل الوجه الجوهرة",
+      "nameEn": "Al-Jawhara Facial Tissues",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ناعمة عالية الجودة — متوفرة بعدة أحجام وباقات تناسب كل الاحتياجات",
+      "descEn": "Premium soft tissues — available in multiple sizes and packages to suit all needs",
+      "badge": "الأكثر مبيعاً",
+      "specs": ["3 طبقات", "ناعمة على البشرة", "مقاومة للتمزق"],
+      "stock": 10000,
+      "status": "active",
+      "variants": [
+        { "nameAr": "علبة واحدة", "nameEn": "Single Box", "price": "1.500", "stock": 5000, "sku": "FAC-JW-1" },
+        { "nameAr": "5 علب", "nameEn": "5 Boxes", "price": "6.500", "stock": 2000, "sku": "FAC-JW-5" },
+        { "nameAr": "12 علبة", "nameEn": "12 Boxes", "price": "14.400", "stock": 800, "sku": "FAC-JW-12" },
+        { "nameAr": "كرتون (24 علبة)", "nameEn": "Carton (24 Boxes)", "price": "26.000", "stock": 300, "sku": "FAC-JW-24" }
+      ]
+    },
+    {
+      "id": 11,
+      "icon": "🧻",
+      "name": "رولات المطبخ الجوهرة",
+      "nameEn": "Al-Jawhara Kitchen Rolls",
+      "category": "rolls",
+      "price": 0.75,
+      "desc": "رولات مطبخ عالية الامتصاص — مناسبة للاستخدام المنزلي والتجاري",
+      "descEn": "Highly absorbent kitchen rolls — suitable for home and commercial use",
+      "badge": null,
+      "specs": ["2 طبقة", "عالية الامتصاص", "مقاومة للماء"],
+      "stock": 15000,
+      "status": "active",
+      "variants": [
+        { "nameAr": "رول واحد", "nameEn": "Single Roll", "price": "0.750", "stock": 8000, "sku": "ROL-KIT-1" },
+        { "nameAr": "6 رولات", "nameEn": "6 Rolls", "price": "3.900", "stock": 4000, "sku": "ROL-KIT-6" },
+        { "nameAr": "كرتون (24 رول)", "nameEn": "Carton (24 Rolls)", "price": "14.000", "stock": 500, "sku": "ROL-KIT-24" }
+      ]
+    },
+    {
+      "id": 12,
+      "icon": "🍽️",
+      "name": "مناديل المائدة الجوهرة",
+      "nameEn": "Al-Jawhara Dinner Napkins",
+      "category": "napkins",
+      "price": 1.2,
+      "desc": "مناديل مائدة فاخرة للمطاعم والمناسبات الخاصة — أناقة وجودة عالية",
+      "descEn": "Premium dinner napkins for restaurants and special occasions — elegance and high quality",
+      "badge": "عرض خاص",
+      "specs": ["2 طبقة", "33×33 سم", "مناسبة للمطاعم"],
+      "stock": 6000,
+      "status": "active",
+      "variants": [
+        { "nameAr": "100 ورقة", "nameEn": "100 Sheets", "price": "1.200", "stock": 3000, "sku": "NAP-JW-100" },
+        { "nameAr": "250 ورقة", "nameEn": "250 Sheets", "price": "2.500", "stock": 2000, "sku": "NAP-JW-250" },
+        { "nameAr": "500 ورقة", "nameEn": "500 Sheets", "price": "4.500", "stock": 800, "sku": "NAP-JW-500" },
+        { "nameAr": "كرتون (10 علب × 500)", "nameEn": "Carton (10 packs × 500)", "price": "40.000", "stock": 100, "sku": "NAP-JW-CTN" }
+      ]
+    },
+    {
       "id": 5,
       "icon": "📋",
       "name": "محارم الجيب المحمولة",
