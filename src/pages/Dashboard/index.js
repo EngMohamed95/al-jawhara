@@ -317,8 +317,9 @@ const Dashboard = () => {
     saveSiteContent,
   } = useApp();
 
-  const { lang } = useLanguage();
-  const dt = (key) => DASH_T[key]?.[lang] ?? DASH_T[key]?.ar ?? key;
+  useLanguage(); // keep import active
+  const lang = 'ar'; // Dashboard is always Arabic
+  const dt = (key) => DASH_T[key]?.ar ?? key;
 
   const myRole = auth?.role || 'viewer';
   const perms  = ROLE_PERMISSIONS[myRole] || ROLE_PERMISSIONS.viewer;
