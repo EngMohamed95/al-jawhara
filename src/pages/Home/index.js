@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -18,9 +19,12 @@ const featuredClients = [
 ];
 
 const Home = () => {
-  const { products, loading, siteContent: sc } = useApp();
+  const { products, loading, siteContent: sc, addToCart, cart, updateCartQty, removeFromCart } = useApp();
   const { t, lang } = useLanguage();
-  const featured = products.filter(p => p.status === 'active').slice(0, 4);
+  const [addedId, setAddedId] = useState(null);
+  const featured = products.filter(p => p.status === 'active').slice(0, 8);
+  const getCartItem = (id) => cart.find(i => i.id === id);
+  const handleAdd = (p) => { addToCart(p); setAddedId(p.id); setTimeout(() => setAddedId(null), 1200); };
 
   /* Hero content — use DB value only in Arabic, always use translation in English */
   const heroBadge   = lang === 'ar' ? (sc?.heroBadge    || t('home.heroBadge'))    : t('home.heroBadge');
@@ -136,14 +140,42 @@ const Home = () => {
               <span>{t('home.loading')}</span>
             </div>
           ) : (
-            <div className="home-featured-grid">
-              {featured.map(p => (
-                <article key={p.id} className="card home-featured-card">
-                  <span className="home-featured-icon" aria-hidden="true">{p.icon}</span>
-                  <h3 className="home-featured-name">{p.name}</h3>
-                  <p className="home-featured-desc">{p.desc}</p>
-                </article>
-              ))}
+            <div className="home-products-grid">
+              {featured.map((p, i) => {
+                const cartItem = getCartItem(p.id);
+                return (
+                  <article key={p.id} className="home-product-card" style={{ animationDelay: `${i * 0.07}s` }}>
+                    {p.badge && <span className="home-prod-badge">{p.badge}</span>}
+                    <div className="home-prod-img-wrap">
+                      {p.image
+                        ? <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} className="home-prod-img" loading="lazy" />
+                        : <span className="home-prod-emoji">{p.icon || '📦'}</span>}
+                    </div>
+                    <div className="home-prod-body">
+                      <h3 className="home-prod-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</h3>
+                      <p className="home-prod-desc">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
+                      <div className="home-prod-footer">
+                        <div className="home-prod-price">
+                          {Number(p.price).toFixed(3)} <span>{t('products.currency')}</span>
+                        </div>
+                        {cartItem ? (
+                          <div className="home-prod-qty">
+                            <button className="hqty-btn" onClick={() => cartItem.qty <= 1 ? removeFromCart(p.id) : updateCartQty(p.id, cartItem.qty - 1)}><i className="fas fa-minus"></i></button>
+                            <span className="hqty-val">{cartItem.qty}</span>
+                            <button className="hqty-btn hqty-plus" onClick={() => updateCartQty(p.id, cartItem.qty + 1)}><i className="fas fa-plus"></i></button>
+                          </div>
+                        ) : (
+                          <button className={`home-prod-add-btn${addedId === p.id ? ' added' : ''}`} onClick={() => handleAdd(p)}>
+                            {addedId === p.id
+                              ? <><i className="fas fa-check"></i></>
+                              : <><i className="fas fa-cart-plus"></i></>}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
           <div className="section-center" style={{ marginTop: '35px' }}>
