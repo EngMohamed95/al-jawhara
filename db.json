@@ -557,6 +557,17 @@
       "sortOrder": 6,
       "status": "active",
       "desc": ""
+    },
+    {
+      "slug": "manadel",
+      "nameAr": "مناديل  وجه ",
+      "nameEn": "مناديل  صناعيه",
+      "emoji": "📦",
+      "icon": "fa-box",
+      "sortOrder": 2,
+      "status": "active",
+      "desc": "",
+      "id": 7
     }
   ]
 }

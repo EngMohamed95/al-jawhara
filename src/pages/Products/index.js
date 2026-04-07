@@ -6,22 +6,13 @@ import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
 import './index.css';
 
-const CAT_ICONS = {
-  all:     'fa-border-all',
-  facial:  'fa-face-smile',
-  rolls:   'fa-scroll',
-  pocket:  'fa-briefcase',
-  towels:  'fa-hand-sparkles',
-  napkins: 'fa-utensils',
-  family:  'fa-box-open',
-};
 
 const normalizeQ = (s = '') =>
   String(s).toLowerCase()
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
 
 const Products = () => {
-  const { products, loading, error, addToCart, cart, updateCartQty, cartTotalQty, siteContent: sc } = useApp();
+  const { products, loading, error, addToCart, cart, updateCartQty, cartTotalQty, siteContent: sc, categories } = useApp();
   const { t, lang } = useLanguage();
   const [activeCat,   setActiveCat]   = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,19 +25,23 @@ const Products = () => {
     ...prev, [id]: Math.max(1, (prev[id] ?? 1) + delta)
   }));
 
-  const categories = [
-    { id: 'all',     label: t('products.all') },
-    { id: 'facial',  label: t('products.cats.facial') },
-    { id: 'rolls',   label: t('products.cats.rolls') },
-    { id: 'pocket',  label: t('products.cats.pocket') },
-    { id: 'towels',  label: t('products.cats.towels') },
-    { id: 'napkins', label: t('products.cats.napkins') },
-    { id: 'family',  label: t('products.cats.family') },
-  ];
+  const getDescendantSlugs = (slug) => {
+    const cat = (categories || []).find(c => c.slug === slug);
+    if (!cat) return [];
+    const children = (categories || []).filter(c => c.parentId === cat.id);
+    return [...children.map(c => c.slug), ...children.flatMap(c => getDescendantSlugs(c.slug))];
+  };
+
+  const catTree = (categories || []).filter(c => (c.parentId ?? null) === null).sort((a, b) => a.sortOrder - b.sortOrder);
+  const getCatChildren = (parentId) => (categories || []).filter(c => c.parentId === parentId).sort((a, b) => a.sortOrder - b.sortOrder);
 
   const sq = normalizeQ(searchQuery);
   const filtered = products
-    .filter(p => activeCat === 'all' || p.category === activeCat)
+    .filter(p => {
+      if (activeCat === 'all') return true;
+      const slugs = [activeCat, ...getDescendantSlugs(activeCat)];
+      return slugs.includes(p.category);
+    })
     .filter(p => !sq || [p.name, p.nameEn, p.desc, p.descEn, ...(p.specs || [])].some(
       f => normalizeQ(f).includes(sq)
     ));
@@ -126,17 +121,36 @@ const Products = () => {
               </div>
 
               <div className="filters" role="group" aria-label={t('products.title')}>
-                {categories.map(c => (
-                  <button
-                    key={c.id}
-                    className={`filter-btn${activeCat === c.id ? ' active' : ''}`}
-                    onClick={() => setActiveCat(c.id)}
-                    aria-pressed={activeCat === c.id}
-                  >
-                    <i className={`fas ${CAT_ICONS[c.id]}`} aria-hidden="true" style={{ marginInlineEnd: '6px' }}></i>
-                    {c.label}
-                  </button>
-                ))}
+                <button className={`filter-btn${activeCat === 'all' ? ' active' : ''}`} onClick={() => setActiveCat('all')} aria-pressed={activeCat === 'all'}>
+                  <i className="fas fa-border-all" aria-hidden="true" style={{ marginInlineEnd: '6px' }}></i>
+                  {t('products.all')}
+                </button>
+                {catTree.map(parent => {
+                  const children = getCatChildren(parent.id);
+                  return (
+                    <div key={parent.id} className="filter-group">
+                      <button
+                        className={`filter-btn${activeCat === parent.slug ? ' active' : ''}`}
+                        onClick={() => setActiveCat(parent.slug)}
+                        aria-pressed={activeCat === parent.slug}
+                      >
+                        <span style={{ marginInlineEnd: '5px' }}>{parent.emoji}</span>
+                        {lang === 'en' && parent.nameEn ? parent.nameEn : parent.nameAr}
+                      </button>
+                      {children.map(child => (
+                        <button
+                          key={child.id}
+                          className={`filter-btn filter-btn-sub${activeCat === child.slug ? ' active' : ''}`}
+                          onClick={() => setActiveCat(child.slug)}
+                          aria-pressed={activeCat === child.slug}
+                        >
+                          <span style={{ marginInlineEnd: '4px', opacity: 0.6 }}>└</span>
+                          {lang === 'en' && child.nameEn ? child.nameEn : child.nameAr}
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
 
               <div className="products-grid" role="list">

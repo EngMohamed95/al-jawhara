@@ -245,11 +245,11 @@
     }
   ],
   "categories": [
-    { "id": 1, "slug": "facial",  "nameAr": "مناديل وجه",    "nameEn": "Facial Tissues",  "emoji": "🤧", "icon": "fa-face-smile", "sortOrder": 1, "status": "active", "desc": "" },
-    { "id": 2, "slug": "rolls",   "nameAr": "رولات",          "nameEn": "Rolls",           "emoji": "🧻", "icon": "fa-toilet-paper","sortOrder": 2, "status": "active", "desc": "" },
-    { "id": 3, "slug": "pocket",  "nameAr": "محارم جيب",      "nameEn": "Pocket Tissues",  "emoji": "📋", "icon": "fa-bag-shopping","sortOrder": 3, "status": "active", "desc": "" },
-    { "id": 4, "slug": "towels",  "nameAr": "مناشف",          "nameEn": "Paper Towels",    "emoji": "🏠", "icon": "fa-droplet",    "sortOrder": 4, "status": "active", "desc": "" },
-    { "id": 5, "slug": "napkins", "nameAr": "مناديل مائدة",  "nameEn": "Dinner Napkins",  "emoji": "🍽️","icon": "fa-utensils",   "sortOrder": 5, "status": "active", "desc": "" },
-    { "id": 6, "slug": "family",  "nameAr": "عروض عائلة",     "nameEn": "Family Bundles",  "emoji": "📦", "icon": "fa-house",      "sortOrder": 6, "status": "active", "desc": "" }
+    { "id": 1, "slug": "facial",  "nameAr": "مناديل وجه",    "nameEn": "Facial Tissues",  "emoji": "🤧", "icon": "fa-face-smile", "sortOrder": 1, "status": "active", "desc": "", "parentId": null },
+    { "id": 2, "slug": "rolls",   "nameAr": "رولات",          "nameEn": "Rolls",           "emoji": "🧻", "icon": "fa-toilet-paper","sortOrder": 2, "status": "active", "desc": "", "parentId": null },
+    { "id": 3, "slug": "pocket",  "nameAr": "محارم جيب",      "nameEn": "Pocket Tissues",  "emoji": "📋", "icon": "fa-bag-shopping","sortOrder": 3, "status": "active", "desc": "", "parentId": null },
+    { "id": 4, "slug": "towels",  "nameAr": "مناشف",          "nameEn": "Paper Towels",    "emoji": "🏠", "icon": "fa-droplet",    "sortOrder": 4, "status": "active", "desc": "", "parentId": null },
+    { "id": 5, "slug": "napkins", "nameAr": "مناديل مائدة",  "nameEn": "Dinner Napkins",  "emoji": "🍽️","icon": "fa-utensils",   "sortOrder": 5, "status": "active", "desc": "", "parentId": null },
+    { "id": 6, "slug": "family",  "nameAr": "عروض عائلة",     "nameEn": "Family Bundles",  "emoji": "📦", "icon": "fa-house",      "sortOrder": 6, "status": "active", "desc": "", "parentId": null }
   ]
 }

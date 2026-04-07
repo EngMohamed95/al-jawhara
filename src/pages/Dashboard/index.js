@@ -304,7 +304,22 @@ const HBar = ({ items, unit = '' }) => {
   );
 };
 
-const emptyCategory = { slug: '', nameAr: '', nameEn: '', emoji: '📦', icon: 'fa-box', sortOrder: 1, status: 'active', desc: '' };
+const emptyCategory = { slug: '', nameAr: '', nameEn: '', emoji: '📦', icon: 'fa-box', sortOrder: 1, status: 'active', desc: '', parentId: null };
+
+const buildCatTree = (cats, parentId = null) =>
+  cats.filter(c => (c.parentId ?? null) === parentId)
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map(c => ({ ...c, children: buildCatTree(cats, c.id) }));
+
+const flattenTree = (nodes, depth = 0) =>
+  nodes.flatMap(n => [{ ...n, depth }, ...flattenTree(n.children || [], depth + 1)]);
+
+const getDescendantSlugs = (slug, cats) => {
+  const cat = cats.find(c => c.slug === slug);
+  if (!cat) return [];
+  const children = cats.filter(c => c.parentId === cat.id);
+  return [...children.map(c => c.slug), ...children.flatMap(c => getDescendantSlugs(c.slug, cats))];
+};
 
 const Dashboard = () => {
   const {
@@ -357,7 +372,7 @@ const Dashboard = () => {
 
   const openAddCat  = () => { setCatForm(emptyCategory); setCatErr(''); setCatSaved(false); setCatModal('add'); };
   const openEditCat = (c) => {
-    setCatForm({ slug: c.slug, nameAr: c.nameAr, nameEn: c.nameEn, emoji: c.emoji || '📦', icon: c.icon || 'fa-box', sortOrder: c.sortOrder || 1, status: c.status, desc: c.desc || '' });
+    setCatForm({ slug: c.slug, nameAr: c.nameAr, nameEn: c.nameEn, emoji: c.emoji || '📦', icon: c.icon || 'fa-box', sortOrder: c.sortOrder || 1, status: c.status, desc: c.desc || '', parentId: c.parentId ?? null });
     setEditCat(c); setCatErr(''); setCatSaved(false); setCatModal('edit');
   };
   const closeCatModal = () => { setCatModal(null); setEditCat(null); };
@@ -376,6 +391,8 @@ const Dashboard = () => {
 
   const handleDeleteCat = async (c) => {
     const usedBy = products.filter(p => p.category === c.slug).length;
+    const hasChildren = categories.some(cat => cat.parentId === c.id);
+    if (hasChildren) { alert(lang === 'en' ? `Cannot delete — "${c.nameAr}" has subcategories. Delete them first.` : `لا يمكن حذف "${c.nameAr}" — لديها فئات فرعية. احذفها أولاً.`); return; }
     if (usedBy > 0) { alert(`لا يمكن حذف الفئة — ${usedBy} منتج مرتبط بها. يرجى تغيير فئة المنتجات أولاً.`); return; }
     if (!window.confirm(`حذف فئة "${c.nameAr}"؟`)) return;
     try { await deleteCategory(c.id); } catch { alert('تعذر الحذف.'); }
@@ -1138,26 +1155,32 @@ const Dashboard = () => {
                 <div className="data-table">
                   <table>
                     <thead>
-                      <tr><th>{dt('collections.name')}</th><th>{lang === 'en' ? 'English Name' : 'الاسم الإنجليزي'}</th><th>{dt('collections.slug')}</th><th>{dt('collections.products')}</th><th>{lang === 'en' ? 'Order' : 'الترتيب'}</th><th>{dt('collections.status')}</th><th>{dt('collections.actions')}</th></tr>
+                      <tr><th>{dt('collections.name')}</th><th>{lang === 'en' ? 'English Name' : 'الاسم الإنجليزي'}</th><th>{dt('collections.slug')}</th><th>{lang === 'en' ? 'Parent' : 'الفئة الأم'}</th><th>{dt('collections.products')}</th><th>{dt('collections.status')}</th><th>{dt('collections.actions')}</th></tr>
                     </thead>
                     <tbody>
                       {categories.length === 0 && (
                         <tr><td colSpan="7" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>{lang === 'en' ? 'No collections' : 'لا توجد فئات'}</td></tr>
                       )}
-                      {categories.sort((a,b) => a.sortOrder - b.sortOrder).map(c => {
+                      {flattenTree(buildCatTree(categories)).map(c => {
                         const prodCount = products.filter(p => p.category === c.slug).length;
+                        const hasChildren = categories.some(ch => ch.parentId === c.id);
+                        const parent = categories.find(p => p.id === c.parentId);
                         return (
                           <tr key={c.id}>
                             <td>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingInlineStart: `${c.depth * 24}px` }}>
+                                {c.depth > 0 && <span style={{ color: 'var(--text-light)', fontSize: '12px' }}>└</span>}
                                 <span className="cat-emoji-badge">{c.emoji}</span>
-                                <span className="td-bold">{c.nameAr}</span>
+                                <div>
+                                  <div className="td-bold">{c.nameAr}</div>
+                                  {hasChildren && <div style={{ fontSize: '11px', color: 'var(--primary)', marginTop: '2px' }}><i className="fas fa-sitemap"></i> {lang === 'en' ? 'Has subcategories' : 'لها فئات فرعية'}</div>}
+                                </div>
                               </div>
                             </td>
                             <td className="td-light" dir="ltr">{c.nameEn}</td>
                             <td><span className="badge-cat" dir="ltr">{c.slug}</span></td>
+                            <td className="td-light">{parent ? <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span>{parent.emoji}</span><span>{parent.nameAr}</span></span> : <span style={{ color: 'var(--text-light)', fontSize: '12px' }}>{lang === 'en' ? 'Top Level' : 'رئيسية'}</span>}</td>
                             <td className="td-bold">{prodCount} {lang === 'en' ? 'product' : 'منتج'}</td>
-                            <td className="td-light">{c.sortOrder}</td>
                             <td><span className={`status-badge status-${c.status}`}>{c.status === 'active' ? (lang === 'en' ? 'Active' : 'نشطة') : (lang === 'en' ? 'Hidden' : 'مخفية')}</span></td>
                             <td>
                               <button className="action-btn action-btn-edit" onClick={() => openEditCat(c)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
@@ -2069,6 +2092,15 @@ const Dashboard = () => {
                       <option value="inactive">{lang === 'en' ? 'Hidden' : 'مخفية'}</option>
                     </select>
                   </div>
+                  <div className="form-group">
+                    <label className="form-label">{lang === 'en' ? 'Parent Category' : 'الفئة الأم'}</label>
+                    <select className="form-select" value={catForm.parentId ?? ''} onChange={e => setCatForm(p => ({ ...p, parentId: e.target.value ? parseInt(e.target.value) : null }))}>
+                      <option value="">{lang === 'en' ? '— None (Top Level) —' : '— بدون — فئة رئيسية —'}</option>
+                      {flattenTree(buildCatTree(categories)).filter(c => catModal === 'add' || c.id !== editCat?.id).map(c => (
+                        <option key={c.id} value={c.id}>{'　'.repeat(c.depth)}{c.depth > 0 ? '└ ' : ''}{c.nameAr}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
                 <div className="form-group">
                   <label className="form-label">{lang === 'en' ? 'Description (optional)' : 'الوصف (اختياري)'}</label>
@@ -2153,7 +2185,7 @@ const Dashboard = () => {
                   <div className="form-group"><label className="form-label">{dt('products.badge')} ({lang === 'en' ? 'optional' : 'اختياري'})</label><input className="form-input" name="badge" value={productForm.badge} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
                 </div>
                 <div className="modal-grid2">
-                  <div className="form-group"><label className="form-label">{dt('products.category')}</label><select className="form-select" name="category" value={productForm.category} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))}>{Object.entries(categoryLabels).map(([k,v])=><option key={k} value={k}>{v?.[lang] || v?.ar}</option>)}</select></div>
+                  <div className="form-group"><label className="form-label">{dt('products.category')}</label><select className="form-select" name="category" value={productForm.category} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))}>{flattenTree(buildCatTree(categories)).map(c => (<option key={c.slug} value={c.slug}>{'　'.repeat(c.depth)}{c.depth > 0 ? '└ ' : ''}{c.nameAr}</option>))}</select></div>
                   <div className="form-group"><label className="form-label">{dt('products.status')}</label><select className="form-select" name="status" value={productForm.status} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))}>{Object.entries(productStatusLabels).map(([k,v])=><option key={k} value={k}>{v?.[lang] || v?.ar}</option>)}</select></div>
                 </div>
                 <div className="modal-grid2">
