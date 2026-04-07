@@ -50,7 +50,7 @@ async function deploy() {
           console.log(`   ➕ Added new collection: ${key}`);
           merged = true;
         } else if (Array.isArray(templateData[key]) && Array.isArray(serverData[key])) {
-          // Array موجودة — أضف العناصر الجديدة بالـ ID فقط
+          // Array موجودة — أضف items جديدة + اضف fields جديدة على items موجودة
           const serverIds = new Set(serverData[key].map(i => i.id));
           const newItems  = templateData[key].filter(i => i.id && !serverIds.has(i.id));
           if (newItems.length > 0) {
@@ -58,6 +58,22 @@ async function deploy() {
             console.log(`   ➕ Added ${newItems.length} new item(s) to "${key}": ${newItems.map(i=>i.id).join(', ')}`);
             merged = true;
           }
+          // اضف fields جديدة على items موجودة (بدون مسح البيانات الحالية)
+          serverData[key] = serverData[key].map(serverItem => {
+            if (!serverItem.id) return serverItem;
+            const tmplItem = templateData[key].find(t => t.id === serverItem.id);
+            if (!tmplItem) return serverItem;
+            let itemMerged = false;
+            for (const field of Object.keys(tmplItem)) {
+              if (!(field in serverItem)) {
+                serverItem = { ...serverItem, [field]: tmplItem[field] };
+                console.log(`   ➕ Added field "${field}" to ${key}[id:${serverItem.id}]`);
+                itemMerged = true;
+              }
+            }
+            if (itemMerged) merged = true;
+            return serverItem;
+          });
         }
       }
       if (merged) {
