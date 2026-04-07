@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import './index.css';
@@ -155,6 +156,7 @@ const ClientCard = ({ client, sectorLabel, lang }) => {
 
 const Clients = () => {
   const { t, lang } = useLanguage();
+  const { siteContent: sc } = useApp();
   const [activeSectorKey, setActiveSectorKey] = useState('all');
 
   const sectorKeys = ['all', ...new Set(clients.map(c => c.sectorKey))];
@@ -176,7 +178,7 @@ const Clients = () => {
         keywords="عملاء الجوهرة، كارفور الكويت، سلطان سنتر، جمعيات تعاونية، مطاعم الكويت"
       />
 
-      <header className="page-header">
+      <header className="page-header" style={sc?.clientsHeaderImg ? { backgroundImage: `url(${sc.clientsHeaderImg})`, backgroundSize:'cover', backgroundPosition:'center' } : {}}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-handshake"></i></div>

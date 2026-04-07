@@ -5,7 +5,8 @@ import translations from '../../translations';
 import Seo from '../../components/Seo';
 import './index.css';
 
-const HERO_VIDEO = 'https://al-jawhara.co/wp-content/uploads/2022/10/JawharaNewIntro.mp4';
+const DEFAULT_HERO_VIDEO  = 'https://al-jawhara.co/wp-content/uploads/2022/10/JawharaNewIntro.mp4';
+const DEFAULT_HERO_POSTER = 'https://al-jawhara.co/wp-content/uploads/revslider/video-media/JawharaNewIntro_59_layer.jpeg';
 
 const featuredClients = [
   { name: 'Carrefour',     color: '#003087' },
@@ -22,9 +23,12 @@ const Home = () => {
   const featured = products.filter(p => p.status === 'active').slice(0, 4);
 
   /* Hero content — use DB value only in Arabic, always use translation in English */
-  const heroBadge = lang === 'ar' ? (sc?.heroBadge   || t('home.heroBadge'))    : t('home.heroBadge');
-  const heroTitle = lang === 'ar' ? (sc?.heroTitle   || t('home.heroTitle'))    : t('home.heroTitle');
-  const heroSub   = lang === 'ar' ? (sc?.heroSubtitle|| t('home.heroSubtitle')) : t('home.heroSubtitle');
+  const heroBadge   = lang === 'ar' ? (sc?.heroBadge    || t('home.heroBadge'))    : t('home.heroBadge');
+  const heroTitle   = lang === 'ar' ? (sc?.heroTitle    || t('home.heroTitle'))    : t('home.heroTitle');
+  const heroSub     = lang === 'ar' ? (sc?.heroSubtitle || t('home.heroSubtitle')) : t('home.heroSubtitle');
+  const heroVideoUrl  = sc?.heroVideoUrl  || DEFAULT_HERO_VIDEO;
+  const heroPosterImg = sc?.heroPosterImg || DEFAULT_HERO_POSTER;
+  const heroImage     = sc?.heroImage     || '';
 
   const ceoName      = sc?.ceoName  || 'Bilal Mohammad Ghadar';
   const ceoTitle     = sc?.ceoTitle || (lang === 'ar' ? 'المدير العام' : 'General Manager');
@@ -61,19 +65,20 @@ const Home = () => {
       {/* ── Hero with video background ── */}
       <section className="hero hero-video-section" aria-label="القسم التعريفي">
 
-        {/* Background video */}
-        <video
-          className="hero-video-bg"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster="https://al-jawhara.co/wp-content/uploads/revslider/video-media/JawharaNewIntro_59_layer.jpeg"
-          aria-hidden="true"
-        >
-          <source src={HERO_VIDEO} type="video/mp4" />
-        </video>
+        {/* Background: video or fallback image */}
+        {heroImage && !heroVideoUrl ? (
+          <div className="hero-video-bg" style={{ backgroundImage: `url(${heroImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+        ) : (
+          <video
+            className="hero-video-bg"
+            autoPlay muted loop playsInline preload="auto"
+            poster={heroPosterImg}
+            aria-hidden="true"
+          >
+            <source src={heroVideoUrl} type="video/mp4" />
+            {heroImage && <img src={heroImage} alt="" />}
+          </video>
+        )}
 
         {/* Dark overlay so text is readable */}
         <div className="hero-video-overlay" aria-hidden="true"></div>

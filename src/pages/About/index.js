@@ -8,10 +8,16 @@ const About = () => {
   const { siteContent: sc } = useApp();
   const { t, lang } = useLanguage();
 
-  const story    = lang === 'ar' ? (sc?.aboutStory || t('about.storyFallback')) : t('about.story1');
-  const ceoName  = sc?.ceoName  || 'Bilal Mohammad Ghadar';
-  const ceoTitle = sc?.ceoTitle || t('about.ceoTitleFallback');
-  const ceoQuote = sc?.ceoQuote || '';
+  const story       = lang === 'ar' ? (sc?.aboutStory  || t('about.storyFallback')) : t('about.story1');
+  const story2      = sc?.aboutStory2 || '';
+  const ceoName     = sc?.ceoName    || 'Bilal Mohammad Ghadar';
+  const ceoTitle    = sc?.ceoTitle   || t('about.ceoTitleFallback');
+  const ceoQuote    = sc?.ceoQuote   || '';
+  const ceoImage    = sc?.ceoImage   || '';
+  const aboutStoryImg   = sc?.aboutStoryImg   || '';
+  const aboutHeaderImg  = sc?.aboutHeaderImg  || '';
+  const missionText = sc?.missionText || t('about.missionText');
+  const visionText  = sc?.visionText  || t('about.visionText');
   const area     = sc?.factoryArea           || '4,500';
   const prod     = sc?.productionCapacity    || '20,000';
   const founded  = sc?.founded               || '18/2/1998';
@@ -41,7 +47,7 @@ const About = () => {
       />
 
       {/* Header */}
-      <header className="page-header">
+      <header className="page-header" style={aboutHeaderImg ? { backgroundImage: `url(${aboutHeaderImg})`, backgroundSize:'cover', backgroundPosition:'center' } : {}}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-circle-info"></i></div>
@@ -61,17 +67,24 @@ const About = () => {
               </span>
               <h2 className="story-title">{t('about.storyTitle')} <span>{founded.split('/')[2] || '1998'}</span></h2>
               <p className="story-text">{story}</p>
-              <p className="story-text">{t('about.story2')}</p>
+              {story2 && <p className="story-text">{story2}</p>}
+              {!story2 && <p className="story-text">{t('about.story2')}</p>}
             </div>
-            <div className="story-stats-grid">
-              {storyStats.map((s, i) => (
-                <div key={i} className="story-stat" style={{ background: s.bg }}>
-                  <i className={`fas ${s.icon} story-stat-icon`} aria-hidden="true"></i>
-                  <div className="story-stat-num">{s.num}</div>
-                  <div className="story-stat-label">{s.label[lang] || s.label.ar}</div>
-                </div>
-              ))}
-            </div>
+            {aboutStoryImg ? (
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <img src={aboutStoryImg} alt={t('about.storyBadge')} style={{ width:'100%', maxWidth:480, borderRadius:16, boxShadow:'0 8px 32px rgba(0,0,0,0.12)' }} />
+              </div>
+            ) : (
+              <div className="story-stats-grid">
+                {storyStats.map((s, i) => (
+                  <div key={i} className="story-stat" style={{ background: s.bg }}>
+                    <i className={`fas ${s.icon} story-stat-icon`} aria-hidden="true"></i>
+                    <div className="story-stat-num">{s.num}</div>
+                    <div className="story-stat-label">{s.label[lang] || s.label.ar}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -103,12 +116,12 @@ const About = () => {
             <div className="mv-card mv-card-green">
               <span className="mv-icon" aria-hidden="true">🎯</span>
               <h3 className="mv-title mv-title-green">{t('about.mission')}</h3>
-              <p className="mv-text">{t('about.missionText')}</p>
+              <p className="mv-text">{missionText}</p>
             </div>
             <div className="mv-card mv-card-orange">
               <span className="mv-icon" aria-hidden="true">🔭</span>
               <h3 className="mv-title mv-title-orange">{t('about.vision')}</h3>
-              <p className="mv-text">{t('about.visionText')}</p>
+              <p className="mv-text">{visionText}</p>
             </div>
           </div>
         </div>
@@ -147,8 +160,9 @@ const About = () => {
           <div className="container">
             <div className="ceo-card">
               <div className="ceo-avatar" aria-hidden="true">
-                <img src="/ceo.jpg" alt={ceoName} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
-                <i className="fas fa-user-tie" style={{ display: 'none' }}></i>
+                {ceoImage
+                  ? <img src={ceoImage} alt={ceoName} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                  : <i className="fas fa-user-tie"></i>}
               </div>
               <div>
                 <div aria-hidden="true" style={{ fontSize: '2.5rem', opacity: 0.25, lineHeight: 1, marginBottom: '-8px' }}>

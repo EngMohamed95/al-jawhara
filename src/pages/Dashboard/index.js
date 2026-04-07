@@ -415,9 +415,11 @@ const Dashboard = () => {
   const [contentSaved,   setContentSaved]   = useState(false);
   const [contentErr,     setContentErr]     = useState('');
   const [contentLoading, setContentLoading] = useState(false);
+  const [contentTab,     setContentTab]     = useState('home'); // 'home'|'about'|'contact'|'banners'|'general'
 
   const openContentTab = () => {
     if (!contentForm && siteContent) setContentForm({ ...siteContent });
+    else if (!contentForm) setContentForm({});
     setView('content');
   };
   const handleContentSave = async (e) => {
@@ -428,6 +430,35 @@ const Dashboard = () => {
     } catch { setContentErr('حدث خطأ أثناء الحفظ.'); }
     finally { setContentLoading(false); }
   };
+  const cf = (name) => contentForm?.[name] || '';
+  const setCf = (name, val) => setContentForm(p => ({ ...p, [name]: val }));
+
+  /* upload image inside content form */
+  const [contentUploading, setContentUploading] = useState({});
+  const uploadContentImg = async (fieldName, file) => {
+    if (!file) return;
+    setContentUploading(p => ({ ...p, [fieldName]: true }));
+    try {
+      const url = await uploadFile(file);
+      if (url) setCf(fieldName, url);
+    } finally {
+      setContentUploading(p => ({ ...p, [fieldName]: false }));
+    }
+  };
+  const ContentImgField = ({ label, field, hint }) => (
+    <div className="form-group content-img-field">
+      <label className="form-label">{label}</label>
+      {cf(field) && <img src={cf(field)} alt="" className="content-img-preview" />}
+      <div className="content-img-row">
+        <input className="form-input" value={cf(field)} onChange={e => setCf(field, e.target.value)} placeholder="https://..." dir="ltr" />
+        <label className="btn btn-outline btn-sm content-img-upload-btn">
+          {contentUploading[field] ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-upload"></i> رفع</>}
+          <input type="file" accept="image/*" style={{ display:'none' }} onChange={e => uploadContentImg(field, e.target.files[0])} />
+        </label>
+      </div>
+      {hint && <div className="form-hint">{hint}</div>}
+    </div>
+  );
 
   /* ── Shipping tab (local edits then save via siteContent) ── */
   const [shippingZones, setShippingZones] = useState(null);
@@ -1264,38 +1295,225 @@ const Dashboard = () => {
           {/* ══ CONTENT ══ */}
           {view === 'content' && contentForm && (
             <div>
-              <div className="dashboard-title">محتوى الموقع</div>
-              <p className="dash-section-desc">التغييرات تُحفظ في قاعدة البيانات وتظهر فوراً على صفحات الموقع.</p>
+              <div className="dash-header-row" style={{ marginBottom: 0 }}>
+                <div className="dashboard-title" style={{ margin: 0 }}>محتوى الموقع</div>
+                <button className="btn btn-green btn-sm" onClick={handleContentSave} disabled={contentLoading}>
+                  {contentLoading ? <><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</> : <><i className="fas fa-save"></i> حفظ الكل</>}
+                </button>
+              </div>
+              <p className="dash-section-desc" style={{ marginBottom: 16 }}>تحكم في نصوص وصور كل صفحات الموقع. التغييرات تظهر فوراً بعد الحفظ.</p>
+
+              {/* Sub-tabs */}
+              <div className="content-tabs">
+                {[
+                  { id: 'home',    label: 'الرئيسية',   icon: 'fa-house' },
+                  { id: 'about',   label: 'عن الشركة',  icon: 'fa-circle-info' },
+                  { id: 'contact', label: 'التواصل',    icon: 'fa-phone' },
+                  { id: 'banners', label: 'البانرات والصور', icon: 'fa-images' },
+                  { id: 'general', label: 'عام',        icon: 'fa-gear' },
+                ].map(t => (
+                  <button key={t.id} className={`content-tab-btn${contentTab === t.id ? ' active' : ''}`} onClick={() => setContentTab(t.id)}>
+                    <i className={`fas ${t.icon}`}></i> {t.label}
+                  </button>
+                ))}
+              </div>
+
               {contentSaved && <AlertSuccess msg="تم حفظ محتوى الموقع بنجاح!" />}
               {contentErr   && <AlertError  msg={contentErr} />}
+
               <form onSubmit={handleContentSave} className="content-form">
-                <div className="content-section-title"><i className="fas fa-house"></i> الصفحة الرئيسية — Hero</div>
-                <div className="content-grid">
-                  <div className="form-group"><label className="form-label">شارة الهيرو</label><input className="form-input" name="heroBadge" value={contentForm.heroBadge || ''} onChange={e => setContentForm(p => ({...p, [e.target.name]: e.target.value}))} /></div>
-                  <div className="form-group"><label className="form-label">عنوان الهيرو</label><input className="form-input" name="heroTitle" value={contentForm.heroTitle || ''} onChange={e => setContentForm(p => ({...p, [e.target.name]: e.target.value}))} /></div>
-                  <div className="form-group content-span2"><label className="form-label">وصف الهيرو</label><textarea className="form-textarea" name="heroSubtitle" value={contentForm.heroSubtitle || ''} onChange={e => setContentForm(p => ({...p, [e.target.name]: e.target.value}))} style={{ minHeight: '70px' }} /></div>
-                </div>
-                <div className="content-section-title"><i className="fas fa-chart-bar"></i> إحصائيات</div>
-                <div className="content-grid">
-                  {['statsYear','founded','factoryArea','productionCapacity','statsClients'].map(k => (
-                    <div key={k} className="form-group"><label className="form-label">{k}</label><input className="form-input" name={k} value={contentForm[k] || ''} onChange={e => setContentForm(p => ({...p, [e.target.name]: e.target.value}))} dir="ltr" /></div>
-                  ))}
-                </div>
-                <div className="content-section-title"><i className="fas fa-circle-info"></i> قصة الشركة</div>
-                <div className="form-group"><label className="form-label">نص القصة</label><textarea className="form-textarea" name="aboutStory" value={contentForm.aboutStory || ''} onChange={e => setContentForm(p => ({...p, [e.target.name]: e.target.value}))} style={{ minHeight: '120px' }} /></div>
-                <div className="content-section-title"><i className="fas fa-user-tie"></i> المدير العام</div>
-                <div className="content-grid">
-                  <div className="form-group"><label className="form-label">الاسم</label><input className="form-input" name="ceoName" value={contentForm.ceoName || ''} onChange={e => setContentForm(p => ({...p, [e.target.name]: e.target.value}))} /></div>
-                  <div className="form-group"><label className="form-label">اللقب</label><input className="form-input" name="ceoTitle" value={contentForm.ceoTitle || ''} onChange={e => setContentForm(p => ({...p, [e.target.name]: e.target.value}))} /></div>
-                  <div className="form-group content-span2"><label className="form-label">الاقتباس (اتركه فارغاً للإخفاء)</label><textarea className="form-textarea" name="ceoQuote" value={contentForm.ceoQuote || ''} onChange={e => setContentForm(p => ({...p, [e.target.name]: e.target.value}))} style={{ minHeight: '80px' }} /></div>
-                </div>
-                <div className="content-section-title"><i className="fas fa-phone"></i> بيانات التواصل</div>
-                <div className="content-grid">
-                  {['companyPhone','companyWhatsapp','companyEmail','workHours'].map(k => (
-                    <div key={k} className="form-group"><label className="form-label">{k}</label><input className="form-input" name={k} value={contentForm[k] || ''} onChange={e => setContentForm(p => ({...p, [e.target.name]: e.target.value}))} dir="ltr" /></div>
-                  ))}
-                  <div className="form-group content-span2"><label className="form-label">العنوان</label><input className="form-input" name="companyAddress" value={contentForm.companyAddress || ''} onChange={e => setContentForm(p => ({...p, [e.target.name]: e.target.value}))} /></div>
-                </div>
+
+                {/* ═══ HOME ═══ */}
+                {contentTab === 'home' && (<>
+                  <div className="content-section-title"><i className="fas fa-film"></i> الهيرو — الصورة والفيديو</div>
+                  <div className="content-grid">
+                    <ContentImgField label="صورة الهيرو (Fallback)" field="heroImage" hint="تظهر إذا فشل تشغيل الفيديو أو على الموبايل" />
+                    <div className="form-group">
+                      <label className="form-label">رابط الفيديو (MP4)</label>
+                      <input className="form-input" dir="ltr" value={cf('heroVideoUrl')} onChange={e => setCf('heroVideoUrl', e.target.value)} placeholder="https://example.com/video.mp4" />
+                      <div className="form-hint">يُشغَّل تلقائياً في خلفية الهيرو</div>
+                    </div>
+                    <ContentImgField label="صورة Poster للفيديو" field="heroPosterImg" hint="تظهر أثناء تحميل الفيديو" />
+                  </div>
+
+                  <div className="content-section-title"><i className="fas fa-heading"></i> نصوص الهيرو</div>
+                  <div className="content-grid">
+                    <div className="form-group"><label className="form-label">شارة الهيرو</label><input className="form-input" value={cf('heroBadge')} onChange={e => setCf('heroBadge', e.target.value)} placeholder="رائدة في صناعة المناديل..." /></div>
+                    <div className="form-group"><label className="form-label">عنوان الهيرو الرئيسي</label><input className="form-input" value={cf('heroTitle')} onChange={e => setCf('heroTitle', e.target.value)} placeholder="جودة الجوهرة في كل لمسة" /></div>
+                    <div className="form-group content-span2"><label className="form-label">وصف الهيرو</label><textarea className="form-textarea" value={cf('heroSubtitle')} onChange={e => setCf('heroSubtitle', e.target.value)} style={{ minHeight: '70px' }} placeholder="شركة الجوهرة للمناديل..." /></div>
+                    <div className="form-group"><label className="form-label">نص زر المنتجات</label><input className="form-input" value={cf('heroBtnProducts')} onChange={e => setCf('heroBtnProducts', e.target.value)} placeholder="تصفح منتجاتنا" /></div>
+                    <div className="form-group"><label className="form-label">نص زر التواصل</label><input className="form-input" value={cf('heroBtnContact')} onChange={e => setCf('heroBtnContact', e.target.value)} placeholder="تواصل معنا" /></div>
+                  </div>
+
+                  <div className="content-section-title"><i className="fas fa-chart-bar"></i> أرقام وإحصائيات</div>
+                  <div className="content-grid">
+                    {[
+                      { field: 'statsYear',          label: 'سنة التأسيس' },
+                      { field: 'founded',             label: 'تاريخ التأسيس الكامل' },
+                      { field: 'factoryArea',         label: 'مساحة المصنع (م²)' },
+                      { field: 'productionCapacity',  label: 'الطاقة الإنتاجية (طن/سنة)' },
+                      { field: 'statsClients',        label: 'عدد العملاء' },
+                    ].map(({ field, label }) => (
+                      <div key={field} className="form-group">
+                        <label className="form-label">{label}</label>
+                        <input className="form-input" dir="ltr" value={cf(field)} onChange={e => setCf(field, e.target.value)} />
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="content-section-title"><i className="fas fa-star"></i> قسم "لماذا الجوهرة"</div>
+                  <div className="content-grid">
+                    <div className="form-group"><label className="form-label">عنوان القسم</label><input className="form-input" value={cf('whyTitle')} onChange={e => setCf('whyTitle', e.target.value)} placeholder="لماذا تختار الجوهرة؟" /></div>
+                    <div className="form-group"><label className="form-label">وصف القسم</label><input className="form-input" value={cf('whySub')} onChange={e => setCf('whySub', e.target.value)} placeholder="..." /></div>
+                  </div>
+                </>)}
+
+                {/* ═══ ABOUT ═══ */}
+                {contentTab === 'about' && (<>
+                  <div className="content-section-title"><i className="fas fa-book-open"></i> قصة الشركة</div>
+                  <div className="form-group">
+                    <label className="form-label">النص الأول (قصة التأسيس)</label>
+                    <textarea className="form-textarea" value={cf('aboutStory')} onChange={e => setCf('aboutStory', e.target.value)} style={{ minHeight: '130px' }} placeholder="تأسست الشركة عام 1998..." />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">النص الثاني (إضافي)</label>
+                    <textarea className="form-textarea" value={cf('aboutStory2')} onChange={e => setCf('aboutStory2', e.target.value)} style={{ minHeight: '100px' }} />
+                  </div>
+                  <ContentImgField label="صورة قصة الشركة" field="aboutStoryImg" hint="تظهر بجانب النص في صفحة عن الشركة" />
+
+                  <div className="content-section-title"><i className="fas fa-user-tie"></i> المدير العام</div>
+                  <div className="content-grid">
+                    <div className="form-group"><label className="form-label">الاسم الكامل</label><input className="form-input" value={cf('ceoName')} onChange={e => setCf('ceoName', e.target.value)} placeholder="Bilal Mohammad Ghadar" /></div>
+                    <div className="form-group"><label className="form-label">المسمى الوظيفي</label><input className="form-input" value={cf('ceoTitle')} onChange={e => setCf('ceoTitle', e.target.value)} placeholder="المدير العام" /></div>
+                    <div className="form-group content-span2">
+                      <label className="form-label">اقتباس المدير (اتركه فارغاً للإخفاء)</label>
+                      <textarea className="form-textarea" value={cf('ceoQuote')} onChange={e => setCf('ceoQuote', e.target.value)} style={{ minHeight: '80px' }} />
+                    </div>
+                    <ContentImgField label="صورة المدير العام" field="ceoImage" hint="صورة شخصية تظهر في الرئيسية وصفحة عن الشركة" />
+                  </div>
+
+                  <div className="content-section-title"><i className="fas fa-bullseye"></i> الرسالة والرؤية</div>
+                  <div className="content-grid">
+                    <div className="form-group">
+                      <label className="form-label">نص الرسالة 🎯</label>
+                      <textarea className="form-textarea" value={cf('missionText')} onChange={e => setCf('missionText', e.target.value)} style={{ minHeight: '100px' }} placeholder="توفير منتجات ورقية عالية الجودة..." />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">نص الرؤية 🔭</label>
+                      <textarea className="form-textarea" value={cf('visionText')} onChange={e => setCf('visionText', e.target.value)} style={{ minHeight: '100px' }} placeholder="أن نكون الخيار الأول..." />
+                    </div>
+                  </div>
+                </>)}
+
+                {/* ═══ CONTACT ═══ */}
+                {contentTab === 'contact' && (<>
+                  <div className="content-section-title"><i className="fas fa-phone"></i> بيانات التواصل</div>
+                  <div className="content-grid">
+                    {[
+                      { field: 'companyPhone',    label: 'رقم الهاتف' },
+                      { field: 'companyWhatsapp', label: 'واتساب' },
+                      { field: 'companyEmail',    label: 'البريد الإلكتروني' },
+                      { field: 'workHours',       label: 'ساعات العمل' },
+                    ].map(({ field, label }) => (
+                      <div key={field} className="form-group">
+                        <label className="form-label">{label}</label>
+                        <input className="form-input" dir="ltr" value={cf(field)} onChange={e => setCf(field, e.target.value)} />
+                      </div>
+                    ))}
+                    <div className="form-group content-span2">
+                      <label className="form-label">العنوان</label>
+                      <input className="form-input" value={cf('companyAddress')} onChange={e => setCf('companyAddress', e.target.value)} />
+                    </div>
+                  </div>
+
+                  <div className="content-section-title"><i className="fas fa-map-location-dot"></i> خريطة جوجل</div>
+                  <div className="form-group">
+                    <label className="form-label">رابط Embed للخريطة</label>
+                    <input className="form-input" dir="ltr" value={cf('mapEmbedUrl')} onChange={e => setCf('mapEmbedUrl', e.target.value)} placeholder="https://www.google.com/maps/embed?pb=..." />
+                    <div className="form-hint">من Google Maps ← Share ← Embed a map ← انسخ الرابط من src="..."</div>
+                  </div>
+                  {cf('mapEmbedUrl') && (
+                    <div style={{ borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
+                      <iframe src={cf('mapEmbedUrl')} width="100%" height="250" style={{ border: 0 }} allowFullScreen loading="lazy" title="map-preview" />
+                    </div>
+                  )}
+
+                  <div className="content-section-title"><i className="fas fa-share-nodes"></i> وسائل التواصل الاجتماعي</div>
+                  <div className="content-grid">
+                    {[
+                      { field: 'instagramUrl', label: 'Instagram', icon: 'fa-instagram' },
+                      { field: 'twitterUrl',   label: 'X (Twitter)', icon: 'fa-x-twitter' },
+                      { field: 'linkedinUrl',  label: 'LinkedIn', icon: 'fa-linkedin-in' },
+                      { field: 'facebookUrl',  label: 'Facebook', icon: 'fa-facebook-f' },
+                      { field: 'tiktokUrl',    label: 'TikTok', icon: 'fa-tiktok' },
+                      { field: 'youtubeUrl',   label: 'YouTube', icon: 'fa-youtube' },
+                    ].map(({ field, label, icon }) => (
+                      <div key={field} className="form-group">
+                        <label className="form-label"><i className={`fab ${icon}`}></i> {label}</label>
+                        <input className="form-input" dir="ltr" value={cf(field)} onChange={e => setCf(field, e.target.value)} placeholder="https://..." />
+                      </div>
+                    ))}
+                  </div>
+                </>)}
+
+                {/* ═══ BANNERS ═══ */}
+                {contentTab === 'banners' && (<>
+                  <p className="dash-section-desc">صور الهيدر التي تظهر في أعلى كل صفحة. الحجم المناسب: 1920×400 بكسل.</p>
+
+                  <div className="content-section-title"><i className="fas fa-house"></i> الرئيسية</div>
+                  <div className="content-grid">
+                    <ContentImgField label="صورة Hero الرئيسية" field="heroImage" hint="تظهر خلف النص في الهيرو (fallback للفيديو)" />
+                    <ContentImgField label="صورة Poster الفيديو" field="heroPosterImg" hint="تظهر أثناء تحميل الفيديو" />
+                  </div>
+
+                  <div className="content-section-title"><i className="fas fa-circle-info"></i> صفحة عن الشركة</div>
+                  <ContentImgField label="صورة الهيدر (عن الشركة)" field="aboutHeaderImg" hint="الصورة الكبيرة في أعلى صفحة عن الشركة" />
+                  <ContentImgField label="صورة القصة" field="aboutStoryImg" hint="تظهر بجانب نص قصة الشركة" />
+
+                  <div className="content-section-title"><i className="fas fa-box-open"></i> صفحة المنتجات</div>
+                  <ContentImgField label="صورة الهيدر (المنتجات)" field="productsHeaderImg" hint="الصورة الكبيرة في أعلى صفحة المنتجات" />
+
+                  <div className="content-section-title"><i className="fas fa-users"></i> صفحة العملاء</div>
+                  <ContentImgField label="صورة الهيدر (العملاء)" field="clientsHeaderImg" hint="الصورة الكبيرة في أعلى صفحة عملاؤنا" />
+
+                  <div className="content-section-title"><i className="fas fa-phone"></i> صفحة التواصل</div>
+                  <ContentImgField label="صورة الهيدر (التواصل)" field="contactHeaderImg" hint="الصورة الكبيرة في أعلى صفحة تواصل معنا" />
+                </>)}
+
+                {/* ═══ GENERAL ═══ */}
+                {contentTab === 'general' && (<>
+                  <div className="content-section-title"><i className="fas fa-gem"></i> هوية الموقع</div>
+                  <div className="content-grid">
+                    <div className="form-group"><label className="form-label">اسم الموقع / الشركة</label><input className="form-input" value={cf('siteName')} onChange={e => setCf('siteName', e.target.value)} placeholder="الجوهرة للمناديل الورقية" /></div>
+                    <div className="form-group"><label className="form-label">وصف الموقع (SEO)</label><input className="form-input" value={cf('siteDesc')} onChange={e => setCf('siteDesc', e.target.value)} placeholder="رائدة في صناعة المناديل بالكويت..." /></div>
+                    <ContentImgField label="شعار الموقع (Logo)" field="siteLogoUrl" hint="PNG شفاف / SVG — الحجم المناسب: 200×60 بكسل" />
+                    <ContentImgField label="Favicon (أيقونة التبويب)" field="faviconUrl" hint="ICO أو PNG 32×32 بكسل" />
+                  </div>
+
+                  <div className="content-section-title"><i className="fas fa-copyright"></i> الفوتر</div>
+                  <div className="content-grid">
+                    <div className="form-group"><label className="form-label">نص الفوتر السفلي</label><input className="form-input" value={cf('footerTagline')} onChange={e => setCf('footerTagline', e.target.value)} placeholder="جودة تثق بها..." /></div>
+                    <div className="form-group"><label className="form-label">نص حقوق الملكية</label><input className="form-input" value={cf('footerCopyright')} onChange={e => setCf('footerCopyright', e.target.value)} placeholder="© 2025 شركة الجوهرة. جميع الحقوق محفوظة." /></div>
+                  </div>
+
+                  <div className="content-section-title"><i className="fas fa-palette"></i> ألوان الموقع</div>
+                  <div className="content-grid">
+                    {[
+                      { field: 'colorPrimary', label: 'اللون الرئيسي', def: '#065089' },
+                      { field: 'colorSecondary', label: 'اللون الثانوي', def: '#0d47a1' },
+                      { field: 'colorAccent', label: 'لون التمييز', def: '#16a34a' },
+                    ].map(({ field, label, def }) => (
+                      <div key={field} className="form-group">
+                        <label className="form-label">{label}</label>
+                        <div style={{ display:'flex', gap: 8, alignItems:'center' }}>
+                          <input type="color" value={cf(field) || def} onChange={e => setCf(field, e.target.value)} style={{ width: 44, height: 36, border:'1px solid var(--border)', borderRadius: 8, padding: 2, cursor:'pointer' }} />
+                          <input className="form-input" dir="ltr" value={cf(field) || def} onChange={e => setCf(field, e.target.value)} style={{ flex: 1 }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>)}
+
                 <div className="content-save-row">
                   <button type="submit" className="btn btn-green" disabled={contentLoading}>
                     {contentLoading ? <><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</> : <><i className="fas fa-save"></i> حفظ في قاعدة البيانات</>}

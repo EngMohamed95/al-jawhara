@@ -20,7 +20,7 @@ const normalizeQ = (s = '') =>
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
 
 const Products = () => {
-  const { products, loading, error, addToCart, cartTotalQty } = useApp();
+  const { products, loading, error, addToCart, cartTotalQty, siteContent: sc } = useApp();
   const { t, lang } = useLanguage();
   const [activeCat,    setActiveCat]    = useState('all');
   const [addedId,      setAddedId]      = useState(null);
@@ -59,7 +59,7 @@ const Products = () => {
         keywords="منتجات الجوهرة، مناديل وجه، رولات مطبخ، محارم جيب، مناشف ورق"
       />
 
-      <header className="page-header">
+      <header className="page-header" style={sc?.productsHeaderImg ? { backgroundImage: `url(${sc.productsHeaderImg})`, backgroundSize:'cover', backgroundPosition:'center' } : {}}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-box-open"></i></div>
