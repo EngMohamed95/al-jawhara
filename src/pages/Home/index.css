@@ -1,6 +1,19 @@
+/* ══════════════════ SCROLL REVEAL ══════════════════ */
+.reveal {
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal-up    { opacity: 0; transform: translateY(40px); }
+.reveal-down  { opacity: 0; transform: translateY(-40px); }
+.reveal-left  { opacity: 0; transform: translateX(40px); }
+.reveal-right { opacity: 0; transform: translateX(-40px); }
+.reveal-visible {
+  opacity: 1 !important;
+  transform: translate(0, 0) !important;
+}
+
 .home-featured-section { background: var(--bg); }
 
-/* ── Fade-up animation ── */
+/* ── Fade-up animation (static cards) ── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: translateY(0); }

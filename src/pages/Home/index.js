@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -6,8 +6,39 @@ import translations from '../../translations';
 import Seo from '../../components/Seo';
 import './index.css';
 
+/* ── Scroll-reveal hook ── */
+const useScrollReveal = (threshold = 0.15) => {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.unobserve(el); } },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return [ref, visible];
+};
+
 const DEFAULT_HERO_VIDEO  = 'https://al-jawhara.co/wp-content/uploads/2022/10/JawharaNewIntro.mp4';
 const DEFAULT_HERO_POSTER = 'https://al-jawhara.co/wp-content/uploads/revslider/video-media/JawharaNewIntro_59_layer.jpeg';
+
+/* ── Reveal wrapper ── */
+const Reveal = ({ children, className = '', delay = 0, direction = 'up' }) => {
+  const [ref, visible] = useScrollReveal(0.12);
+  return (
+    <div
+      ref={ref}
+      className={`reveal reveal-${direction} ${visible ? 'reveal-visible' : ''} ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+};
 
 const featuredClients = [
   { name: 'Carrefour',     color: '#003087' },
@@ -117,11 +148,13 @@ const Home = () => {
         <div className="container">
           <div className="stats-grid">
             {stats.map((s, i) => (
-              <div className="stat-card" key={i}>
-                <div className="stat-icon" aria-hidden="true"><i className={`fas ${s.icon}`}></i></div>
-                <div className="stat-number">{s.number}</div>
-                <div className="stat-label">{s.label}</div>
-              </div>
+              <Reveal key={i} delay={i * 80} direction="up">
+                <div className="stat-card">
+                  <div className="stat-icon" aria-hidden="true"><i className={`fas ${s.icon}`}></i></div>
+                  <div className="stat-number">{s.number}</div>
+                  <div className="stat-label">{s.label}</div>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -130,10 +163,12 @@ const Home = () => {
       {/* ── Featured Products ── */}
       <section className="section home-featured-section" aria-label="المنتجات المميزة">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">{t('home.featuredTitle')}</h2>
-            <p className="section-subtitle">{t('home.featuredSub')}</p>
-          </div>
+          <Reveal direction="up">
+            <div className="section-header">
+              <h2 className="section-title">{t('home.featuredTitle')}</h2>
+              <p className="section-subtitle">{t('home.featuredSub')}</p>
+            </div>
+          </Reveal>
           {loading ? (
             <div className="home-loading" role="status" aria-live="polite">
               <i className="fas fa-spinner fa-spin" aria-hidden="true"></i>
@@ -144,65 +179,70 @@ const Home = () => {
               {featured.map((p, i) => {
                 const cartItem = getCartItem(p.id);
                 return (
-                  <article key={p.id} className="home-product-card" style={{ animationDelay: `${i * 0.07}s` }}>
-                    {p.badge && <span className="home-prod-badge">{p.badge}</span>}
-                    <div className="home-prod-img-wrap">
-                      {p.image
-                        ? <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} className="home-prod-img" loading="lazy" />
-                        : <span className="home-prod-emoji">{p.icon || '📦'}</span>}
-                    </div>
-                    <div className="home-prod-body">
-                      <h3 className="home-prod-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</h3>
-                      <p className="home-prod-desc">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
-                      <div className="home-prod-footer">
-                        <div className="home-prod-price">
-                          {Number(p.price).toFixed(3)} <span>{t('products.currency')}</span>
-                        </div>
-                        {cartItem ? (
-                          <div className="home-prod-qty">
-                            <button className="hqty-btn" onClick={() => cartItem.qty <= 1 ? removeFromCart(p.id) : updateCartQty(p.id, cartItem.qty - 1)}><i className="fas fa-minus"></i></button>
-                            <span className="hqty-val">{cartItem.qty}</span>
-                            <button className="hqty-btn hqty-plus" onClick={() => updateCartQty(p.id, cartItem.qty + 1)}><i className="fas fa-plus"></i></button>
-                          </div>
-                        ) : (
-                          <button className={`home-prod-add-btn${addedId === p.id ? ' added' : ''}`} onClick={() => handleAdd(p)}>
-                            {addedId === p.id
-                              ? <><i className="fas fa-check"></i></>
-                              : <><i className="fas fa-cart-plus"></i></>}
-                          </button>
-                        )}
+                  <Reveal key={p.id} delay={(i % 4) * 80} direction="up">
+                    <article className="home-product-card">
+                      {p.badge && <span className="home-prod-badge">{p.badge}</span>}
+                      <div className="home-prod-img-wrap">
+                        {p.image
+                          ? <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} className="home-prod-img" loading="lazy" />
+                          : <span className="home-prod-emoji">{p.icon || '📦'}</span>}
                       </div>
-                    </div>
-                  </article>
+                      <div className="home-prod-body">
+                        <h3 className="home-prod-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</h3>
+                        <p className="home-prod-desc">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
+                        <div className="home-prod-footer">
+                          <div className="home-prod-price">
+                            {Number(p.price).toFixed(3)} <span>{t('products.currency')}</span>
+                          </div>
+                          {cartItem ? (
+                            <div className="home-prod-qty">
+                              <button className="hqty-btn" onClick={() => cartItem.qty <= 1 ? removeFromCart(p.id) : updateCartQty(p.id, cartItem.qty - 1)}><i className="fas fa-minus"></i></button>
+                              <span className="hqty-val">{cartItem.qty}</span>
+                              <button className="hqty-btn hqty-plus" onClick={() => updateCartQty(p.id, cartItem.qty + 1)}><i className="fas fa-plus"></i></button>
+                            </div>
+                          ) : (
+                            <button className={`home-prod-add-btn${addedId === p.id ? ' added' : ''}`} onClick={() => handleAdd(p)}>
+                              {addedId === p.id ? <i className="fas fa-check"></i> : <i className="fas fa-cart-plus"></i>}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </article>
+                  </Reveal>
                 );
               })}
             </div>
           )}
-          <div className="section-center" style={{ marginTop: '35px' }}>
-            <Link to="/products" className="btn btn-green">
-              <i className="fas fa-arrow-left" aria-hidden="true"></i>
-              {t('home.viewAll')}
-            </Link>
-          </div>
+          <Reveal direction="up" delay={200}>
+            <div className="section-center" style={{ marginTop: '35px' }}>
+              <Link to="/products" className="btn btn-green">
+                <i className="fas fa-arrow-left" aria-hidden="true"></i>
+                {t('home.viewAll')}
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ── Why Us ── */}
+      {/* ── Why Us ── */}
       <section className="section home-why-section" aria-label="لماذا الجوهرة">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">{t('home.whyTitle')}</h2>
-            <p className="section-subtitle">{t('home.whySub')}</p>
-          </div>
+          <Reveal direction="up">
+            <div className="section-header">
+              <h2 className="section-title">{t('home.whyTitle')}</h2>
+              <p className="section-subtitle">{t('home.whySub')}</p>
+            </div>
+          </Reveal>
           <div className="home-why-grid">
             {whyFeatures.map((f, i) => (
-              <div key={i} className="home-why-card">
-                <div className="home-why-icon" aria-hidden="true">
-                  <i className={`fas ${f.icon}`}></i>
+              <Reveal key={i} delay={i * 100} direction="up">
+                <div className="home-why-card">
+                  <div className="home-why-icon" aria-hidden="true"><i className={`fas ${f.icon}`}></i></div>
+                  <h3 className="home-why-title">{f.title[lang] || f.title.ar}</h3>
+                  <p className="home-why-desc">{f.desc[lang] || f.desc.ar}</p>
                 </div>
-                <h3 className="home-why-title">{f.title[lang] || f.title.ar}</h3>
-                <p className="home-why-desc">{f.desc[lang] || f.desc.ar}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -211,37 +251,45 @@ const Home = () => {
       {/* ── Clients ── */}
       <section className="section home-clients-section" aria-label="عملاؤنا">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">{t('home.clientsTitle')}</h2>
-            <p className="section-subtitle">{t('home.clientsSub')}</p>
-          </div>
-          <div className="client-tags" role="list">
-            {featuredClients.map((c, i) => (
-              <div key={i} className="client-tag" role="listitem">
-                <span className="client-tag-dot" style={{ background: c.color }} aria-hidden="true"></span>
-                <span style={{ color: c.color }}>{c.name}</span>
-              </div>
-            ))}
-          </div>
-          <div className="section-center">
-            <Link to="/clients" className="btn btn-green">
-              <i className="fas fa-users" aria-hidden="true"></i>
-              {t('home.viewClients')}
-            </Link>
-          </div>
+          <Reveal direction="up">
+            <div className="section-header">
+              <h2 className="section-title">{t('home.clientsTitle')}</h2>
+              <p className="section-subtitle">{t('home.clientsSub')}</p>
+            </div>
+          </Reveal>
+          <Reveal direction="up" delay={100}>
+            <div className="client-tags" role="list">
+              {featuredClients.map((c, i) => (
+                <div key={i} className="client-tag" role="listitem">
+                  <span className="client-tag-dot" style={{ background: c.color }} aria-hidden="true"></span>
+                  <span style={{ color: c.color }}>{c.name}</span>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+          <Reveal direction="up" delay={200}>
+            <div className="section-center">
+              <Link to="/clients" className="btn btn-green">
+                <i className="fas fa-users" aria-hidden="true"></i>
+                {t('home.viewClients')}
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ── CEO Quote ── */}
       {ceoQuote && (
-        <section className="quote-section" aria-label="كلمة المدير العام">
-          <div className="container">
-            <div className="quote-icon" aria-hidden="true"><i className="fas fa-quote-right"></i></div>
-            <blockquote className="quote-text">"{ceoQuote}"</blockquote>
-            <p className="quote-author">{ceoName}</p>
-            <p className="quote-author-title">{ceoTitle}</p>
-          </div>
-        </section>
+        <Reveal direction="up">
+          <section className="quote-section" aria-label="كلمة المدير العام">
+            <div className="container">
+              <div className="quote-icon" aria-hidden="true"><i className="fas fa-quote-right"></i></div>
+              <blockquote className="quote-text">"{ceoQuote}"</blockquote>
+              <p className="quote-author">{ceoName}</p>
+              <p className="quote-author-title">{ceoTitle}</p>
+            </div>
+          </section>
+        </Reveal>
       )}
     </>
   );
