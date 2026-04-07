@@ -107,9 +107,21 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile nav */}
+      {/* Overlay */}
       {menuOpen && (
-        <div className="mobile-nav" role="menu">
+        <div className="mobile-nav-overlay" onClick={() => setMenuOpen(false)} aria-hidden="true" />
+      )}
+
+      {/* Mobile drawer */}
+      <div className={`mobile-nav${menuOpen ? ' open' : ''}`} role="menu" aria-hidden={!menuOpen}>
+        <div className="mobile-nav-header">
+          <img src={LOGO_URL} alt="الجوهرة" style={{ height: '30px', filter: 'brightness(0) invert(1)' }} />
+          <button className="mobile-nav-close" onClick={() => setMenuOpen(false)} aria-label="إغلاق القائمة">
+            <i className="fas fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="mobile-nav-body">
           {navLinks.map(l => (
             <Link
               key={l.path}
@@ -118,17 +130,19 @@ const Navbar = () => {
               className={`mobile-nav-link${isActive(l.path) ? ' active' : ''}`}
               onClick={() => setMenuOpen(false)}
             >
-              <i className={`fas ${l.icon}`} aria-hidden="true" style={{ marginLeft: '10px', marginRight: '10px' }}></i>
+              <i className={`fas ${l.icon}`} aria-hidden="true"></i>
               {l.label}
             </Link>
           ))}
 
           {/* Mobile cart link */}
           <Link to="/cart" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-            <i className="fas fa-cart-shopping" aria-hidden="true" style={{ marginLeft: '10px', marginRight: '10px' }}></i>
+            <i className="fas fa-cart-shopping" aria-hidden="true"></i>
             {t('nav.cart')}
             {cartTotalQty > 0 && <span className="mobile-cart-badge">{cartTotalQty}</span>}
           </Link>
+
+          <div className="mobile-nav-divider" />
 
           {/* Mobile lang toggle */}
           <div className="mobile-toggles">
@@ -145,22 +159,22 @@ const Navbar = () => {
                 className={`mobile-nav-link${isActive('/dashboard') ? ' active' : ''}`}
                 onClick={() => setMenuOpen(false)}
               >
-                <i className="fas fa-chart-pie" aria-hidden="true" style={{ marginLeft: '10px', marginRight: '10px' }}></i>
+                <i className="fas fa-chart-pie" aria-hidden="true"></i>
                 {t('nav.dashboard')}
               </Link>
               <button className="mobile-logout-btn" onClick={handleLogout}>
-                <i className="fas fa-right-from-bracket" aria-hidden="true" style={{ marginLeft: '10px', marginRight: '10px' }}></i>
+                <i className="fas fa-right-from-bracket" aria-hidden="true"></i>
                 {t('nav.logout')}
               </button>
             </>
           ) : (
             <Link to="/login" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-              <i className="fas fa-right-to-bracket" aria-hidden="true" style={{ marginLeft: '10px', marginRight: '10px' }}></i>
+              <i className="fas fa-right-to-bracket" aria-hidden="true"></i>
               {t('nav.login')}
             </Link>
           )}
         </div>
-      )}
+      </div>
     </nav>
   );
 };
