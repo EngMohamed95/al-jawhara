@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import translations from '../../translations';
 import Seo from '../../components/Seo';
@@ -417,6 +417,45 @@ const Dashboard = () => {
   const pendingOrders  = orders.filter(o => o.status === 'pending').length;
   const totalRevenue   = orders.reduce((s, o) => s + parseFloat(o.grandTotal || o.total || 0), 0).toFixed(3);
 
+  /* ── Search ── */
+  const [dashSearch, setDashSearch] = useState('');
+  useEffect(() => { setDashSearch(''); }, [view]);
+
+  const ns = (s = '') => String(s).toLowerCase()
+    .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
+
+  const filteredDashProducts = useMemo(() => {
+    const q = ns(dashSearch);
+    if (!q) return products;
+    return products.filter(p =>
+      [p.name, p.nameEn, p.sku, categoryLabels[p.category], productStatusLabels[p.status], p.desc].some(f => ns(f).includes(q))
+    );
+  }, [products, dashSearch]);
+
+  const filteredOrders = useMemo(() => {
+    const q = ns(dashSearch);
+    if (!q) return orders;
+    return orders.filter(o =>
+      [o.ref, o.client, o.governorate, o.product, o.payment, orderStatusLabels[o.status]].some(f => ns(f).includes(q))
+    );
+  }, [orders, dashSearch]);
+
+  const filteredUsers = useMemo(() => {
+    const q = ns(dashSearch);
+    if (!q) return users;
+    return users.filter(u =>
+      [u.name, u.username, u.email, u.phone, roleLabels[u.role], userStatusLabels[u.status]].some(f => ns(f).includes(q))
+    );
+  }, [users, dashSearch]);
+
+  const filteredCoupons = useMemo(() => {
+    const q = ns(dashSearch);
+    if (!q) return coupons;
+    return coupons.filter(c =>
+      [c.code, c.type === 'percent' ? 'نسبة' : 'مبلغ', c.desc, c.status === 'active' ? 'نشط' : 'متوقف'].some(f => ns(f).includes(q))
+    );
+  }, [coupons, dashSearch]);
+
   if (loading) return (
     <div className="dashboard-layout">
       <div className="dashboard-main">
@@ -561,11 +600,17 @@ const Dashboard = () => {
                   </button>
                 )}
               </div>
+              <div className="dash-search-bar">
+                <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
+                <input type="search" className="dash-search-input" placeholder="ابحث بالاسم أو الفئة أو الحالة..." value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
+                {dashSearch && <span className="dash-search-count">{filteredDashProducts.length} نتيجة</span>}
+              </div>
               <div className="data-table">
                 <table>
                   <thead><tr><th>#</th><th>المنتج</th><th>الفئة</th><th>السعر</th><th>المخزون</th><th>الحالة</th><th>إجراءات</th></tr></thead>
                   <tbody>
-                    {products.map((p, i) => (
+                    {filteredDashProducts.map((p, i) => (
                       <tr key={p.id}>
                         <td className="td-light">{i + 1}</td>
                         <td><span className="td-icon">{p.icon}</span><span className="td-bold">{p.name}</span></td>
@@ -588,12 +633,20 @@ const Dashboard = () => {
           {/* ══ ORDERS ══ */}
           {view === 'orders' && (
             <div>
-              <div className="dashboard-title">الطلبات ({orders.length})</div>
+              <div className="dash-header-row">
+                <div className="dashboard-title">الطلبات ({orders.length})</div>
+              </div>
+              <div className="dash-search-bar">
+                <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
+                <input type="search" className="dash-search-input" placeholder="ابحث برقم الطلب أو العميل أو المحافظة أو الحالة..." value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
+                {dashSearch && <span className="dash-search-count">{filteredOrders.length} نتيجة</span>}
+              </div>
               <div className="data-table">
                 <table>
                   <thead><tr><th>رقم الطلب</th><th>العميل</th><th>المحافظة</th><th>المنتج</th><th>الإجمالي</th><th>الدفع</th><th>التاريخ</th><th>الحالة</th><th></th></tr></thead>
                   <tbody>
-                    {orders.map(o => (
+                    {filteredOrders.map(o => (
                       <tr key={o.id}>
                         <td className="td-primary">{o.ref}</td>
                         <td className="td-bold">{o.client}</td>
@@ -627,8 +680,16 @@ const Dashboard = () => {
           {/* ══ INVOICES ══ */}
           {view === 'invoices' && (
             <div>
-              <div className="dashboard-title">الفواتير ({orders.length})</div>
+              <div className="dash-header-row">
+                <div className="dashboard-title">الفواتير ({orders.length})</div>
+              </div>
               <p className="dash-section-desc">عرض وطباعة فاتورة لكل طلب بتصميم احترافي.</p>
+              <div className="dash-search-bar">
+                <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
+                <input type="search" className="dash-search-input" placeholder="ابحث برقم الطلب أو العميل أو الهاتف..." value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
+                {dashSearch && <span className="dash-search-count">{filteredOrders.length} نتيجة</span>}
+              </div>
               <div className="data-table">
                 <table>
                   <thead>
@@ -647,7 +708,7 @@ const Dashboard = () => {
                   </thead>
                   <tbody>
                     {orders.length === 0 && <tr><td colSpan="10" className="td-light" style={{textAlign:'center',padding:'30px'}}>لا توجد طلبات بعد.</td></tr>}
-                    {orders.map(o => (
+                    {filteredOrders.map(o => (
                       <tr key={o.id}>
                         <td className="td-primary">{o.ref}</td>
                         <td>
@@ -685,11 +746,17 @@ const Dashboard = () => {
                   </button>
                 )}
               </div>
+              <div className="dash-search-bar">
+                <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
+                <input type="search" className="dash-search-input" placeholder="ابحث بالاسم أو اسم المستخدم أو البريد..." value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
+                {dashSearch && <span className="dash-search-count">{filteredUsers.length} نتيجة</span>}
+              </div>
               <div className="data-table">
                 <table>
                   <thead><tr><th>#</th><th>الاسم</th><th>اسم المستخدم</th><th>الهاتف</th><th>الصلاحية</th><th>الحالة</th><th>إجراءات</th></tr></thead>
                   <tbody>
-                    {users.map((u, i) => (
+                    {filteredUsers.map((u, i) => (
                       <tr key={u.id}>
                         <td className="td-light">{i + 1}</td>
                         <td>
@@ -900,11 +967,17 @@ const Dashboard = () => {
                 <div className="dashboard-title">الكوبونات والخصومات</div>
                 <button className="btn btn-green btn-sm" onClick={openAddCoupon}><i className="fas fa-plus"></i> إضافة كوبون</button>
               </div>
+              <div className="dash-search-bar">
+                <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
+                <input type="search" className="dash-search-input" placeholder="ابحث بالكود أو النوع أو الحالة..." value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
+                {dashSearch && <span className="dash-search-count">{filteredCoupons.length} نتيجة</span>}
+              </div>
               <div className="data-table">
                 <table>
                   <thead><tr><th>الكود</th><th>النوع</th><th>الخصم</th><th>الحد الأدنى</th><th>الاستخدام</th><th>الانتهاء</th><th>الحالة</th><th>إجراءات</th></tr></thead>
                   <tbody>
-                    {coupons.map(c => (
+                    {filteredCoupons.map(c => (
                       <tr key={c.id}>
                         <td className="td-primary" dir="ltr">{c.code}</td>
                         <td><span className="badge-cat">{c.type === 'percent' ? 'نسبة %' : 'مبلغ ثابت'}</span></td>

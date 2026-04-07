@@ -15,11 +15,16 @@ const CAT_ICONS = {
   family:  'fa-box-open',
 };
 
+const normalizeQ = (s = '') =>
+  String(s).toLowerCase()
+    .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
+
 const Products = () => {
   const { products, loading, error, addToCart, cartTotalQty } = useApp();
   const { t, lang } = useLanguage();
-  const [activeCat, setActiveCat] = useState('all');
-  const [addedId,   setAddedId]   = useState(null);
+  const [activeCat,    setActiveCat]    = useState('all');
+  const [addedId,      setAddedId]      = useState(null);
+  const [searchQuery,  setSearchQuery]  = useState('');
 
   const categories = [
     { id: 'all',     label: t('products.all') },
@@ -31,9 +36,12 @@ const Products = () => {
     { id: 'family',  label: t('products.cats.family') },
   ];
 
-  const filtered = activeCat === 'all'
-    ? products
-    : products.filter(p => p.category === activeCat);
+  const sq = normalizeQ(searchQuery);
+  const filtered = products
+    .filter(p => activeCat === 'all' || p.category === activeCat)
+    .filter(p => !sq || [p.name, p.nameEn, p.desc, p.descEn, ...(p.specs || [])].some(
+      f => normalizeQ(f).includes(sq)
+    ));
 
   const handleAdd = (product) => {
     addToCart(product);
@@ -80,6 +88,32 @@ const Products = () => {
 
           {!loading && !error && (
             <>
+              {/* Search box */}
+              <div className="products-search-wrap">
+                <div className="products-search-box">
+                  <i className="fas fa-magnifying-glass products-search-icon" aria-hidden="true"></i>
+                  <input
+                    type="search"
+                    className="products-search-input"
+                    placeholder={lang === 'ar' ? 'ابحث عن منتج...' : 'Search products...'}
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    autoComplete="off"
+                    aria-label="بحث المنتجات"
+                  />
+                  {searchQuery && (
+                    <button className="products-search-clear" onClick={() => setSearchQuery('')} aria-label="مسح">
+                      <i className="fas fa-xmark"></i>
+                    </button>
+                  )}
+                </div>
+                {searchQuery && (
+                  <span className="products-search-count">
+                    {filtered.length} {lang === 'ar' ? 'نتيجة' : 'result(s)'}
+                  </span>
+                )}
+              </div>
+
               <div className="filters" role="group" aria-label={t('products.title')}>
                 {categories.map(c => (
                   <button
