@@ -173,13 +173,13 @@ const Home = () => {
                   <Reveal key={p.id} delay={(i % 4) * 80} direction="up">
                     <article className="home-product-card">
                       {p.badge && <span className="home-prod-badge">{p.badge}</span>}
-                      <div className="home-prod-img-wrap">
+                      <Link to={`/products/${p.id}`} className="home-prod-img-wrap" style={{ textDecoration: 'none' }}>
                         {p.image
                           ? <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} className="home-prod-img" loading="lazy" />
                           : <span className="home-prod-emoji">{p.icon || '📦'}</span>}
-                      </div>
+                      </Link>
                       <div className="home-prod-body">
-                        <h3 className="home-prod-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</h3>
+                        <Link to={`/products/${p.id}`} className="home-prod-name" style={{ textDecoration: 'none', color: 'inherit' }}>{lang === 'en' && p.nameEn ? p.nameEn : p.name}</Link>
                         <p className="home-prod-desc">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
                         {/* Variant picker */}
                         {(p.variants || []).length > 0 && (

@@ -171,14 +171,14 @@ const Products = () => {
                 ) : filtered.map((p, i) => (
                   <Reveal key={p.id} delay={(i % 4) * 70} direction="up">
                   <article className="product-card" role="listitem">
-                    <div className="product-card-img" aria-hidden="true">
+                    <Link to={`/products/${p.id}`} className="product-card-img" aria-label={lang === 'en' && p.nameEn ? p.nameEn : p.name}>
                       {p.badge && <span className="product-badge">{p.badge}</span>}
                       {p.image
                         ? <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} className="product-card-photo" />
                         : p.icon || '📦'}
-                    </div>
+                    </Link>
                     <div className="product-card-body">
-                      <h2 className="product-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</h2>
+                      <Link to={`/products/${p.id}`} className="product-name" style={{ textDecoration: 'none', color: 'inherit' }}>{lang === 'en' && p.nameEn ? p.nameEn : p.name}</Link>
                       <p className="product-description">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
                       <div className="product-specs">
                         {p.specs?.map((s, i) => <span key={i} className="product-spec">{s}</span>)}

@@ -14,6 +14,7 @@ import Login        from './pages/Login';
 import Cart         from './pages/Cart';
 import Checkout     from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
+import ProductDetail from './pages/ProductDetail';
 import NotFound    from './pages/NotFound';
 
 const ProtectedRoute = ({ children }) => {
@@ -32,6 +33,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/"          element={<Home />} />
           <Route path="/about"     element={<About />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/products"  element={<Products />} />
           <Route path="/clients"   element={<Clients />} />
           <Route path="/contact"   element={<Contact />} />
