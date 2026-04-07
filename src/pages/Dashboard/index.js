@@ -41,7 +41,7 @@ const navItems = [
   { id: 'shipping',  label: 'الشحن والتوصيل',   icon: 'fa-truck' },
   { id: 'payments',  label: 'بوابات الدفع',      icon: 'fa-credit-card' },
   { id: 'coupons',   label: 'الكوبونات',         icon: 'fa-tag' },
-  { id: 'reports',   label: 'التقارير',          icon: 'fa-chart-bar' },
+  { id: 'reports',   label: 'التحليلات',         icon: 'fa-chart-line' },
 ];
 
 /* ── Password Strength ── */
@@ -75,6 +75,102 @@ const AlertError = ({ msg }) => (
 );
 
 /* ════════════════════════════════════════════════════ */
+
+/* ── Analytics helpers ── */
+const toArabicNum = s => String(s).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+const parseOrderDate = (raw) => {
+  if (!raw) return null;
+  const s = toArabicNum(raw).replace(/\//g, '-').trim();
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+};
+const fmtMonth = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+const fmtDay   = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+
+/* ── MiniLineChart (SVG) ── */
+const MiniLineChart = ({ data, color = '#065089', height = 120 }) => {
+  if (!data || data.length < 2) return <div className="analytics-empty-chart">لا توجد بيانات كافية</div>;
+  const w = 600, h = height;
+  const pad = { t: 12, b: 28, l: 8, r: 8 };
+  const maxV = Math.max(...data.map(d => d.v), 1);
+  const xs = data.map((_, i) => pad.l + (i / (data.length - 1)) * (w - pad.l - pad.r));
+  const ys = data.map(d => pad.t + (1 - d.v / maxV) * (h - pad.t - pad.b));
+  const path = xs.map((x, i) => `${i === 0 ? 'M' : 'L'}${x},${ys[i]}`).join(' ');
+  const fill = `${path} L${xs[xs.length-1]},${h-pad.b} L${xs[0]},${h-pad.b} Z`;
+  const step = Math.max(1, Math.floor(data.length / 6));
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height }} preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="lgA" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.18" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={fill} fill="url(#lgA)" />
+      <path d={path} fill="none" stroke={color} strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
+      {data.map((d, i) => i % step === 0 && (
+        <text key={i} x={xs[i]} y={h - 6} textAnchor="middle" fontSize="10" fill="#888">{d.k}</text>
+      ))}
+    </svg>
+  );
+};
+
+/* ── DonutChart (SVG) ── */
+const DonutChart = ({ slices }) => {
+  const total = slices.reduce((s, x) => s + x.v, 0);
+  if (!total) return <div className="analytics-empty-chart">لا توجد بيانات</div>;
+  let cum = 0;
+  const r = 70, cx = 90, cy = 90;
+  const paths = slices.map((sl, i) => {
+    const frac = sl.v / total;
+    const start = cum * 2 * Math.PI - Math.PI / 2;
+    cum += frac;
+    const end = cum * 2 * Math.PI - Math.PI / 2;
+    const x1 = cx + r * Math.cos(start), y1 = cy + r * Math.sin(start);
+    const x2 = cx + r * Math.cos(end),   y2 = cy + r * Math.sin(end);
+    const large = frac > 0.5 ? 1 : 0;
+    return <path key={i} d={`M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} Z`} fill={sl.color} opacity="0.9" />;
+  });
+  return (
+    <div className="donut-wrap">
+      <svg viewBox="0 0 180 180" style={{ width: 140, flexShrink: 0 }}>
+        <circle cx={cx} cy={cy} r={r} fill="#f1f5f9" />
+        {paths}
+        <circle cx={cx} cy={cy} r={42} fill="white" />
+        <text x={cx} y={cy-6}  textAnchor="middle" fontSize="11" fill="#555">الكل</text>
+        <text x={cx} y={cy+12} textAnchor="middle" fontSize="16" fontWeight="700" fill="#222">{total}</text>
+      </svg>
+      <div className="donut-legend">
+        {slices.filter(s => s.v > 0).map((s, i) => (
+          <div key={i} className="donut-legend-item">
+            <span className="donut-dot" style={{ background: s.color }}></span>
+            <span className="donut-label">{s.label}</span>
+            <span className="donut-val">{s.v}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ── HBar (horizontal bar) ── */
+const HBar = ({ items, unit = '' }) => {
+  const max = Math.max(...items.map(i => i.v), 1);
+  return (
+    <div className="hbar-list">
+      {items.slice(0, 7).map((item, i) => (
+        <div key={i} className="hbar-row">
+          <div className="hbar-label" title={item.k}>{i + 1}. {item.k}</div>
+          <div className="hbar-track">
+            <div className="hbar-fill" style={{ width: `${(item.v / max) * 100}%` }}></div>
+          </div>
+          <div className="hbar-val">{typeof item.v === 'number' && !Number.isInteger(item.v) ? item.v.toFixed(3) : item.v}{unit}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const emptyCategory = { slug: '', nameAr: '', nameEn: '', emoji: '📦', icon: 'fa-box', sortOrder: 1, status: 'active', desc: '' };
 
 const Dashboard = () => {
@@ -546,6 +642,88 @@ const Dashboard = () => {
       [c.code, c.type === 'percent' ? 'نسبة' : 'مبلغ', c.desc, c.status === 'active' ? 'نشط' : 'متوقف'].some(f => ns(f).includes(q))
     );
   }, [coupons, dashSearch]);
+
+  /* ── Analytics ── */
+  const [analyticsRange, setAnalyticsRange] = useState('30d'); // 'today'|'7d'|'30d'|'month'|'all'
+
+  const analyticsData = useMemo(() => {
+    const now = new Date();
+    const startOf = (n) => { const d = new Date(now); d.setHours(0,0,0,0); d.setDate(d.getDate() - n); return d; };
+    let from = null;
+    if (analyticsRange === 'today')  from = startOf(0);
+    else if (analyticsRange === '7d')   from = startOf(6);
+    else if (analyticsRange === '30d')  from = startOf(29);
+    else if (analyticsRange === 'month') { from = new Date(now.getFullYear(), now.getMonth(), 1); }
+
+    const inRange = orders.filter(o => {
+      if (!from) return true;
+      const d = parseOrderDate(o.date);
+      return d && d >= from;
+    });
+    const completed = inRange.filter(o => !['cancelled'].includes(o.status));
+
+    const grossRevenue = completed.reduce((s, o) => s + parseFloat(o.grandTotal || o.total || 0), 0);
+    const shipping     = completed.reduce((s, o) => s + parseFloat(o.deliveryFee || 0), 0);
+    const discounts    = completed.reduce((s, o) => s + parseFloat(o.discount || 0), 0);
+    const net          = grossRevenue - discounts;
+    const avgOrder     = completed.length ? grossRevenue / completed.length : 0;
+    const uniqueClients= [...new Set(completed.map(o => o.client).filter(Boolean))].length;
+
+    /* ── Line chart: group by day or month ── */
+    const useMonth = analyticsRange === 'all' || analyticsRange === 'month';
+    const grouped = {};
+    completed.forEach(o => {
+      const d = parseOrderDate(o.date);
+      if (!d) return;
+      const key = useMonth ? fmtMonth(d) : fmtDay(d);
+      grouped[key] = (grouped[key] || 0) + parseFloat(o.grandTotal || o.total || 0);
+    });
+    const lineData = Object.keys(grouped).sort().map(k => ({
+      k: useMonth ? k.slice(5) : k.slice(5),
+      v: grouped[k],
+    }));
+
+    /* ── Orders by status ── */
+    const statusColors = { active:'#065089', pending:'#f59e0b', shipped:'#16a34a', cancelled:'#ef4444', inactive:'#94a3b8' };
+    const statusSlices = Object.entries(orderStatusLabels).map(([k, label]) => ({
+      label, color: statusColors[k] || '#94a3b8',
+      v: inRange.filter(o => o.status === k).length,
+    }));
+
+    /* ── Top products by revenue ── */
+    const prodRev = {};
+    completed.forEach(o => {
+      (o.items || [{ name: o.product, qty: o.qty || 1, price: parseFloat(o.grandTotal || o.total) / (o.qty || 1) }]).forEach(item => {
+        if (!item.name) return;
+        prodRev[item.name] = (prodRev[item.name] || 0) + (item.price * item.qty);
+      });
+    });
+    const topProducts = Object.entries(prodRev).sort((a,b) => b[1]-a[1]).map(([k,v]) => ({ k, v }));
+
+    /* ── Top governorates ── */
+    const govMap = {};
+    completed.forEach(o => { if (o.governorate) govMap[o.governorate] = (govMap[o.governorate]||0)+1; });
+    const topGov = Object.entries(govMap).sort((a,b)=>b[1]-a[1]).map(([k,v])=>({k,v}));
+
+    /* ── Top clients ── */
+    const clientMap = {};
+    completed.forEach(o => {
+      if (!o.client) return;
+      if (!clientMap[o.client]) clientMap[o.client] = { orders: 0, total: 0, phone: o.phone || '' };
+      clientMap[o.client].orders++;
+      clientMap[o.client].total += parseFloat(o.grandTotal || o.total || 0);
+      if (!clientMap[o.client].phone && o.phone) clientMap[o.client].phone = o.phone;
+    });
+    const topClients = Object.entries(clientMap).sort((a,b)=>b[1].total-a[1].total).slice(0, 8)
+      .map(([name, d]) => ({ name, ...d }));
+
+    /* ── Payment breakdown ── */
+    const payMap = {};
+    completed.forEach(o => { if (o.payment) payMap[o.payment] = (payMap[o.payment]||0)+1; });
+    const payData = Object.entries(payMap).sort((a,b)=>b[1]-a[1]).map(([k,v])=>({ k: k.toUpperCase(), v }));
+
+    return { inRange, completed, grossRevenue, shipping, discounts, net, avgOrder, uniqueClients, lineData, statusSlices, topProducts, topGov, topClients, payData };
+  }, [orders, analyticsRange]);
 
   if (loading) return (
     <div className="dashboard-layout">
@@ -1354,47 +1532,112 @@ const Dashboard = () => {
             </div>
           )}
 
-          {/* ══ REPORTS ══ */}
+          {/* ══ ANALYTICS ══ */}
           {view === 'reports' && (
-            <div>
-              <div className="dashboard-title">التقارير والإحصائيات</div>
-              <div className="reports-grid">
+            <div className="analytics-page">
+              <div className="analytics-header">
+                <div className="dashboard-title" style={{ margin: 0 }}>التحليلات</div>
+                <div className="analytics-range-pills">
+                  {[
+                    { id: 'today', label: 'اليوم' },
+                    { id: '7d',    label: '7 أيام' },
+                    { id: '30d',   label: '30 يوم' },
+                    { id: 'month', label: 'هذا الشهر' },
+                    { id: 'all',   label: 'كل الوقت' },
+                  ].map(r => (
+                    <button key={r.id} className={`analytics-pill${analyticsRange === r.id ? ' active' : ''}`} onClick={() => setAnalyticsRange(r.id)}>{r.label}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── KPI Cards ── */}
+              <div className="analytics-kpi-row">
                 {[
-                  { title: 'إجمالي الإيرادات', value: `${totalRevenue} د.ك`, change: '', icon: 'fa-chart-line',    cls: 'dash-stat-green',   iconColor: 'var(--primary)', badgeColor: 'var(--primary)' },
-                  { title: 'الطلبات النشطة',   value: orders.filter(o => o.status === 'active').length, change: '',  icon: 'fa-shopping-bag', cls: 'dash-stat-purple', iconColor: '#7c3aed', badgeColor: '#7c3aed' },
-                  { title: 'قيد المراجعة',     value: pendingOrders, change: '', icon: 'fa-hourglass-half', cls: 'dash-stat-orange', iconColor: '#d97706', badgeColor: '#d97706' },
-                  { title: 'المنتجات النشطة',  value: activeCount,   change: `من ${products.length}`, icon: 'fa-box-open', cls: 'dash-stat-emerald', iconColor: '#059669', badgeColor: '#059669' },
-                ].map((r, i) => (
-                  <div key={i} className="reports-card">
-                    <div className="reports-card-header">
-                      <div className={`reports-card-icon ${r.cls}`}><i className={`fas ${r.icon}`} style={{ color: r.iconColor }}></i></div>
-                      {r.change && <span className={`reports-card-badge ${r.cls}`} style={{ color: r.badgeColor }}>{r.change}</span>}
+                  { label: 'إجمالي الإيرادات',    value: `${analyticsData.grossRevenue.toFixed(3)} د.ك`, icon: 'fa-coins',         cls: 'kpi-blue'   },
+                  { label: 'عدد الطلبات',          value: analyticsData.completed.length,                  icon: 'fa-bag-shopping',  cls: 'kpi-purple' },
+                  { label: 'متوسط قيمة الطلب',    value: `${analyticsData.avgOrder.toFixed(3)} د.ك`,      icon: 'fa-chart-simple',  cls: 'kpi-green'  },
+                  { label: 'المنتجات النشطة',      value: activeCount,                                      icon: 'fa-box-open',      cls: 'kpi-orange' },
+                  { label: 'العملاء الفريدون',     value: analyticsData.uniqueClients,                      icon: 'fa-users',         cls: 'kpi-teal'   },
+                ].map((k, i) => (
+                  <div key={i} className={`analytics-kpi-card ${k.cls}`}>
+                    <div className="kpi-icon"><i className={`fas ${k.icon}`}></i></div>
+                    <div className="kpi-body">
+                      <div className="kpi-value">{k.value}</div>
+                      <div className="kpi-label">{k.label}</div>
                     </div>
-                    <div className="reports-card-label">{r.title}</div>
-                    <div className="reports-card-value">{r.value}</div>
                   </div>
                 ))}
               </div>
-              {/* Revenue by payment method */}
-              <div className="bar-chart-card">
-                <div className="bar-chart-title">الطلبات حسب طريقة الدفع</div>
-                <div className="bar-items">
-                  {['cash','transfer','knet','myfatoorah','tap','stcpay'].map(method => {
-                    const count = orders.filter(o => o.payment === method).length;
-                    const pct   = orders.length ? Math.round((count / orders.length) * 100) : 0;
-                    if (!count) return null;
-                    return (
-                      <div key={method} className="bar-item">
-                        <div className="bar-item-header">
-                          <span className="bar-item-name">{method.toUpperCase()}</span>
-                          <span className="bar-item-count">{count} طلب ({pct}%)</span>
-                        </div>
-                        <div className="bar-track"><div className="bar-fill" style={{ width: `${pct}%` }}></div></div>
-                      </div>
-                    );
-                  })}
+
+              {/* ── Line Chart + Breakdown ── */}
+              <div className="analytics-row2">
+                <div className="analytics-card analytics-card-wide">
+                  <div className="analytics-card-title"><i className="fas fa-chart-area"></i> المبيعات عبر الزمن</div>
+                  <MiniLineChart data={analyticsData.lineData} height={140} />
+                </div>
+                <div className="analytics-card">
+                  <div className="analytics-card-title"><i className="fas fa-receipt"></i> ملخص المبيعات</div>
+                  <table className="analytics-breakdown-table">
+                    <tbody>
+                      <tr><td>الإيرادات الإجمالية</td><td>{analyticsData.grossRevenue.toFixed(3)} د.ك</td></tr>
+                      <tr><td>الخصومات</td><td className="text-red">- {analyticsData.discounts.toFixed(3)} د.ك</td></tr>
+                      <tr><td>رسوم الشحن</td><td>{analyticsData.shipping.toFixed(3)} د.ك</td></tr>
+                      <tr className="breakdown-net"><td>الصافي</td><td>{analyticsData.net.toFixed(3)} د.ك</td></tr>
+                      <tr><td>ملغاة</td><td>{analyticsData.inRange.filter(o=>o.status==='cancelled').length} طلب</td></tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
+
+              {/* ── Status Donut + Top Products + Top Regions ── */}
+              <div className="analytics-row3">
+                <div className="analytics-card">
+                  <div className="analytics-card-title"><i className="fas fa-circle-half-stroke"></i> الطلبات حسب الحالة</div>
+                  <DonutChart slices={analyticsData.statusSlices} />
+                </div>
+                <div className="analytics-card">
+                  <div className="analytics-card-title"><i className="fas fa-trophy"></i> أفضل المنتجات (مبيعاً)</div>
+                  {analyticsData.topProducts.length ? <HBar items={analyticsData.topProducts} unit=" د.ك" /> : <div className="analytics-empty-chart">لا توجد بيانات</div>}
+                </div>
+                <div className="analytics-card">
+                  <div className="analytics-card-title"><i className="fas fa-map-location-dot"></i> أفضل المناطق</div>
+                  {analyticsData.topGov.length ? <HBar items={analyticsData.topGov} unit=" طلب" /> : <div className="analytics-empty-chart">لا توجد بيانات</div>}
+                </div>
+              </div>
+
+              {/* ── Top Clients + Payment Method ── */}
+              <div className="analytics-row2">
+                <div className="analytics-card analytics-card-wide">
+                  <div className="analytics-card-title"><i className="fas fa-star"></i> أفضل العملاء</div>
+                  {analyticsData.topClients.length ? (
+                    <div className="analytics-table-wrap">
+                      <table className="analytics-table">
+                        <thead><tr><th>#</th><th>العميل</th><th>الهاتف</th><th>الطلبات</th><th>الإجمالي</th></tr></thead>
+                        <tbody>
+                          {analyticsData.topClients.map((c, i) => (
+                            <tr key={i}>
+                              <td className="analytics-rank">{i+1}</td>
+                              <td>
+                                <button className="client-name-btn" onClick={() => { setClientFilter(c.name); setView('orders'); }}>
+                                  {c.name}
+                                </button>
+                              </td>
+                              <td className="text-muted" dir="ltr">{c.phone || '—'}</td>
+                              <td>{c.orders}</td>
+                              <td className="analytics-money">{c.total.toFixed(3)} د.ك</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : <div className="analytics-empty-chart">لا توجد بيانات</div>}
+                </div>
+                <div className="analytics-card">
+                  <div className="analytics-card-title"><i className="fas fa-credit-card"></i> طرق الدفع</div>
+                  {analyticsData.payData.length ? <HBar items={analyticsData.payData} unit=" طلب" /> : <div className="analytics-empty-chart">لا توجد بيانات</div>}
+                </div>
+              </div>
+
             </div>
           )}
 
