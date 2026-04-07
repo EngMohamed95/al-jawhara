@@ -2,12 +2,13 @@
 /* ── Featured section — dot grid pattern + soft gradient ── */
 .home-featured-section {
   position: relative;
-  background-color: #f0f5fb;
+  background-color: #eaf1fb;
   background-image:
-    radial-gradient(circle at 15% 25%, rgba(6,80,137,0.07) 0%, transparent 45%),
-    radial-gradient(circle at 85% 70%, rgba(240,149,64,0.07) 0%, transparent 45%),
-    radial-gradient(circle, rgba(6,80,137,0.10) 1px, transparent 1px);
-  background-size: auto, auto, 28px 28px;
+    radial-gradient(circle at 10% 20%, rgba(6,80,137,0.13) 0%, transparent 40%),
+    radial-gradient(circle at 90% 75%, rgba(240,149,64,0.13) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(6,80,137,0.05) 0%, transparent 60%),
+    radial-gradient(circle, rgba(6,80,137,0.18) 1.5px, transparent 1.5px);
+  background-size: auto, auto, auto, 32px 32px;
 }
 
 /* ── Fade-up animation (static cards) ── */
@@ -102,16 +103,16 @@
 
 /* ── Why-us section — diagonal lines pattern ── */
 .home-why-section {
-  background-color: #fff;
+  background-color: #f7fbff;
   background-image:
-    radial-gradient(circle at 90% 10%, rgba(6,80,137,0.06) 0%, transparent 40%),
-    radial-gradient(circle at 10% 90%, rgba(6,80,137,0.06) 0%, transparent 40%),
+    radial-gradient(circle at 90% 10%, rgba(6,80,137,0.12) 0%, transparent 40%),
+    radial-gradient(circle at 10% 90%, rgba(240,149,64,0.10) 0%, transparent 40%),
     repeating-linear-gradient(
       -45deg,
       transparent,
-      transparent 18px,
-      rgba(6,80,137,0.03) 18px,
-      rgba(6,80,137,0.03) 19px
+      transparent 14px,
+      rgba(6,80,137,0.06) 14px,
+      rgba(6,80,137,0.06) 15px
     );
 }
 .home-why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
@@ -129,9 +130,15 @@
 .home-why-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
 .home-why-desc  { font-size: 0.86rem; color: var(--text-light); line-height: 1.6; }
 
-/* ── Clients section — soft wave gradient ── */
+/* ── Clients section — grid squares pattern ── */
 .home-clients-section {
-  background: linear-gradient(135deg, #e8f0f8 0%, #ffffff 50%, #fef3e8 100%);
+  background-color: #fafcff;
+  background-image:
+    radial-gradient(circle at 80% 20%, rgba(6,80,137,0.10) 0%, transparent 45%),
+    radial-gradient(circle at 20% 80%, rgba(240,149,64,0.10) 0%, transparent 45%),
+    linear-gradient(rgba(6,80,137,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6,80,137,0.06) 1px, transparent 1px);
+  background-size: auto, auto, 40px 40px, 40px 40px;
 }
 .client-tags { display: flex; flex-wrap: nowrap; gap: 16px; justify-content: center; margin-bottom: 40px; overflow-x: auto; padding-bottom: 8px; }
 .client-tag {
