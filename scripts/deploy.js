@@ -39,20 +39,30 @@ async function deploy() {
       serverDataExists = true;
       console.log('\n💾 Server data.json backed up successfully');
 
-      // دمج: إضافة أي collections جديدة من القالب بدون مسح البيانات الحالية
+      // دمج: إضافة أي collections أو items جديدة من القالب بدون مسح البيانات الحالية
       const serverData   = JSON.parse(fs.readFileSync(LOCAL_BACKUP,   'utf8'));
       const templateData = JSON.parse(fs.readFileSync(LOCAL_TEMPLATE, 'utf8'));
       let merged = false;
       for (const key of Object.keys(templateData)) {
         if (!(key in serverData)) {
+          // مفتاح جديد كلياً — أضفه
           serverData[key] = templateData[key];
           console.log(`   ➕ Added new collection: ${key}`);
           merged = true;
+        } else if (Array.isArray(templateData[key]) && Array.isArray(serverData[key])) {
+          // Array موجودة — أضف العناصر الجديدة بالـ ID فقط
+          const serverIds = new Set(serverData[key].map(i => i.id));
+          const newItems  = templateData[key].filter(i => i.id && !serverIds.has(i.id));
+          if (newItems.length > 0) {
+            serverData[key] = [...serverData[key], ...newItems];
+            console.log(`   ➕ Added ${newItems.length} new item(s) to "${key}": ${newItems.map(i=>i.id).join(', ')}`);
+            merged = true;
+          }
         }
       }
       if (merged) {
         fs.writeFileSync(LOCAL_BACKUP, JSON.stringify(serverData, null, 2), 'utf8');
-        console.log('   ✅ Merged new collections into backup');
+        console.log('   ✅ Merged new items into backup');
       }
     } catch {
       console.log('\n⚠️  No existing data.json on server — will use template');
