@@ -67,7 +67,15 @@ if ($resource === 'siteContent') {
 }
 
 // ── Collections ──────────────────────────────────────────
-if (!isset($db[$resource])) respond(['error' => 'Resource not found'], 404);
+// If resource missing, auto-create empty collection (allows new features without data migration)
+if (!isset($db[$resource])) {
+    if ($method === 'GET' && $id === null) respond([]);
+    if ($method === 'POST') {
+        $db[$resource] = [];
+    } else {
+        respond(['error' => 'Resource not found'], 404);
+    }
+}
 
 $col = &$db[$resource];
 
