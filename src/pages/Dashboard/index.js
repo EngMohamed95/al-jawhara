@@ -492,8 +492,9 @@ const Dashboard = () => {
   const totalRevenue   = orders.reduce((s, o) => s + parseFloat(o.grandTotal || o.total || 0), 0).toFixed(3);
 
   /* ── Search ── */
-  const [dashSearch, setDashSearch] = useState('');
-  useEffect(() => { setDashSearch(''); }, [view]);
+  const [dashSearch,    setDashSearch]    = useState('');
+  const [clientFilter,  setClientFilter]  = useState(null); // string | null
+  useEffect(() => { setDashSearch(''); setClientFilter(null); }, [view]);
 
   const ns = (s = '') => String(s).toLowerCase()
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
@@ -507,12 +508,13 @@ const Dashboard = () => {
   }, [products, dashSearch]);
 
   const filteredOrders = useMemo(() => {
+    if (clientFilter) return orders.filter(o => o.client === clientFilter);
     const q = ns(dashSearch);
     if (!q) return orders;
     return orders.filter(o =>
       [o.ref, o.client, o.governorate, o.product, o.payment, orderStatusLabels[o.status]].some(f => ns(f).includes(q))
     );
-  }, [orders, dashSearch]);
+  }, [orders, dashSearch, clientFilter]);
 
   const filteredUsers = useMemo(() => {
     const q = ns(dashSearch);
@@ -859,22 +861,66 @@ const Dashboard = () => {
           {view === 'orders' && (
             <div>
               <div className="dash-header-row">
-                <div className="dashboard-title">الطلبات ({orders.length})</div>
+                <div className="dashboard-title">
+                  {clientFilter
+                    ? <><button className="client-back-btn" onClick={() => setClientFilter(null)} title="العودة لكل الطلبات"><i className="fas fa-arrow-right"></i></button> طلبات العميل</>
+                    : `الطلبات (${orders.length})`
+                  }
+                </div>
               </div>
-              <div className="dash-search-bar">
-                <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
-                <input type="search" className="dash-search-input" placeholder="ابحث برقم الطلب أو العميل أو المحافظة أو الحالة..." value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
-                {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
-                {dashSearch && <span className="dash-search-count">{filteredOrders.length} نتيجة</span>}
-              </div>
+
+              {/* Client summary banner */}
+              {clientFilter && (() => {
+                const clientOrders = filteredOrders;
+                const totalSpent   = clientOrders.reduce((s,o) => s + parseFloat(o.grandTotal || o.total || 0), 0);
+                const lastOrder    = clientOrders[clientOrders.length - 1];
+                return (
+                  <div className="client-summary-banner">
+                    <div className="client-summary-avatar">{clientFilter[0]}</div>
+                    <div className="client-summary-info">
+                      <div className="client-summary-name">{clientFilter}</div>
+                      {lastOrder?.phone && <div className="client-summary-meta" dir="ltr"><i className="fas fa-phone"></i> {lastOrder.phone}</div>}
+                      {lastOrder?.governorate && <div className="client-summary-meta"><i className="fas fa-location-dot"></i> {lastOrder.governorate}</div>}
+                    </div>
+                    <div className="client-summary-stats">
+                      <div className="client-stat"><span className="client-stat-num">{clientOrders.length}</span><span className="client-stat-label">طلب</span></div>
+                      <div className="client-stat"><span className="client-stat-num">{totalSpent.toFixed(3)}</span><span className="client-stat-label">د.ك إجمالي</span></div>
+                    </div>
+                    <button className="client-summary-close" onClick={() => setClientFilter(null)} title="عرض كل الطلبات">
+                      <i className="fas fa-xmark"></i> كل الطلبات
+                    </button>
+                  </div>
+                );
+              })()}
+
+              {!clientFilter && (
+                <div className="dash-search-bar">
+                  <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
+                  <input type="search" className="dash-search-input" placeholder="ابحث برقم الطلب أو العميل أو المحافظة أو الحالة..." value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                  {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
+                  {dashSearch && <span className="dash-search-count">{filteredOrders.length} نتيجة</span>}
+                </div>
+              )}
+
               <div className="data-table">
                 <table>
                   <thead><tr><th>رقم الطلب</th><th>العميل</th><th>المحافظة</th><th>المنتج</th><th>الإجمالي</th><th>الدفع</th><th>التاريخ</th><th>الحالة</th><th></th></tr></thead>
                   <tbody>
+                    {filteredOrders.length === 0 && (
+                      <tr><td colSpan="9" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>لا توجد طلبات</td></tr>
+                    )}
                     {filteredOrders.map(o => (
                       <tr key={o.id}>
                         <td className="td-primary">{o.ref}</td>
-                        <td className="td-bold">{o.client}</td>
+                        <td>
+                          <button
+                            className={`client-name-btn${clientFilter === o.client ? ' active' : ''}`}
+                            onClick={() => setClientFilter(o.client)}
+                            title={`عرض كل طلبات ${o.client}`}
+                          >
+                            {o.client}
+                          </button>
+                        </td>
                         <td className="td-light">{o.governorate || '—'}</td>
                         <td className="td-light">{o.product}</td>
                         <td className="td-bold">{o.grandTotal || o.total} د.ك</td>
