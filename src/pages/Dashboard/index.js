@@ -1,18 +1,23 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../translations';
 import Seo from '../../components/Seo';
 import './index.css';
 
 /* ── Constants ── */
 const categoryLabels = {
-  facial: 'مناديل وجه', rolls: 'رولات', pocket: 'محارم جيب',
-  towels: 'مناشف', napkins: 'مناديل مائدة', family: 'عروض عائلة',
+  facial: { ar: 'مناديل وجه', en: 'Facial Tissues' },
+  rolls:  { ar: 'رولات',      en: 'Rolls' },
+  pocket: { ar: 'محارم جيب',  en: 'Pocket Tissues' },
+  towels: { ar: 'مناشف',      en: 'Paper Towels' },
+  napkins:{ ar: 'مناديل مائدة', en: 'Dinner Napkins' },
+  family: { ar: 'عروض عائلة', en: 'Family Bundles' },
 };
-const orderStatusLabels  = { active: 'نشط', pending: 'قيد المراجعة', inactive: 'متوقف', shipped: 'تم الشحن', cancelled: 'ملغي' };
-const productStatusLabels= { active: 'نشط', pending: 'قيد المراجعة', inactive: 'متوقف' };
-const roleLabels         = { admin: 'مدير', editor: 'محرر', viewer: 'مشاهد' };
-const userStatusLabels   = { active: 'نشط', suspended: 'موقوف', pending: 'قيد المراجعة', locked: 'مقفل' };
+const orderStatusLabels  = { active: { ar: 'نشط', en: 'Active' }, pending: { ar: 'قيد المراجعة', en: 'Pending' }, inactive: { ar: 'متوقف', en: 'Inactive' }, shipped: { ar: 'تم الشحن', en: 'Shipped' }, cancelled: { ar: 'ملغي', en: 'Cancelled' } };
+const productStatusLabels= { active: { ar: 'نشط', en: 'Active' }, pending: { ar: 'قيد المراجعة', en: 'Pending' }, inactive: { ar: 'متوقف', en: 'Inactive' } };
+const roleLabels         = { admin: { ar: 'مدير', en: 'Admin' }, editor: { ar: 'محرر', en: 'Editor' }, viewer: { ar: 'مشاهد', en: 'Viewer' } };
+const userStatusLabels   = { active: { ar: 'نشط', en: 'Active' }, suspended: { ar: 'موقوف', en: 'Suspended' }, pending: { ar: 'قيد المراجعة', en: 'Pending' }, locked: { ar: 'مقفل', en: 'Locked' } };
 
 const ROLE_PERMISSIONS = {
   admin:  { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: true,  content: true,  reports: true,  shipping: true,  payments: true,  coupons: true  },
@@ -24,25 +29,152 @@ const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price:
 const emptyUser    = { username: '', password: '', name: '', email: '', phone: '', role: 'viewer', status: 'active' };
 const emptyCoupon  = { code: '', type: 'percent', value: '', minOrder: '', maxUses: '', expiry: '', status: 'active', desc: '' };
 
-const navItems = [
-  { id: 'overview',  label: 'نظرة عامة',        icon: 'fa-chart-pie' },
-  {
-    id: 'products',  label: 'المنتجات',          icon: 'fa-box',
-    children: [
-      { id: 'list',        label: 'كل المنتجات', icon: 'fa-list-ul',     perm: 'products'   },
-      { id: 'collections', label: 'الفئات',      icon: 'fa-folder-open', perm: 'categories' },
-      { id: 'inventory',   label: 'المخزون',     icon: 'fa-warehouse',   perm: 'inventory'  },
-    ],
-  },
-  { id: 'orders',    label: 'الطلبات',           icon: 'fa-list-check' },
-  { id: 'invoices',  label: 'الفواتير',          icon: 'fa-file-invoice' },
-  { id: 'users',     label: 'المستخدمون',        icon: 'fa-users-gear' },
-  { id: 'content',   label: 'محتوى الموقع',      icon: 'fa-pen-nib' },
-  { id: 'shipping',  label: 'الشحن والتوصيل',   icon: 'fa-truck' },
-  { id: 'payments',  label: 'بوابات الدفع',      icon: 'fa-credit-card' },
-  { id: 'coupons',   label: 'الكوبونات',         icon: 'fa-tag' },
-  { id: 'reports',   label: 'التحليلات',         icon: 'fa-chart-line' },
-];
+/* ── Translation dictionary ── */
+const DASH_T = {
+  // Sidebar
+  'nav.overview':    { ar: 'نظرة عامة',       en: 'Overview' },
+  'nav.products':    { ar: 'المنتجات',         en: 'Products' },
+  'nav.allProducts': { ar: 'كل المنتجات',      en: 'All Products' },
+  'nav.collections': { ar: 'الفئات',           en: 'Collections' },
+  'nav.inventory':   { ar: 'المخزون',          en: 'Inventory' },
+  'nav.orders':      { ar: 'الطلبات',          en: 'Orders' },
+  'nav.invoices':    { ar: 'الفواتير',         en: 'Invoices' },
+  'nav.users':       { ar: 'المستخدمون',       en: 'Users' },
+  'nav.content':     { ar: 'محتوى الموقع',     en: 'Site Content' },
+  'nav.shipping':    { ar: 'الشحن والتوصيل',   en: 'Shipping' },
+  'nav.payments':    { ar: 'بوابات الدفع',     en: 'Payment Gateways' },
+  'nav.coupons':     { ar: 'الكوبونات',        en: 'Coupons' },
+  'nav.reports':     { ar: 'التحليلات',        en: 'Analytics' },
+  // Overview
+  'overview.title':       { ar: 'نظرة عامة',           en: 'Overview' },
+  'overview.totalRev':    { ar: 'إجمالي الإيرادات',    en: 'Total Revenue' },
+  'overview.activeProds': { ar: 'منتجات نشطة',         en: 'Active Products' },
+  'overview.pendingOrds': { ar: 'طلبات معلقة',         en: 'Pending Orders' },
+  'overview.totalUsers':  { ar: 'إجمالي المستخدمين',  en: 'Total Users' },
+  // Products
+  'products.title':    { ar: 'المنتجات',        en: 'Products' },
+  'products.add':      { ar: 'إضافة منتج',      en: 'Add Product' },
+  'products.name':     { ar: 'الاسم',           en: 'Name' },
+  'products.nameEn':   { ar: 'الاسم إنجليزي',  en: 'Name (EN)' },
+  'products.sku':      { ar: 'الرمز SKU',       en: 'SKU' },
+  'products.category': { ar: 'الفئة',           en: 'Category' },
+  'products.price':    { ar: 'السعر (د.ك)',     en: 'Price (KD)' },
+  'products.stock':    { ar: 'المخزون',         en: 'Stock' },
+  'products.status':   { ar: 'الحالة',          en: 'Status' },
+  'products.actions':  { ar: 'إجراءات',         en: 'Actions' },
+  'products.image':    { ar: 'الصورة الرئيسية', en: 'Main Image' },
+  'products.gallery':  { ar: 'معرض الصور',      en: 'Gallery' },
+  'products.desc':     { ar: 'الوصف عربي',      en: 'Description (AR)' },
+  'products.descEn':   { ar: 'الوصف إنجليزي',   en: 'Description (EN)' },
+  'products.badge':    { ar: 'الشارة/البادج',   en: 'Badge' },
+  'products.noResults':{ ar: 'لا توجد منتجات مطابقة', en: 'No matching products' },
+  // Orders
+  'orders.title':    { ar: 'الطلبات',       en: 'Orders' },
+  'orders.ref':      { ar: 'رقم الطلب',    en: 'Order Ref' },
+  'orders.client':   { ar: 'العميل',       en: 'Client' },
+  'orders.phone':    { ar: 'الهاتف',       en: 'Phone' },
+  'orders.gov':      { ar: 'المنطقة',      en: 'Governorate' },
+  'orders.product':  { ar: 'المنتج',       en: 'Product' },
+  'orders.total':    { ar: 'الإجمالي',     en: 'Total' },
+  'orders.date':     { ar: 'التاريخ',      en: 'Date' },
+  'orders.status':   { ar: 'الحالة',       en: 'Status' },
+  'orders.payment':  { ar: 'الدفع',        en: 'Payment' },
+  'orders.actions':  { ar: 'إجراءات',      en: 'Actions' },
+  'orders.noResults':{ ar: 'لا توجد طلبات مطابقة', en: 'No matching orders' },
+  // Invoices
+  'invoices.title':  { ar: 'الفواتير',     en: 'Invoices' },
+  'invoices.print':  { ar: 'طباعة',        en: 'Print' },
+  // Users
+  'users.title':     { ar: 'المستخدمون',   en: 'Users' },
+  'users.add':       { ar: 'إضافة مستخدم', en: 'Add User' },
+  'users.name':      { ar: 'الاسم',        en: 'Name' },
+  'users.username':  { ar: 'اسم المستخدم', en: 'Username' },
+  'users.email':     { ar: 'البريد',       en: 'Email' },
+  'users.phone':     { ar: 'الهاتف',       en: 'Phone' },
+  'users.role':      { ar: 'الدور',        en: 'Role' },
+  'users.status':    { ar: 'الحالة',       en: 'Status' },
+  'users.actions':   { ar: 'إجراءات',      en: 'Actions' },
+  // Coupons
+  'coupons.title':   { ar: 'الكوبونات',    en: 'Coupons' },
+  'coupons.add':     { ar: 'إضافة كوبون',  en: 'Add Coupon' },
+  'coupons.code':    { ar: 'الكود',        en: 'Code' },
+  'coupons.type':    { ar: 'النوع',        en: 'Type' },
+  'coupons.value':   { ar: 'القيمة',       en: 'Value' },
+  'coupons.minOrder':{ ar: 'الحد الأدنى',  en: 'Min Order' },
+  'coupons.maxUses': { ar: 'أقصى استخدام', en: 'Max Uses' },
+  'coupons.expiry':  { ar: 'الانتهاء',     en: 'Expiry' },
+  'coupons.status':  { ar: 'الحالة',       en: 'Status' },
+  'coupons.actions': { ar: 'إجراءات',      en: 'Actions' },
+  // Collections
+  'collections.title':    { ar: 'الفئات',           en: 'Collections' },
+  'collections.add':      { ar: 'إضافة فئة',        en: 'Add Collection' },
+  'collections.name':     { ar: 'الاسم',            en: 'Name' },
+  'collections.slug':     { ar: 'Slug',             en: 'Slug' },
+  'collections.products': { ar: 'المنتجات',         en: 'Products' },
+  'collections.status':   { ar: 'الحالة',           en: 'Status' },
+  'collections.actions':  { ar: 'إجراءات',          en: 'Actions' },
+  // Inventory
+  'inventory.title':  { ar: 'المخزون',          en: 'Inventory' },
+  'inventory.save':   { ar: 'حفظ التغييرات',    en: 'Save Changes' },
+  'inventory.product':{ ar: 'المنتج',           en: 'Product' },
+  'inventory.stock':  { ar: 'الكمية',           en: 'Qty' },
+  // Shipping
+  'shipping.title':   { ar: 'الشحن والتوصيل',  en: 'Shipping & Delivery' },
+  'shipping.zones':   { ar: 'مناطق التوصيل',   en: 'Delivery Zones' },
+  'shipping.companies':{ ar: 'شركات الشحن',    en: 'Shipping Companies' },
+  'shipping.save':    { ar: 'حفظ',             en: 'Save' },
+  // Payments
+  'payments.title':   { ar: 'بوابات الدفع',    en: 'Payment Gateways' },
+  'payments.save':    { ar: 'حفظ',             en: 'Save' },
+  // Content
+  'content.title':    { ar: 'محتوى الموقع',    en: 'Site Content' },
+  'content.saveAll':  { ar: 'حفظ الكل',        en: 'Save All' },
+  'content.home':     { ar: 'الرئيسية',        en: 'Home' },
+  'content.about':    { ar: 'عن الشركة',       en: 'About' },
+  'content.contact':  { ar: 'التواصل',         en: 'Contact' },
+  'content.banners':  { ar: 'البانرات والصور', en: 'Banners & Images' },
+  'content.general':  { ar: 'عام',             en: 'General' },
+  // Analytics
+  'analytics.title':  { ar: 'التحليلات',       en: 'Analytics' },
+  'analytics.today':  { ar: 'اليوم',           en: 'Today' },
+  'analytics.7d':     { ar: '7 أيام',          en: '7 Days' },
+  'analytics.30d':    { ar: '30 يوم',          en: '30 Days' },
+  'analytics.month':  { ar: 'هذا الشهر',       en: 'This Month' },
+  'analytics.all':    { ar: 'كل الوقت',        en: 'All Time' },
+  // Common
+  'common.save':      { ar: 'حفظ',             en: 'Save' },
+  'common.cancel':    { ar: 'إلغاء',           en: 'Cancel' },
+  'common.edit':      { ar: 'تعديل',           en: 'Edit' },
+  'common.delete':    { ar: 'حذف',             en: 'Delete' },
+  'common.add':       { ar: 'إضافة',           en: 'Add' },
+  'common.search':    { ar: 'بحث...',          en: 'Search...' },
+  'common.actions':   { ar: 'إجراءات',         en: 'Actions' },
+  'common.status':    { ar: 'الحالة',          en: 'Status' },
+  'common.loading':   { ar: 'جاري التحميل...', en: 'Loading...' },
+  'common.noData':    { ar: 'لا توجد بيانات',  en: 'No data' },
+  'common.refresh':   { ar: 'تحديث',           en: 'Refresh' },
+  'common.print':     { ar: 'طباعة',           en: 'Print' },
+  'common.invoice':   { ar: 'فاتورة',          en: 'Invoice' },
+  'common.name':      { ar: 'الاسم',           en: 'Name' },
+  'common.price':     { ar: 'السعر',           en: 'Price' },
+  'common.total':     { ar: 'الإجمالي',        en: 'Total' },
+  'common.date':      { ar: 'التاريخ',         en: 'Date' },
+  'common.active':    { ar: 'نشط',             en: 'Active' },
+  'common.inactive':  { ar: 'متوقف',           en: 'Inactive' },
+  'common.pending':   { ar: 'قيد المراجعة',   en: 'Pending' },
+  'common.saveDB':    { ar: 'حفظ في قاعدة البيانات', en: 'Save to Database' },
+  'common.saving':    { ar: 'جاري الحفظ...',   en: 'Saving...' },
+  'common.savedOk':   { ar: 'تم الحفظ بنجاح!', en: 'Saved successfully!' },
+  // Sidebar
+  'sidebar.panel':    { ar: 'لوحة التحكم',     en: 'Control Panel' },
+  'sidebar.manager':  { ar: 'مدير',            en: 'Admin' },
+  'sidebar.editor':   { ar: 'محرر',            en: 'Editor' },
+  'sidebar.viewer':   { ar: 'مشاهد',           en: 'Viewer' },
+  'sidebar.mainMenu': { ar: 'القائمة الرئيسية', en: 'Main Menu' },
+  'sidebar.quickLinks':{ ar: 'روابط سريعة',   en: 'Quick Links' },
+  'sidebar.visitSite':{ ar: 'زيارة الموقع',   en: 'Visit Site' },
+  'sidebar.logout':   { ar: 'تسجيل الخروج',   en: 'Logout' },
+};
 
 /* ── Password Strength ── */
 const calcStrength = (pwd) => {
@@ -185,8 +317,32 @@ const Dashboard = () => {
     saveSiteContent,
   } = useApp();
 
+  const { lang } = useLanguage();
+  const dt = (key) => DASH_T[key]?.[lang] ?? DASH_T[key]?.ar ?? key;
+
   const myRole = auth?.role || 'viewer';
   const perms  = ROLE_PERMISSIONS[myRole] || ROLE_PERMISSIONS.viewer;
+
+  /* ── navItems defined inside component so dt() is available ── */
+  const navItems = [
+    { id: 'overview',  label: dt('nav.overview'),  icon: 'fa-chart-pie' },
+    {
+      id: 'products',  label: dt('nav.products'),  icon: 'fa-box',
+      children: [
+        { id: 'list',        label: dt('nav.allProducts'), icon: 'fa-list-ul',     perm: 'products'   },
+        { id: 'collections', label: dt('nav.collections'), icon: 'fa-folder-open', perm: 'categories' },
+        { id: 'inventory',   label: dt('nav.inventory'),   icon: 'fa-warehouse',   perm: 'inventory'  },
+      ],
+    },
+    { id: 'orders',    label: dt('nav.orders'),    icon: 'fa-list-check' },
+    { id: 'invoices',  label: dt('nav.invoices'),  icon: 'fa-file-invoice' },
+    { id: 'users',     label: dt('nav.users'),     icon: 'fa-users-gear' },
+    { id: 'content',   label: dt('nav.content'),   icon: 'fa-pen-nib' },
+    { id: 'shipping',  label: dt('nav.shipping'),  icon: 'fa-truck' },
+    { id: 'payments',  label: dt('nav.payments'),  icon: 'fa-credit-card' },
+    { id: 'coupons',   label: dt('nav.coupons'),   icon: 'fa-tag' },
+    { id: 'reports',   label: dt('nav.reports'),   icon: 'fa-chart-line' },
+  ];
 
   const [view, setView]               = useState('overview');
   const [productsTab, setProductsTab] = useState('list'); // 'list' | 'collections' | 'inventory'
@@ -614,7 +770,7 @@ const Dashboard = () => {
 </table>
 
 <div class="inv-footer">
-  <div class="inv-stamp">${orderStatusLabels[order.status] || order.status}</div>
+  <div class="inv-stamp">${orderStatusLabels[order.status]?.ar || order.status}</div>
   <p>شكراً لتعاملكم مع شركة الجوهرة للمناديل الورقية</p>
   <p>www.al-jawhara.co | ${sc.companyPhone || '(965) 23263824'}</p>
 </div>
@@ -645,7 +801,7 @@ const Dashboard = () => {
     const q = ns(dashSearch);
     if (!q) return products;
     return products.filter(p =>
-      [p.name, p.nameEn, p.sku, categoryLabels[p.category], productStatusLabels[p.status], p.desc].some(f => ns(f).includes(q))
+      [p.name, p.nameEn, p.sku, categoryLabels[p.category]?.ar, categoryLabels[p.category]?.en, productStatusLabels[p.status]?.ar, productStatusLabels[p.status]?.en, p.desc].some(f => ns(f).includes(q))
     );
   }, [products, dashSearch]);
 
@@ -654,7 +810,7 @@ const Dashboard = () => {
     const q = ns(dashSearch);
     if (!q) return orders;
     return orders.filter(o =>
-      [o.ref, o.client, o.governorate, o.product, o.payment, orderStatusLabels[o.status]].some(f => ns(f).includes(q))
+      [o.ref, o.client, o.governorate, o.product, o.payment, orderStatusLabels[o.status]?.ar, orderStatusLabels[o.status]?.en].some(f => ns(f).includes(q))
     );
   }, [orders, dashSearch, clientFilter]);
 
@@ -662,7 +818,7 @@ const Dashboard = () => {
     const q = ns(dashSearch);
     if (!q) return users;
     return users.filter(u =>
-      [u.name, u.username, u.email, u.phone, roleLabels[u.role], userStatusLabels[u.status]].some(f => ns(f).includes(q))
+      [u.name, u.username, u.email, u.phone, roleLabels[u.role]?.ar, roleLabels[u.role]?.en, userStatusLabels[u.status]?.ar, userStatusLabels[u.status]?.en].some(f => ns(f).includes(q))
     );
   }, [users, dashSearch]);
 
@@ -716,8 +872,8 @@ const Dashboard = () => {
 
     /* ── Orders by status ── */
     const statusColors = { active:'#065089', pending:'#f59e0b', shipped:'#16a34a', cancelled:'#ef4444', inactive:'#94a3b8' };
-    const statusSlices = Object.entries(orderStatusLabels).map(([k, label]) => ({
-      label, color: statusColors[k] || '#94a3b8',
+    const statusSlices = Object.entries(orderStatusLabels).map(([k, labelObj]) => ({
+      label: labelObj?.ar || k, color: statusColors[k] || '#94a3b8',
       v: inRange.filter(o => o.status === k).length,
     }));
 
@@ -761,7 +917,7 @@ const Dashboard = () => {
       <div className="dashboard-main">
         <div className="dash-loading">
           <i className="fas fa-spinner fa-spin" aria-hidden="true"></i>
-          <span>جاري تحميل البيانات...</span>
+          <span>{dt('common.loading')}</span>
         </div>
       </div>
     </div>
@@ -779,16 +935,16 @@ const Dashboard = () => {
           <div className="sidebar-header">
             <div className="sidebar-logo-icon"><i className="fas fa-gem" aria-hidden="true"></i></div>
             <div>
-              <div className="sidebar-header-title">لوحة التحكم</div>
+              <div className="sidebar-header-title">{dt('sidebar.panel')}</div>
               <div className="sidebar-header-sub">{auth?.name || 'Admin'}</div>
             </div>
           </div>
           <div className="sidebar-role-badge">
             <i className="fas fa-shield-halved" aria-hidden="true"></i>
-            {roleLabels[myRole] || myRole}
+            {roleLabels[myRole]?.[lang] || roleLabels[myRole]?.ar || myRole}
           </div>
 
-          <div className="sidebar-title">القائمة الرئيسية</div>
+          <div className="sidebar-title">{dt('sidebar.mainMenu')}</div>
           {navItems.map(item => {
             const blocked = item.id !== 'overview' && !perms[item.id === 'products' ? 'products' : item.id];
             const isProductsParent = item.id === 'products';
@@ -854,15 +1010,15 @@ const Dashboard = () => {
           {/* ══ OVERVIEW ══ */}
           {view === 'overview' && (
             <div>
-              <div className="dashboard-title">نظرة عامة</div>
+              <div className="dashboard-title">{dt('overview.title')}</div>
               <div className="dashboard-stats">
                 {[
-                  { icon: 'fa-box',          num: products.length, label: 'إجمالي المنتجات',  cls: 'dash-stat-green',   color: 'var(--primary)' },
-                  { icon: 'fa-circle-check', num: activeCount,      label: 'منتج نشط',         cls: 'dash-stat-emerald', color: '#15803d' },
-                  { icon: 'fa-warehouse',    num: totalStock,       label: 'إجمالي المخزون',   cls: 'dash-stat-orange',  color: 'var(--secondary-dark)' },
-                  { icon: 'fa-list-check',   num: orders.length,    label: 'إجمالي الطلبات',   cls: 'dash-stat-purple',  color: '#7c3aed' },
-                  { icon: 'fa-hourglass-half', num: pendingOrders,  label: 'طلبات معلقة',      cls: 'dash-stat-orange',  color: '#d97706' },
-                  { icon: 'fa-coins',        num: `${totalRevenue} د.ك`, label: 'إجمالي الإيرادات', cls: 'dash-stat-green', color: 'var(--primary)' },
+                  { icon: 'fa-box',          num: products.length, label: lang === 'en' ? 'Total Products' : 'إجمالي المنتجات',  cls: 'dash-stat-green',   color: 'var(--primary)' },
+                  { icon: 'fa-circle-check', num: activeCount,      label: lang === 'en' ? 'Active Products' : 'منتج نشط',         cls: 'dash-stat-emerald', color: '#15803d' },
+                  { icon: 'fa-warehouse',    num: totalStock,       label: lang === 'en' ? 'Total Stock' : 'إجمالي المخزون',   cls: 'dash-stat-orange',  color: 'var(--secondary-dark)' },
+                  { icon: 'fa-list-check',   num: orders.length,    label: lang === 'en' ? 'Total Orders' : 'إجمالي الطلبات',   cls: 'dash-stat-purple',  color: '#7c3aed' },
+                  { icon: 'fa-hourglass-half', num: pendingOrders,  label: dt('overview.pendingOrds'),      cls: 'dash-stat-orange',  color: '#d97706' },
+                  { icon: 'fa-coins',        num: `${totalRevenue} د.ك`, label: dt('overview.totalRev'), cls: 'dash-stat-green', color: 'var(--primary)' },
                 ].map((s, i) => (
                   <div key={i} className="dash-stat">
                     <div className={`dash-stat-icon ${s.cls}`}>
@@ -878,12 +1034,12 @@ const Dashboard = () => {
 
               <div className="quick-actions">
                 {[
-                  { icon: 'fa-plus',        label: 'إضافة منتج جديد',    color: 'var(--primary)',       action: () => { setView('products'); setTimeout(openAddProduct, 100); } },
-                  { icon: 'fa-users-gear',  label: 'إدارة المستخدمين',   color: '#7c3aed',               action: () => setView('users') },
-                  { icon: 'fa-pen-nib',     label: 'تعديل محتوى الموقع', color: 'var(--secondary-dark)', action: openContentTab },
-                  { icon: 'fa-list-check',  label: 'عرض الطلبات',        color: '#0891b2',               action: () => setView('orders') },
-                  { icon: 'fa-truck',       label: 'إعدادات الشحن',      color: '#16a34a',               action: openShippingTab },
-                  { icon: 'fa-credit-card', label: 'بوابات الدفع',       color: '#e67e22',               action: openPaymentsTab },
+                  { icon: 'fa-plus',        label: lang === 'en' ? 'Add New Product' : 'إضافة منتج جديد',    color: 'var(--primary)',       action: () => { setView('products'); setTimeout(openAddProduct, 100); } },
+                  { icon: 'fa-users-gear',  label: lang === 'en' ? 'Manage Users' : 'إدارة المستخدمين',   color: '#7c3aed',               action: () => setView('users') },
+                  { icon: 'fa-pen-nib',     label: lang === 'en' ? 'Edit Site Content' : 'تعديل محتوى الموقع', color: 'var(--secondary-dark)', action: openContentTab },
+                  { icon: 'fa-list-check',  label: lang === 'en' ? 'View Orders' : 'عرض الطلبات',        color: '#0891b2',               action: () => setView('orders') },
+                  { icon: 'fa-truck',       label: lang === 'en' ? 'Shipping Settings' : 'إعدادات الشحن',      color: '#16a34a',               action: openShippingTab },
+                  { icon: 'fa-credit-card', label: dt('payments.title'),       color: '#e67e22',               action: openPaymentsTab },
                 ].map((a, i) => (
                   <button key={i} className="quick-action-btn" onClick={a.action}
                     onMouseEnter={e => { e.currentTarget.style.borderColor = a.color; e.currentTarget.style.color = a.color; }}
@@ -898,10 +1054,10 @@ const Dashboard = () => {
 
               <div className="data-table">
                 <div className="table-header">
-                  <span className="table-title">آخر الطلبات</span>
+                  <span className="table-title">{lang === 'en' ? 'Recent Orders' : 'آخر الطلبات'}</span>
                 </div>
                 <table>
-                  <thead><tr><th>رقم الطلب</th><th>العميل</th><th>المحافظة</th><th>الإجمالي</th><th>الدفع</th><th>الحالة</th></tr></thead>
+                  <thead><tr><th>{dt('orders.ref')}</th><th>{dt('orders.client')}</th><th>{lang === 'en' ? 'Governorate' : 'المحافظة'}</th><th>{dt('orders.total')}</th><th>{dt('orders.payment')}</th><th>{dt('orders.status')}</th></tr></thead>
                   <tbody>
                     {orders.slice(0, 5).map(o => (
                       <tr key={o.id}>
@@ -910,7 +1066,7 @@ const Dashboard = () => {
                         <td className="td-light">{o.governorate || '—'}</td>
                         <td className="td-bold">{o.grandTotal || o.total} د.ك</td>
                         <td><span className="badge-pay">{o.payment || '—'}</span></td>
-                        <td><span className={`status-badge status-${o.status}`}>{orderStatusLabels[o.status] || o.status}</span></td>
+                        <td><span className={`status-badge status-${o.status}`}>{orderStatusLabels[o.status]?.[lang] || orderStatusLabels[o.status]?.ar || o.status}</span></td>
                       </tr>
                     ))}
                   </tbody>
@@ -927,34 +1083,34 @@ const Dashboard = () => {
               {productsTab === 'list' && (
               <div>
               <div className="dash-header-row">
-                <div className="dashboard-title">كل المنتجات</div>
+                <div className="dashboard-title">{dt('nav.allProducts')}</div>
                 {perms.products && (
                   <button className="btn btn-green btn-sm" onClick={openAddProduct}>
-                    <i className="fas fa-plus" aria-hidden="true"></i> إضافة منتج
+                    <i className="fas fa-plus" aria-hidden="true"></i> {dt('products.add')}
                   </button>
                 )}
               </div>
               <div className="dash-search-bar">
                 <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
-                <input type="search" className="dash-search-input" placeholder="ابحث بالاسم أو الفئة أو الحالة..." value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                <input type="search" className="dash-search-input" placeholder={lang === 'en' ? 'Search by name, category or status...' : 'ابحث بالاسم أو الفئة أو الحالة...'} value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
                 {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
-                {dashSearch && <span className="dash-search-count">{filteredDashProducts.length} نتيجة</span>}
+                {dashSearch && <span className="dash-search-count">{filteredDashProducts.length} {lang === 'en' ? 'results' : 'نتيجة'}</span>}
               </div>
               <div className="data-table">
                 <table>
-                  <thead><tr><th>#</th><th>المنتج</th><th>الفئة</th><th>السعر</th><th>المخزون</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                  <thead><tr><th>#</th><th>{dt('products.name')}</th><th>{dt('products.category')}</th><th>{dt('products.price')}</th><th>{dt('products.stock')}</th><th>{dt('products.status')}</th><th>{dt('products.actions')}</th></tr></thead>
                   <tbody>
                     {filteredDashProducts.map((p, i) => (
                       <tr key={p.id}>
                         <td className="td-light">{i + 1}</td>
                         <td><span className="td-icon">{p.icon}</span><span className="td-bold">{p.name}</span></td>
-                        <td><span className="badge-cat">{categoryLabels[p.category] || p.category}</span></td>
+                        <td><span className="badge-cat">{categoryLabels[p.category]?.[lang] || categoryLabels[p.category]?.ar || p.category}</span></td>
                         <td className="td-primary">{Number(p.price).toFixed(3)} د.ك</td>
                         <td className={Number(p.stock) < 100 ? 'td-warn' : ''}>{Number(p.stock).toLocaleString()}</td>
-                        <td><span className={`status-badge status-${p.status}`}>{productStatusLabels[p.status]}</span></td>
+                        <td><span className={`status-badge status-${p.status}`}>{productStatusLabels[p.status]?.[lang] || productStatusLabels[p.status]?.ar}</span></td>
                         <td>
-                          <button className="action-btn action-btn-edit" onClick={() => openEditProduct(p)}><i className="fas fa-pen"></i> تعديل</button>
-                          <button className="action-btn action-btn-delete" onClick={() => handleDeleteProduct(p.id)}><i className="fas fa-trash"></i> حذف</button>
+                          <button className="action-btn action-btn-edit" onClick={() => openEditProduct(p)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
+                          <button className="action-btn action-btn-delete" onClick={() => handleDeleteProduct(p.id)}><i className="fas fa-trash"></i> {dt('common.delete')}</button>
                         </td>
                       </tr>
                     ))}
@@ -968,22 +1124,22 @@ const Dashboard = () => {
               {productsTab === 'collections' && (
               <div>
                 <div className="dash-header-row">
-                  <div className="dashboard-title">الفئات</div>
+                  <div className="dashboard-title">{dt('collections.title')}</div>
                   {perms.categories && (
                     <button className="btn btn-green btn-sm" onClick={openAddCat}>
-                      <i className="fas fa-plus" aria-hidden="true"></i> إضافة فئة
+                      <i className="fas fa-plus" aria-hidden="true"></i> {dt('collections.add')}
                     </button>
                   )}
                 </div>
-                <p className="dash-section-desc">إدارة فئات المنتجات — تظهر في صفحة المنتجات وفلاتر البحث.</p>
+                <p className="dash-section-desc">{lang === 'en' ? 'Manage product collections — displayed on the products page and search filters.' : 'إدارة فئات المنتجات — تظهر في صفحة المنتجات وفلاتر البحث.'}</p>
                 <div className="data-table">
                   <table>
                     <thead>
-                      <tr><th>الفئة</th><th>الاسم الإنجليزي</th><th>المعرف</th><th>المنتجات</th><th>الترتيب</th><th>الحالة</th><th>إجراءات</th></tr>
+                      <tr><th>{dt('collections.name')}</th><th>{lang === 'en' ? 'English Name' : 'الاسم الإنجليزي'}</th><th>{dt('collections.slug')}</th><th>{dt('collections.products')}</th><th>{lang === 'en' ? 'Order' : 'الترتيب'}</th><th>{dt('collections.status')}</th><th>{dt('collections.actions')}</th></tr>
                     </thead>
                     <tbody>
                       {categories.length === 0 && (
-                        <tr><td colSpan="7" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>لا توجد فئات</td></tr>
+                        <tr><td colSpan="7" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>{lang === 'en' ? 'No collections' : 'لا توجد فئات'}</td></tr>
                       )}
                       {categories.sort((a,b) => a.sortOrder - b.sortOrder).map(c => {
                         const prodCount = products.filter(p => p.category === c.slug).length;
@@ -997,12 +1153,12 @@ const Dashboard = () => {
                             </td>
                             <td className="td-light" dir="ltr">{c.nameEn}</td>
                             <td><span className="badge-cat" dir="ltr">{c.slug}</span></td>
-                            <td className="td-bold">{prodCount} منتج</td>
+                            <td className="td-bold">{prodCount} {lang === 'en' ? 'product' : 'منتج'}</td>
                             <td className="td-light">{c.sortOrder}</td>
-                            <td><span className={`status-badge status-${c.status}`}>{c.status === 'active' ? 'نشطة' : 'مخفية'}</span></td>
+                            <td><span className={`status-badge status-${c.status}`}>{c.status === 'active' ? (lang === 'en' ? 'Active' : 'نشطة') : (lang === 'en' ? 'Hidden' : 'مخفية')}</span></td>
                             <td>
-                              <button className="action-btn action-btn-edit" onClick={() => openEditCat(c)}><i className="fas fa-pen"></i> تعديل</button>
-                              <button className="action-btn action-btn-delete" onClick={() => handleDeleteCat(c)}><i className="fas fa-trash"></i> حذف</button>
+                              <button className="action-btn action-btn-edit" onClick={() => openEditCat(c)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
+                              <button className="action-btn action-btn-delete" onClick={() => handleDeleteCat(c)}><i className="fas fa-trash"></i> {dt('common.delete')}</button>
                             </td>
                           </tr>
                         );
@@ -1017,19 +1173,19 @@ const Dashboard = () => {
               {productsTab === 'inventory' && invStock && (
               <div>
                 <div className="dash-header-row">
-                  <div className="dashboard-title">إدارة المخزون</div>
+                  <div className="dashboard-title">{lang === 'en' ? 'Inventory Management' : 'إدارة المخزون'}</div>
                   <button className="btn btn-green btn-sm" onClick={handleInvSave} disabled={invSaving}>
                     {invSaving
-                      ? <><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</>
-                      : <><i className="fas fa-save"></i> حفظ التغييرات</>}
+                      ? <><i className="fas fa-spinner fa-spin"></i> {dt('common.saving')}</>
+                      : <><i className="fas fa-save"></i> {dt('inventory.save')}</>}
                   </button>
                 </div>
-                {invSaved && <AlertSuccess msg="تم حفظ المخزون بنجاح!" />}
-                <p className="dash-section-desc">تعديل كميات المخزون لكل المنتجات دفعة واحدة.</p>
+                {invSaved && <AlertSuccess msg={lang === 'en' ? 'Inventory saved successfully!' : 'تم حفظ المخزون بنجاح!'} />}
+                <p className="dash-section-desc">{lang === 'en' ? 'Edit stock quantities for all products at once.' : 'تعديل كميات المخزون لكل المنتجات دفعة واحدة.'}</p>
                 <div className="data-table">
                   <table>
                     <thead>
-                      <tr><th>المنتج</th><th>الفئة</th><th>الكمية الحالية</th><th>تعديل سريع</th><th>الكمية الجديدة</th><th>الحالة</th></tr>
+                      <tr><th>{dt('inventory.product')}</th><th>{dt('products.category')}</th><th>{lang === 'en' ? 'Current Qty' : 'الكمية الحالية'}</th><th>{lang === 'en' ? 'Quick Adjust' : 'تعديل سريع'}</th><th>{lang === 'en' ? 'New Qty' : 'الكمية الجديدة'}</th><th>{dt('common.status')}</th></tr>
                     </thead>
                     <tbody>
                       {products.map(p => {
@@ -1044,7 +1200,7 @@ const Dashboard = () => {
                                 <span className="td-bold">{p.name}</span>
                               </div>
                             </td>
-                            <td><span className="badge-cat">{categoryLabels[p.category] || p.category}</span></td>
+                            <td><span className="badge-cat">{categoryLabels[p.category]?.[lang] || categoryLabels[p.category]?.ar || p.category}</span></td>
                             <td className={isZero ? 'td-warn' : isLow ? 'td-warn' : 'td-bold'}>{p.stock.toLocaleString()}</td>
                             <td>
                               <div className="inv-adjust-row">
@@ -1065,9 +1221,9 @@ const Dashboard = () => {
                               />
                             </td>
                             <td>
-                              {isZero  ? <span className="inv-badge inv-out">نفذ</span>
-                              : isLow  ? <span className="inv-badge inv-low">منخفض</span>
-                              : <span className="inv-badge inv-ok">متوفر</span>}
+                              {isZero  ? <span className="inv-badge inv-out">{lang === 'en' ? 'Out' : 'نفذ'}</span>
+                              : isLow  ? <span className="inv-badge inv-low">{lang === 'en' ? 'Low' : 'منخفض'}</span>
+                              : <span className="inv-badge inv-ok">{lang === 'en' ? 'OK' : 'متوفر'}</span>}
                             </td>
                           </tr>
                         );
@@ -1087,8 +1243,8 @@ const Dashboard = () => {
               <div className="dash-header-row">
                 <div className="dashboard-title">
                   {clientFilter
-                    ? <><button className="client-back-btn" onClick={() => setClientFilter(null)} title="العودة لكل الطلبات"><i className="fas fa-arrow-right"></i></button> طلبات العميل</>
-                    : `الطلبات (${orders.length})`
+                    ? <><button className="client-back-btn" onClick={() => setClientFilter(null)} title={lang === 'en' ? 'Back to all orders' : 'العودة لكل الطلبات'}><i className="fas fa-arrow-right"></i></button> {lang === 'en' ? "Client's Orders" : 'طلبات العميل'}</>
+                    : `${dt('orders.title')} (${orders.length})`
                   }
                 </div>
               </div>
@@ -1109,17 +1265,17 @@ const Dashboard = () => {
                         <i className="fas fa-phone"></i>
                         {withPhone?.phone
                           ? <a href={`tel:${withPhone.phone}`} style={{color:'inherit',textDecoration:'none'}}>{withPhone.phone}</a>
-                          : <span style={{opacity:0.5}}>لا يوجد رقم</span>}
+                          : <span style={{opacity:0.5}}>{lang === 'en' ? 'No phone' : 'لا يوجد رقم'}</span>}
                       </div>
                       {withGov?.governorate && <div className="client-summary-meta"><i className="fas fa-location-dot"></i> {withGov.governorate}</div>}
                       {withEmail?.email && <div className="client-summary-meta"><i className="fas fa-envelope"></i> {withEmail.email}</div>}
                     </div>
                     <div className="client-summary-stats">
-                      <div className="client-stat"><span className="client-stat-num">{clientOrders.length}</span><span className="client-stat-label">طلب</span></div>
-                      <div className="client-stat"><span className="client-stat-num">{totalSpent.toFixed(3)}</span><span className="client-stat-label">د.ك إجمالي</span></div>
+                      <div className="client-stat"><span className="client-stat-num">{clientOrders.length}</span><span className="client-stat-label">{lang === 'en' ? 'Orders' : 'طلب'}</span></div>
+                      <div className="client-stat"><span className="client-stat-num">{totalSpent.toFixed(3)}</span><span className="client-stat-label">{lang === 'en' ? 'KD total' : 'د.ك إجمالي'}</span></div>
                     </div>
-                    <button className="client-summary-close" onClick={() => setClientFilter(null)} title="عرض كل الطلبات">
-                      <i className="fas fa-xmark"></i> كل الطلبات
+                    <button className="client-summary-close" onClick={() => setClientFilter(null)} title={lang === 'en' ? 'Show all orders' : 'عرض كل الطلبات'}>
+                      <i className="fas fa-xmark"></i> {lang === 'en' ? 'All Orders' : 'كل الطلبات'}
                     </button>
                   </div>
                 );
@@ -1128,18 +1284,18 @@ const Dashboard = () => {
               {!clientFilter && (
                 <div className="dash-search-bar">
                   <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
-                  <input type="search" className="dash-search-input" placeholder="ابحث برقم الطلب أو العميل أو المحافظة أو الحالة..." value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                  <input type="search" className="dash-search-input" placeholder={lang === 'en' ? 'Search by order ref, client, governorate or status...' : 'ابحث برقم الطلب أو العميل أو المحافظة أو الحالة...'} value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
                   {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
-                  {dashSearch && <span className="dash-search-count">{filteredOrders.length} نتيجة</span>}
+                  {dashSearch && <span className="dash-search-count">{filteredOrders.length} {lang === 'en' ? 'results' : 'نتيجة'}</span>}
                 </div>
               )}
 
               <div className="data-table">
                 <table>
-                  <thead><tr><th>رقم الطلب</th><th>العميل</th><th>الهاتف</th><th>المحافظة</th><th>المنتج</th><th>الإجمالي</th><th>الدفع</th><th>التاريخ</th><th>الحالة</th><th></th></tr></thead>
+                  <thead><tr><th>{dt('orders.ref')}</th><th>{dt('orders.client')}</th><th>{dt('orders.phone')}</th><th>{dt('orders.gov')}</th><th>{dt('orders.product')}</th><th>{dt('orders.total')}</th><th>{dt('orders.payment')}</th><th>{dt('orders.date')}</th><th>{dt('orders.status')}</th><th></th></tr></thead>
                   <tbody>
                     {filteredOrders.length === 0 && (
-                      <tr><td colSpan="10" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>لا توجد طلبات</td></tr>
+                      <tr><td colSpan="10" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>{dt('orders.noResults')}</td></tr>
                     )}
                     {filteredOrders.map(o => (
                       <tr key={o.id}>
@@ -1148,7 +1304,7 @@ const Dashboard = () => {
                           <button
                             className={`client-name-btn${clientFilter === o.client ? ' active' : ''}`}
                             onClick={() => setClientFilter(o.client)}
-                            title={`عرض كل طلبات ${o.client}`}
+                            title={lang === 'en' ? `View all orders for ${o.client}` : `عرض كل طلبات ${o.client}`}
                           >
                             {o.client}
                           </button>
@@ -1169,12 +1325,12 @@ const Dashboard = () => {
                             value={o.status}
                             onChange={e => updateOrderStatus(o.id, e.target.value)}
                           >
-                            {Object.entries(orderStatusLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                            {Object.entries(orderStatusLabels).map(([k, v]) => <option key={k} value={k}>{v?.[lang] || v?.ar}</option>)}
                           </select>
                         </td>
                         <td>
                           <button className="action-btn action-btn-edit" onClick={() => printInvoice(o)}>
-                            <i className="fas fa-print"></i> طباعة
+                            <i className="fas fa-print"></i> {dt('common.print')}
                           </button>
                         </td>
                       </tr>
@@ -1189,33 +1345,33 @@ const Dashboard = () => {
           {view === 'invoices' && (
             <div>
               <div className="dash-header-row">
-                <div className="dashboard-title">الفواتير ({orders.length})</div>
+                <div className="dashboard-title">{dt('invoices.title')} ({orders.length})</div>
               </div>
-              <p className="dash-section-desc">عرض وطباعة فاتورة لكل طلب بتصميم احترافي.</p>
+              <p className="dash-section-desc">{lang === 'en' ? 'View and print a professional invoice for each order.' : 'عرض وطباعة فاتورة لكل طلب بتصميم احترافي.'}</p>
               <div className="dash-search-bar">
                 <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
-                <input type="search" className="dash-search-input" placeholder="ابحث برقم الطلب أو العميل أو الهاتف..." value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                <input type="search" className="dash-search-input" placeholder={lang === 'en' ? 'Search by order ref, client or phone...' : 'ابحث برقم الطلب أو العميل أو الهاتف...'} value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
                 {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
-                {dashSearch && <span className="dash-search-count">{filteredOrders.length} نتيجة</span>}
+                {dashSearch && <span className="dash-search-count">{filteredOrders.length} {lang === 'en' ? 'results' : 'نتيجة'}</span>}
               </div>
               <div className="data-table">
                 <table>
                   <thead>
                     <tr>
-                      <th>رقم الطلب</th>
-                      <th>العميل</th>
-                      <th>الهاتف</th>
-                      <th>المحافظة</th>
-                      <th>المنتجات</th>
-                      <th>الدفع</th>
-                      <th>التاريخ</th>
-                      <th>الإجمالي</th>
-                      <th>الحالة</th>
-                      <th>طباعة</th>
+                      <th>{dt('orders.ref')}</th>
+                      <th>{dt('orders.client')}</th>
+                      <th>{dt('orders.phone')}</th>
+                      <th>{dt('orders.gov')}</th>
+                      <th>{dt('orders.product')}</th>
+                      <th>{dt('orders.payment')}</th>
+                      <th>{dt('orders.date')}</th>
+                      <th>{dt('orders.total')}</th>
+                      <th>{dt('orders.status')}</th>
+                      <th>{dt('common.print')}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {orders.length === 0 && <tr><td colSpan="10" className="td-light" style={{textAlign:'center',padding:'30px'}}>لا توجد طلبات بعد.</td></tr>}
+                    {orders.length === 0 && <tr><td colSpan="10" className="td-light" style={{textAlign:'center',padding:'30px'}}>{lang === 'en' ? 'No orders yet.' : 'لا توجد طلبات بعد.'}</td></tr>}
                     {filteredOrders.map(o => (
                       <tr key={o.id}>
                         <td className="td-primary">{o.ref}</td>
@@ -1229,10 +1385,10 @@ const Dashboard = () => {
                         <td><span className="badge-pay">{o.payment || '—'}</span></td>
                         <td className="td-light" dir="ltr">{o.date}</td>
                         <td className="td-bold">{Number(o.grandTotal || o.total || 0).toFixed(3)} د.ك</td>
-                        <td><span className={`status-badge status-${o.status}`}>{orderStatusLabels[o.status] || o.status}</span></td>
+                        <td><span className={`status-badge status-${o.status}`}>{orderStatusLabels[o.status]?.[lang] || orderStatusLabels[o.status]?.ar || o.status}</span></td>
                         <td>
                           <button className="action-btn action-btn-edit" onClick={() => printInvoice(o)}>
-                            <i className="fas fa-print"></i> طباعة
+                            <i className="fas fa-print"></i> {dt('common.print')}
                           </button>
                         </td>
                       </tr>
@@ -1247,22 +1403,22 @@ const Dashboard = () => {
           {view === 'users' && (
             <div>
               <div className="dash-header-row">
-                <div className="dashboard-title">إدارة المستخدمين</div>
+                <div className="dashboard-title">{lang === 'en' ? 'User Management' : 'إدارة المستخدمين'}</div>
                 {perms.users && (
                   <button className="btn btn-green btn-sm" onClick={openAddUser}>
-                    <i className="fas fa-user-plus" aria-hidden="true"></i> إضافة مستخدم
+                    <i className="fas fa-user-plus" aria-hidden="true"></i> {dt('users.add')}
                   </button>
                 )}
               </div>
               <div className="dash-search-bar">
                 <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
-                <input type="search" className="dash-search-input" placeholder="ابحث بالاسم أو اسم المستخدم أو البريد..." value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                <input type="search" className="dash-search-input" placeholder={lang === 'en' ? 'Search by name, username or email...' : 'ابحث بالاسم أو اسم المستخدم أو البريد...'} value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
                 {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
-                {dashSearch && <span className="dash-search-count">{filteredUsers.length} نتيجة</span>}
+                {dashSearch && <span className="dash-search-count">{filteredUsers.length} {lang === 'en' ? 'results' : 'نتيجة'}</span>}
               </div>
               <div className="data-table">
                 <table>
-                  <thead><tr><th>#</th><th>الاسم</th><th>اسم المستخدم</th><th>الهاتف</th><th>الصلاحية</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                  <thead><tr><th>#</th><th>{dt('users.name')}</th><th>{dt('users.username')}</th><th>{dt('users.phone')}</th><th>{dt('users.role')}</th><th>{dt('users.status')}</th><th>{dt('users.actions')}</th></tr></thead>
                   <tbody>
                     {filteredUsers.map((u, i) => (
                       <tr key={u.id}>
@@ -1278,11 +1434,11 @@ const Dashboard = () => {
                         </td>
                         <td className="td-light" dir="ltr">{u.username}</td>
                         <td className="td-light" dir="ltr">{u.phone || '—'}</td>
-                        <td><span className={`role-badge role-${u.role}`}>{roleLabels[u.role] || u.role}</span></td>
-                        <td><span className={`user-status-badge ustatus-${u.status || 'active'}`}>{userStatusLabels[u.status || 'active']}</span></td>
+                        <td><span className={`role-badge role-${u.role}`}>{roleLabels[u.role]?.[lang] || roleLabels[u.role]?.ar || u.role}</span></td>
+                        <td><span className={`user-status-badge ustatus-${u.status || 'active'}`}>{userStatusLabels[u.status || 'active']?.[lang] || userStatusLabels[u.status || 'active']?.ar}</span></td>
                         <td>
-                          <button className="action-btn action-btn-edit" onClick={() => openEditUser(u)}><i className="fas fa-pen"></i> تعديل</button>
-                          <button className="action-btn action-btn-delete" onClick={() => handleDeleteUser(u)} disabled={u.id === auth?.id}><i className="fas fa-trash"></i> حذف</button>
+                          <button className="action-btn action-btn-edit" onClick={() => openEditUser(u)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
+                          <button className="action-btn action-btn-delete" onClick={() => handleDeleteUser(u)} disabled={u.id === auth?.id}><i className="fas fa-trash"></i> {dt('common.delete')}</button>
                         </td>
                       </tr>
                     ))}
@@ -1296,21 +1452,21 @@ const Dashboard = () => {
           {view === 'content' && contentForm && (
             <div>
               <div className="dash-header-row" style={{ marginBottom: 0 }}>
-                <div className="dashboard-title" style={{ margin: 0 }}>محتوى الموقع</div>
+                <div className="dashboard-title" style={{ margin: 0 }}>{dt('content.title')}</div>
                 <button className="btn btn-green btn-sm" onClick={handleContentSave} disabled={contentLoading}>
-                  {contentLoading ? <><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</> : <><i className="fas fa-save"></i> حفظ الكل</>}
+                  {contentLoading ? <><i className="fas fa-spinner fa-spin"></i> {dt('common.saving')}</> : <><i className="fas fa-save"></i> {dt('content.saveAll')}</>}
                 </button>
               </div>
-              <p className="dash-section-desc" style={{ marginBottom: 16 }}>تحكم في نصوص وصور كل صفحات الموقع. التغييرات تظهر فوراً بعد الحفظ.</p>
+              <p className="dash-section-desc" style={{ marginBottom: 16 }}>{lang === 'en' ? 'Control all texts and images across all site pages. Changes appear immediately after saving.' : 'تحكم في نصوص وصور كل صفحات الموقع. التغييرات تظهر فوراً بعد الحفظ.'}</p>
 
               {/* Sub-tabs */}
               <div className="content-tabs">
                 {[
-                  { id: 'home',    label: 'الرئيسية',   icon: 'fa-house' },
-                  { id: 'about',   label: 'عن الشركة',  icon: 'fa-circle-info' },
-                  { id: 'contact', label: 'التواصل',    icon: 'fa-phone' },
-                  { id: 'banners', label: 'البانرات والصور', icon: 'fa-images' },
-                  { id: 'general', label: 'عام',        icon: 'fa-gear' },
+                  { id: 'home',    label: dt('content.home'),    icon: 'fa-house' },
+                  { id: 'about',   label: dt('content.about'),   icon: 'fa-circle-info' },
+                  { id: 'contact', label: dt('content.contact'), icon: 'fa-phone' },
+                  { id: 'banners', label: dt('content.banners'), icon: 'fa-images' },
+                  { id: 'general', label: dt('content.general'), icon: 'fa-gear' },
                 ].map(t => (
                   <button key={t.id} className={`content-tab-btn${contentTab === t.id ? ' active' : ''}`} onClick={() => setContentTab(t.id)}>
                     <i className={`fas ${t.icon}`}></i> {t.label}
@@ -1318,7 +1474,7 @@ const Dashboard = () => {
                 ))}
               </div>
 
-              {contentSaved && <AlertSuccess msg="تم حفظ محتوى الموقع بنجاح!" />}
+              {contentSaved && <AlertSuccess msg={lang === 'en' ? 'Site content saved successfully!' : 'تم حفظ محتوى الموقع بنجاح!'} />}
               {contentErr   && <AlertError  msg={contentErr} />}
 
               <form onSubmit={handleContentSave} className="content-form">
@@ -1516,7 +1672,7 @@ const Dashboard = () => {
 
                 <div className="content-save-row">
                   <button type="submit" className="btn btn-green" disabled={contentLoading}>
-                    {contentLoading ? <><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</> : <><i className="fas fa-save"></i> حفظ في قاعدة البيانات</>}
+                    {contentLoading ? <><i className="fas fa-spinner fa-spin"></i> {dt('common.saving')}</> : <><i className="fas fa-save"></i> {dt('common.saveDB')}</>}
                   </button>
                 </div>
               </form>
@@ -1527,25 +1683,25 @@ const Dashboard = () => {
           {view === 'shipping' && shippingZones && shipCompanies && (
             <div>
               <div className="dash-header-row">
-                <div className="dashboard-title">الشحن والتوصيل</div>
-                <button className="btn btn-green btn-sm" onClick={saveShipping}><i className="fas fa-save"></i> حفظ</button>
+                <div className="dashboard-title">{dt('shipping.title')}</div>
+                <button className="btn btn-green btn-sm" onClick={saveShipping}><i className="fas fa-save"></i> {dt('shipping.save')}</button>
               </div>
-              {shippingSaved && <AlertSuccess msg="تم حفظ إعدادات الشحن بنجاح!" />}
+              {shippingSaved && <AlertSuccess msg={lang === 'en' ? 'Shipping settings saved successfully!' : 'تم حفظ إعدادات الشحن بنجاح!'} />}
 
               {/* Tab switcher */}
               <div className="shipping-tabs">
                 <button className={`shipping-tab-btn${shippingTab === 'zones' ? ' active' : ''}`} onClick={() => setShippingTab('zones')}>
-                  <i className="fas fa-map-marker-alt"></i> مناطق التوصيل
+                  <i className="fas fa-map-marker-alt"></i> {dt('shipping.zones')}
                 </button>
                 <button className={`shipping-tab-btn${shippingTab === 'companies' ? ' active' : ''}`} onClick={() => setShippingTab('companies')}>
-                  <i className="fas fa-truck"></i> شركات الشحن
+                  <i className="fas fa-truck"></i> {dt('shipping.companies')}
                 </button>
               </div>
 
               {/* ── Zones ── */}
               {shippingTab === 'zones' && (
                 <>
-                  <p className="dash-section-desc">تحكم في مناطق التوصيل ورسومها داخل الكويت.</p>
+                  <p className="dash-section-desc">{lang === 'en' ? 'Control delivery zones and fees within Kuwait.' : 'تحكم في مناطق التوصيل ورسومها داخل الكويت.'}</p>
                   <div className="shipping-zones-grid">
                     {shippingZones.map(zone => (
                       <div key={zone.id} className={`shipping-zone-card${zone.enabled ? '' : ' disabled-zone'}`}>
@@ -1558,7 +1714,7 @@ const Dashboard = () => {
                         </div>
                         <div className="zone-name-en">{zone.en}</div>
                         <div className="zone-fee-row">
-                          <label className="form-label" style={{ marginBottom: 0 }}>رسوم التوصيل (د.ك)</label>
+                          <label className="form-label" style={{ marginBottom: 0 }}>{lang === 'en' ? 'Delivery Fee (KD)' : 'رسوم التوصيل (د.ك)'}</label>
                           <input className="form-input zone-fee-input" type="number" step="0.250" min="0" value={zone.fee} onChange={e => updateZoneFee(zone.id, e.target.value)} dir="ltr" disabled={!zone.enabled} />
                         </div>
                       </div>
@@ -1570,7 +1726,7 @@ const Dashboard = () => {
               {/* ── Companies ── */}
               {shippingTab === 'companies' && (
                 <>
-                  <p className="dash-section-desc">فعّل شركات الشحن وأدخل بيانات API لكل شركة لتفعيل التتبع التلقائي.</p>
+                  <p className="dash-section-desc">{lang === 'en' ? 'Enable shipping companies and enter API credentials for automatic tracking.' : 'فعّل شركات الشحن وأدخل بيانات API لكل شركة لتفعيل التتبع التلقائي.'}</p>
                   <div className="payment-gateways-grid">
                     {[
                       { key: 'aramex',    nameAr: 'أرامكس الكويت',  nameEn: 'Aramex Kuwait',     emoji: '📦', bg: '#fff3e0', color: '#e65100', site: 'aramex.com' },
@@ -1584,8 +1740,8 @@ const Dashboard = () => {
                           <div className="gateway-info">
                             <div className="gateway-icon" style={{ background: co.bg, fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{co.emoji}</div>
                             <div>
-                              <div className="gateway-name">{co.nameAr}</div>
-                              <div className="gateway-sub">{co.nameEn}</div>
+                              <div className="gateway-name">{lang === 'en' ? co.nameEn : co.nameAr}</div>
+                              <div className="gateway-sub">{lang === 'en' ? co.nameAr : co.nameEn}</div>
                             </div>
                           </div>
                           <label className="toggle-switch">
@@ -1600,11 +1756,11 @@ const Dashboard = () => {
                               <input className="form-input" dir="ltr" value={shipCompanies[co.key]?.apiKey || ''} onChange={e => setShipCompanyField(co.key, 'apiKey', e.target.value)} placeholder={`Enter ${co.nameEn} API key...`} />
                             </div>
                             <div className="form-group">
-                              <label className="form-label">رقم الحساب</label>
+                              <label className="form-label">{lang === 'en' ? 'Account Number' : 'رقم الحساب'}</label>
                               <input className="form-input" dir="ltr" value={shipCompanies[co.key]?.accountNumber || ''} onChange={e => setShipCompanyField(co.key, 'accountNumber', e.target.value)} placeholder="Account / Customer Number" />
                             </div>
                             <p className="gateway-coming-soon">
-                              <i className="fas fa-circle-info"></i> للحصول على API Key تفضل بزيارة <a href={`https://${co.site}`} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>{co.site}</a>
+                              <i className="fas fa-circle-info"></i> {lang === 'en' ? 'To get an API Key, visit' : 'للحصول على API Key تفضل بزيارة'} <a href={`https://${co.site}`} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>{co.site}</a>
                             </p>
                           </div>
                         )}
@@ -1620,17 +1776,17 @@ const Dashboard = () => {
           {view === 'payments' && paySettings && (
             <div>
               <div className="dash-header-row">
-                <div className="dashboard-title">بوابات الدفع</div>
-                <button className="btn btn-green btn-sm" onClick={savePayments}><i className="fas fa-save"></i> حفظ</button>
+                <div className="dashboard-title">{dt('payments.title')}</div>
+                <button className="btn btn-green btn-sm" onClick={savePayments}><i className="fas fa-save"></i> {dt('payments.save')}</button>
               </div>
-              {paySaved && <AlertSuccess msg="تم حفظ إعدادات الدفع بنجاح!" />}
-              <p className="dash-section-desc">فعّل بوابات الدفع وأدخل مفاتيح API للربط مع كل بوابة.</p>
+              {paySaved && <AlertSuccess msg={lang === 'en' ? 'Payment settings saved successfully!' : 'تم حفظ إعدادات الدفع بنجاح!'} />}
+              <p className="dash-section-desc">{lang === 'en' ? 'Enable payment gateways and enter API keys to connect each gateway.' : 'فعّل بوابات الدفع وأدخل مفاتيح API للربط مع كل بوابة.'}</p>
 
               <div className="payment-gateways-grid">
                 {/* Cash */}
                 <div className="gateway-card">
                   <div className="gateway-header">
-                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#dcfce7' }}><i className="fas fa-money-bills" style={{ color: '#16a34a' }}></i></div><div><div className="gateway-name">كاش عند الاستلام</div><div className="gateway-sub">Cash on Delivery</div></div></div>
+                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#dcfce7' }}><i className="fas fa-money-bills" style={{ color: '#16a34a' }}></i></div><div><div className="gateway-name">{lang === 'en' ? 'Cash on Delivery' : 'كاش عند الاستلام'}</div><div className="gateway-sub">Cash on Delivery</div></div></div>
                     <label className="toggle-switch"><input type="checkbox" checked={paySettings.cash?.enabled} onChange={() => toggleGateway('cash')} /><span className="toggle-slider"></span></label>
                   </div>
                 </div>
@@ -1638,13 +1794,13 @@ const Dashboard = () => {
                 {/* Bank Transfer */}
                 <div className="gateway-card">
                   <div className="gateway-header">
-                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#dbeafe' }}><i className="fas fa-building-columns" style={{ color: '#1d4ed8' }}></i></div><div><div className="gateway-name">تحويل بنكي</div><div className="gateway-sub">Bank Transfer</div></div></div>
+                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#dbeafe' }}><i className="fas fa-building-columns" style={{ color: '#1d4ed8' }}></i></div><div><div className="gateway-name">{lang === 'en' ? 'Bank Transfer' : 'تحويل بنكي'}</div><div className="gateway-sub">Bank Transfer</div></div></div>
                     <label className="toggle-switch"><input type="checkbox" checked={paySettings.transfer?.enabled} onChange={() => toggleGateway('transfer')} /><span className="toggle-slider"></span></label>
                   </div>
                   {paySettings.transfer?.enabled && (
                     <div className="gateway-fields">
-                      <div className="form-group"><label className="form-label">اسم البنك</label><input className="form-input" value={paySettings.transfer?.bankName || ''} onChange={e => setGatewayField('transfer', 'bankName', e.target.value)} /></div>
-                      <div className="form-group"><label className="form-label">رقم الآيبان (IBAN)</label><input className="form-input" dir="ltr" value={paySettings.transfer?.iban || ''} onChange={e => setGatewayField('transfer', 'iban', e.target.value)} placeholder="KW81NBKU..." /></div>
+                      <div className="form-group"><label className="form-label">{lang === 'en' ? 'Bank Name' : 'اسم البنك'}</label><input className="form-input" value={paySettings.transfer?.bankName || ''} onChange={e => setGatewayField('transfer', 'bankName', e.target.value)} /></div>
+                      <div className="form-group"><label className="form-label">{lang === 'en' ? 'IBAN Number' : 'رقم الآيبان (IBAN)'}</label><input className="form-input" dir="ltr" value={paySettings.transfer?.iban || ''} onChange={e => setGatewayField('transfer', 'iban', e.target.value)} placeholder="KW81NBKU..." /></div>
                     </div>
                   )}
                 </div>
@@ -1652,13 +1808,13 @@ const Dashboard = () => {
                 {/* KNET */}
                 <div className="gateway-card">
                   <div className="gateway-header">
-                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#e0e7ff' }}><i className="fas fa-credit-card" style={{ color: '#003087' }}></i></div><div><div className="gateway-name">K-NET</div><div className="gateway-sub">الشبكة الكويتية</div></div></div>
+                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#e0e7ff' }}><i className="fas fa-credit-card" style={{ color: '#003087' }}></i></div><div><div className="gateway-name">K-NET</div><div className="gateway-sub">{lang === 'en' ? 'Kuwait Network' : 'الشبكة الكويتية'}</div></div></div>
                     <label className="toggle-switch"><input type="checkbox" checked={paySettings.knet?.enabled} onChange={() => toggleGateway('knet')} /><span className="toggle-slider"></span></label>
                   </div>
                   {paySettings.knet?.enabled && (
                     <div className="gateway-fields">
                       <div className="form-group"><label className="form-label">API Key</label><input className="form-input" dir="ltr" value={paySettings.knet?.apiKey || ''} onChange={e => setGatewayField('knet', 'apiKey', e.target.value)} placeholder="sk_..." /></div>
-                      <label className="gateway-test-toggle"><input type="checkbox" checked={paySettings.knet?.testMode} onChange={() => setGatewayField('knet', 'testMode', !paySettings.knet?.testMode)} /> وضع الاختبار (Test Mode)</label>
+                      <label className="gateway-test-toggle"><input type="checkbox" checked={paySettings.knet?.testMode} onChange={() => setGatewayField('knet', 'testMode', !paySettings.knet?.testMode)} /> {lang === 'en' ? 'Test Mode' : 'وضع الاختبار (Test Mode)'}</label>
                     </div>
                   )}
                 </div>
@@ -1666,13 +1822,13 @@ const Dashboard = () => {
                 {/* MyFatoorah */}
                 <div className="gateway-card">
                   <div className="gateway-header">
-                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#fff7ed' }}><i className="fas fa-wallet" style={{ color: '#e67e22' }}></i></div><div><div className="gateway-name">MyFatoorah</div><div className="gateway-sub">ماي فاتورة</div></div></div>
+                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#fff7ed' }}><i className="fas fa-wallet" style={{ color: '#e67e22' }}></i></div><div><div className="gateway-name">MyFatoorah</div><div className="gateway-sub">{lang === 'en' ? 'My Fatoorah' : 'ماي فاتورة'}</div></div></div>
                     <label className="toggle-switch"><input type="checkbox" checked={paySettings.myfatoorah?.enabled} onChange={() => toggleGateway('myfatoorah')} /><span className="toggle-slider"></span></label>
                   </div>
                   {paySettings.myfatoorah?.enabled && (
                     <div className="gateway-fields">
                       <div className="form-group"><label className="form-label">API Key</label><input className="form-input" dir="ltr" value={paySettings.myfatoorah?.apiKey || ''} onChange={e => setGatewayField('myfatoorah', 'apiKey', e.target.value)} placeholder="rLtt7iI3-..." /></div>
-                      <label className="gateway-test-toggle"><input type="checkbox" checked={paySettings.myfatoorah?.testMode} onChange={() => setGatewayField('myfatoorah', 'testMode', !paySettings.myfatoorah?.testMode)} /> وضع الاختبار</label>
+                      <label className="gateway-test-toggle"><input type="checkbox" checked={paySettings.myfatoorah?.testMode} onChange={() => setGatewayField('myfatoorah', 'testMode', !paySettings.myfatoorah?.testMode)} /> {lang === 'en' ? 'Test Mode' : 'وضع الاختبار'}</label>
                     </div>
                   )}
                 </div>
@@ -1680,20 +1836,20 @@ const Dashboard = () => {
                 {/* Tap */}
                 <div className="gateway-card">
                   <div className="gateway-header">
-                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#f0fdf4' }}><i className="fas fa-mobile-screen" style={{ color: '#000' }}></i></div><div><div className="gateway-name">Tap Payments</div><div className="gateway-sub">تاب للمدفوعات</div></div></div>
+                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#f0fdf4' }}><i className="fas fa-mobile-screen" style={{ color: '#000' }}></i></div><div><div className="gateway-name">Tap Payments</div><div className="gateway-sub">{lang === 'en' ? 'Tap Payments' : 'تاب للمدفوعات'}</div></div></div>
                     <label className="toggle-switch"><input type="checkbox" checked={paySettings.tap?.enabled} onChange={() => toggleGateway('tap')} /><span className="toggle-slider"></span></label>
                   </div>
                   {paySettings.tap?.enabled && (
                     <div className="gateway-fields">
                       <div className="form-group"><label className="form-label">Secret Key</label><input className="form-input" dir="ltr" value={paySettings.tap?.apiKey || ''} onChange={e => setGatewayField('tap', 'apiKey', e.target.value)} placeholder="sk_test_..." /></div>
-                      <label className="gateway-test-toggle"><input type="checkbox" checked={paySettings.tap?.testMode} onChange={() => setGatewayField('tap', 'testMode', !paySettings.tap?.testMode)} /> وضع الاختبار</label>
+                      <label className="gateway-test-toggle"><input type="checkbox" checked={paySettings.tap?.testMode} onChange={() => setGatewayField('tap', 'testMode', !paySettings.tap?.testMode)} /> {lang === 'en' ? 'Test Mode' : 'وضع الاختبار'}</label>
                     </div>
                   )}
                 </div>
 
                 {/* Benefit Pay */}
                 {[
-                  { key: 'benefitpay', name: 'Benefit Pay', sub: 'بيفيت باي', color: '#00843d', bg: '#dcfce7' },
+                  { key: 'benefitpay', name: 'Benefit Pay', sub: lang === 'en' ? 'Benefit Pay' : 'بيفيت باي', color: '#00843d', bg: '#dcfce7' },
                 ].map(gw => (
                   <div key={gw.key} className="gateway-card">
                     <div className="gateway-header">
@@ -1702,7 +1858,7 @@ const Dashboard = () => {
                     </div>
                     {paySettings[gw.key]?.enabled && (
                       <div className="gateway-fields">
-                        <p className="gateway-coming-soon"><i className="fas fa-circle-info"></i> سيتوفر الربط المباشر قريباً. يمكنك تفعيل الخيار الآن ليظهر في صفحة الدفع.</p>
+                        <p className="gateway-coming-soon"><i className="fas fa-circle-info"></i> {lang === 'en' ? 'Direct integration coming soon. You can enable this option now so it appears on the checkout page.' : 'سيتوفر الربط المباشر قريباً. يمكنك تفعيل الخيار الآن ليظهر في صفحة الدفع.'}</p>
                       </div>
                     )}
                   </div>
@@ -1715,35 +1871,35 @@ const Dashboard = () => {
           {view === 'coupons' && (
             <div>
               <div className="dash-header-row">
-                <div className="dashboard-title">الكوبونات والخصومات</div>
-                <button className="btn btn-green btn-sm" onClick={openAddCoupon}><i className="fas fa-plus"></i> إضافة كوبون</button>
+                <div className="dashboard-title">{lang === 'en' ? 'Coupons & Discounts' : 'الكوبونات والخصومات'}</div>
+                <button className="btn btn-green btn-sm" onClick={openAddCoupon}><i className="fas fa-plus"></i> {dt('coupons.add')}</button>
               </div>
               <div className="dash-search-bar">
                 <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
-                <input type="search" className="dash-search-input" placeholder="ابحث بالكود أو النوع أو الحالة..." value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                <input type="search" className="dash-search-input" placeholder={lang === 'en' ? 'Search by code, type or status...' : 'ابحث بالكود أو النوع أو الحالة...'} value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
                 {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
-                {dashSearch && <span className="dash-search-count">{filteredCoupons.length} نتيجة</span>}
+                {dashSearch && <span className="dash-search-count">{filteredCoupons.length} {lang === 'en' ? 'results' : 'نتيجة'}</span>}
               </div>
               <div className="data-table">
                 <table>
-                  <thead><tr><th>الكود</th><th>النوع</th><th>الخصم</th><th>الحد الأدنى</th><th>الاستخدام</th><th>الانتهاء</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                  <thead><tr><th>{dt('coupons.code')}</th><th>{dt('coupons.type')}</th><th>{dt('coupons.value')}</th><th>{dt('coupons.minOrder')}</th><th>{lang === 'en' ? 'Usage' : 'الاستخدام'}</th><th>{dt('coupons.expiry')}</th><th>{dt('coupons.status')}</th><th>{dt('coupons.actions')}</th></tr></thead>
                   <tbody>
                     {filteredCoupons.map(c => (
                       <tr key={c.id}>
                         <td className="td-primary" dir="ltr">{c.code}</td>
-                        <td><span className="badge-cat">{c.type === 'percent' ? 'نسبة %' : 'مبلغ ثابت'}</span></td>
+                        <td><span className="badge-cat">{c.type === 'percent' ? (lang === 'en' ? 'Percent %' : 'نسبة %') : (lang === 'en' ? 'Fixed Amount' : 'مبلغ ثابت')}</span></td>
                         <td className="td-bold">{c.type === 'percent' ? `${c.value}%` : `${c.value} د.ك`}</td>
                         <td className="td-light">{c.minOrder ? `${c.minOrder} د.ك` : '—'}</td>
                         <td className="td-light">{c.usedCount || 0} / {c.maxUses || '∞'}</td>
                         <td className="td-light" dir="ltr">{c.expiry || '—'}</td>
-                        <td><span className={`status-badge status-${c.status}`}>{c.status === 'active' ? 'نشط' : 'متوقف'}</span></td>
+                        <td><span className={`status-badge status-${c.status}`}>{c.status === 'active' ? dt('common.active') : dt('common.inactive')}</span></td>
                         <td>
-                          <button className="action-btn action-btn-edit" onClick={() => openEditCoupon(c)}><i className="fas fa-pen"></i> تعديل</button>
-                          <button className="action-btn action-btn-delete" onClick={async () => { if(window.confirm(`حذف كوبون "${c.code}"؟`)) await deleteCoupon(c.id); }}><i className="fas fa-trash"></i> حذف</button>
+                          <button className="action-btn action-btn-edit" onClick={() => openEditCoupon(c)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
+                          <button className="action-btn action-btn-delete" onClick={async () => { if(window.confirm(`حذف كوبون "${c.code}"؟`)) await deleteCoupon(c.id); }}><i className="fas fa-trash"></i> {dt('common.delete')}</button>
                         </td>
                       </tr>
                     ))}
-                    {coupons.length === 0 && <tr><td colSpan="8" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>لا توجد كوبونات بعد</td></tr>}
+                    {coupons.length === 0 && <tr><td colSpan="8" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>{lang === 'en' ? 'No coupons yet' : 'لا توجد كوبونات بعد'}</td></tr>}
                   </tbody>
                 </table>
               </div>
@@ -1754,14 +1910,14 @@ const Dashboard = () => {
           {view === 'reports' && (
             <div className="analytics-page">
               <div className="analytics-header">
-                <div className="dashboard-title" style={{ margin: 0 }}>التحليلات</div>
+                <div className="dashboard-title" style={{ margin: 0 }}>{dt('analytics.title')}</div>
                 <div className="analytics-range-pills">
                   {[
-                    { id: 'today', label: 'اليوم' },
-                    { id: '7d',    label: '7 أيام' },
-                    { id: '30d',   label: '30 يوم' },
-                    { id: 'month', label: 'هذا الشهر' },
-                    { id: 'all',   label: 'كل الوقت' },
+                    { id: 'today', label: dt('analytics.today') },
+                    { id: '7d',    label: dt('analytics.7d') },
+                    { id: '30d',   label: dt('analytics.30d') },
+                    { id: 'month', label: dt('analytics.month') },
+                    { id: 'all',   label: dt('analytics.all') },
                   ].map(r => (
                     <button key={r.id} className={`analytics-pill${analyticsRange === r.id ? ' active' : ''}`} onClick={() => setAnalyticsRange(r.id)}>{r.label}</button>
                   ))}
@@ -1771,11 +1927,11 @@ const Dashboard = () => {
               {/* ── KPI Cards ── */}
               <div className="analytics-kpi-row">
                 {[
-                  { label: 'إجمالي الإيرادات',    value: `${analyticsData.grossRevenue.toFixed(3)} د.ك`, icon: 'fa-coins',         cls: 'kpi-blue'   },
-                  { label: 'عدد الطلبات',          value: analyticsData.completed.length,                  icon: 'fa-bag-shopping',  cls: 'kpi-purple' },
-                  { label: 'متوسط قيمة الطلب',    value: `${analyticsData.avgOrder.toFixed(3)} د.ك`,      icon: 'fa-chart-simple',  cls: 'kpi-green'  },
-                  { label: 'المنتجات النشطة',      value: activeCount,                                      icon: 'fa-box-open',      cls: 'kpi-orange' },
-                  { label: 'العملاء الفريدون',     value: analyticsData.uniqueClients,                      icon: 'fa-users',         cls: 'kpi-teal'   },
+                  { label: dt('overview.totalRev'),                                         value: `${analyticsData.grossRevenue.toFixed(3)} د.ك`, icon: 'fa-coins',         cls: 'kpi-blue'   },
+                  { label: lang === 'en' ? 'Total Orders' : 'عدد الطلبات',                  value: analyticsData.completed.length,                  icon: 'fa-bag-shopping',  cls: 'kpi-purple' },
+                  { label: lang === 'en' ? 'Avg Order Value' : 'متوسط قيمة الطلب',         value: `${analyticsData.avgOrder.toFixed(3)} د.ك`,      icon: 'fa-chart-simple',  cls: 'kpi-green'  },
+                  { label: dt('overview.activeProds'),                                       value: activeCount,                                      icon: 'fa-box-open',      cls: 'kpi-orange' },
+                  { label: lang === 'en' ? 'Unique Clients' : 'العملاء الفريدون',           value: analyticsData.uniqueClients,                      icon: 'fa-users',         cls: 'kpi-teal'   },
                 ].map((k, i) => (
                   <div key={i} className={`analytics-kpi-card ${k.cls}`}>
                     <div className="kpi-icon"><i className={`fas ${k.icon}`}></i></div>
@@ -1790,18 +1946,18 @@ const Dashboard = () => {
               {/* ── Line Chart + Breakdown ── */}
               <div className="analytics-row2">
                 <div className="analytics-card analytics-card-wide">
-                  <div className="analytics-card-title"><i className="fas fa-chart-area"></i> المبيعات عبر الزمن</div>
+                  <div className="analytics-card-title"><i className="fas fa-chart-area"></i> {lang === 'en' ? 'Sales Over Time' : 'المبيعات عبر الزمن'}</div>
                   <MiniLineChart data={analyticsData.lineData} height={140} />
                 </div>
                 <div className="analytics-card">
-                  <div className="analytics-card-title"><i className="fas fa-receipt"></i> ملخص المبيعات</div>
+                  <div className="analytics-card-title"><i className="fas fa-receipt"></i> {lang === 'en' ? 'Sales Summary' : 'ملخص المبيعات'}</div>
                   <table className="analytics-breakdown-table">
                     <tbody>
-                      <tr><td>الإيرادات الإجمالية</td><td>{analyticsData.grossRevenue.toFixed(3)} د.ك</td></tr>
-                      <tr><td>الخصومات</td><td className="text-red">- {analyticsData.discounts.toFixed(3)} د.ك</td></tr>
-                      <tr><td>رسوم الشحن</td><td>{analyticsData.shipping.toFixed(3)} د.ك</td></tr>
-                      <tr className="breakdown-net"><td>الصافي</td><td>{analyticsData.net.toFixed(3)} د.ك</td></tr>
-                      <tr><td>ملغاة</td><td>{analyticsData.inRange.filter(o=>o.status==='cancelled').length} طلب</td></tr>
+                      <tr><td>{lang === 'en' ? 'Gross Revenue' : 'الإيرادات الإجمالية'}</td><td>{analyticsData.grossRevenue.toFixed(3)} د.ك</td></tr>
+                      <tr><td>{lang === 'en' ? 'Discounts' : 'الخصومات'}</td><td className="text-red">- {analyticsData.discounts.toFixed(3)} د.ك</td></tr>
+                      <tr><td>{lang === 'en' ? 'Shipping Fees' : 'رسوم الشحن'}</td><td>{analyticsData.shipping.toFixed(3)} د.ك</td></tr>
+                      <tr className="breakdown-net"><td>{lang === 'en' ? 'Net' : 'الصافي'}</td><td>{analyticsData.net.toFixed(3)} د.ك</td></tr>
+                      <tr><td>{lang === 'en' ? 'Cancelled' : 'ملغاة'}</td><td>{analyticsData.inRange.filter(o=>o.status==='cancelled').length} {lang === 'en' ? 'orders' : 'طلب'}</td></tr>
                     </tbody>
                   </table>
                 </div>
@@ -1810,27 +1966,27 @@ const Dashboard = () => {
               {/* ── Status Donut + Top Products + Top Regions ── */}
               <div className="analytics-row3">
                 <div className="analytics-card">
-                  <div className="analytics-card-title"><i className="fas fa-circle-half-stroke"></i> الطلبات حسب الحالة</div>
+                  <div className="analytics-card-title"><i className="fas fa-circle-half-stroke"></i> {lang === 'en' ? 'Orders by Status' : 'الطلبات حسب الحالة'}</div>
                   <DonutChart slices={analyticsData.statusSlices} />
                 </div>
                 <div className="analytics-card">
-                  <div className="analytics-card-title"><i className="fas fa-trophy"></i> أفضل المنتجات (مبيعاً)</div>
-                  {analyticsData.topProducts.length ? <HBar items={analyticsData.topProducts} unit=" د.ك" /> : <div className="analytics-empty-chart">لا توجد بيانات</div>}
+                  <div className="analytics-card-title"><i className="fas fa-trophy"></i> {lang === 'en' ? 'Top Products (by revenue)' : 'أفضل المنتجات (مبيعاً)'}</div>
+                  {analyticsData.topProducts.length ? <HBar items={analyticsData.topProducts} unit=" د.ك" /> : <div className="analytics-empty-chart">{dt('common.noData')}</div>}
                 </div>
                 <div className="analytics-card">
-                  <div className="analytics-card-title"><i className="fas fa-map-location-dot"></i> أفضل المناطق</div>
-                  {analyticsData.topGov.length ? <HBar items={analyticsData.topGov} unit=" طلب" /> : <div className="analytics-empty-chart">لا توجد بيانات</div>}
+                  <div className="analytics-card-title"><i className="fas fa-map-location-dot"></i> {lang === 'en' ? 'Top Regions' : 'أفضل المناطق'}</div>
+                  {analyticsData.topGov.length ? <HBar items={analyticsData.topGov} unit={lang === 'en' ? ' orders' : ' طلب'} /> : <div className="analytics-empty-chart">{dt('common.noData')}</div>}
                 </div>
               </div>
 
               {/* ── Top Clients + Payment Method ── */}
               <div className="analytics-row2">
                 <div className="analytics-card analytics-card-wide">
-                  <div className="analytics-card-title"><i className="fas fa-star"></i> أفضل العملاء</div>
+                  <div className="analytics-card-title"><i className="fas fa-star"></i> {lang === 'en' ? 'Top Clients' : 'أفضل العملاء'}</div>
                   {analyticsData.topClients.length ? (
                     <div className="analytics-table-wrap">
                       <table className="analytics-table">
-                        <thead><tr><th>#</th><th>العميل</th><th>الهاتف</th><th>الطلبات</th><th>الإجمالي</th></tr></thead>
+                        <thead><tr><th>#</th><th>{dt('orders.client')}</th><th>{dt('orders.phone')}</th><th>{lang === 'en' ? 'Orders' : 'الطلبات'}</th><th>{dt('orders.total')}</th></tr></thead>
                         <tbody>
                           {analyticsData.topClients.map((c, i) => (
                             <tr key={i}>
@@ -1848,11 +2004,11 @@ const Dashboard = () => {
                         </tbody>
                       </table>
                     </div>
-                  ) : <div className="analytics-empty-chart">لا توجد بيانات</div>}
+                  ) : <div className="analytics-empty-chart">{dt('common.noData')}</div>}
                 </div>
                 <div className="analytics-card">
-                  <div className="analytics-card-title"><i className="fas fa-credit-card"></i> طرق الدفع</div>
-                  {analyticsData.payData.length ? <HBar items={analyticsData.payData} unit=" طلب" /> : <div className="analytics-empty-chart">لا توجد بيانات</div>}
+                  <div className="analytics-card-title"><i className="fas fa-credit-card"></i> {lang === 'en' ? 'Payment Methods' : 'طرق الدفع'}</div>
+                  {analyticsData.payData.length ? <HBar items={analyticsData.payData} unit={lang === 'en' ? ' orders' : ' طلب'} /> : <div className="analytics-empty-chart">{dt('common.noData')}</div>}
                 </div>
               </div>
 
@@ -1866,48 +2022,48 @@ const Dashboard = () => {
           <div className="modal-overlay" onClick={e => e.target === e.currentTarget && closeCatModal()}>
             <div className="modal" role="dialog">
               <div className="modal-header">
-                <h3>{catModal === 'add' ? 'إضافة فئة جديدة' : 'تعديل الفئة'}</h3>
+                <h3>{catModal === 'add' ? (lang === 'en' ? 'Add New Collection' : 'إضافة فئة جديدة') : (lang === 'en' ? 'Edit Collection' : 'تعديل الفئة')}</h3>
                 <button className="modal-close" onClick={closeCatModal}><i className="fas fa-xmark"></i></button>
               </div>
-              {catSaved && <AlertSuccess msg="تم الحفظ بنجاح!" />}
+              {catSaved && <AlertSuccess msg={dt('common.savedOk')} />}
               {catErr   && <AlertError  msg={catErr} />}
               <form onSubmit={handleCatSave}>
                 <div className="modal-grid2">
                   <div className="form-group">
-                    <label className="form-label">الاسم بالعربي *</label>
+                    <label className="form-label">{lang === 'en' ? 'Arabic Name *' : 'الاسم بالعربي *'}</label>
                     <input className="form-input" value={catForm.nameAr} onChange={e => setCatForm(p=>({...p, nameAr: e.target.value}))} placeholder="مثال: مناديل وجه" required />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">الاسم بالإنجليزي</label>
+                    <label className="form-label">{lang === 'en' ? 'English Name' : 'الاسم بالإنجليزي'}</label>
                     <input className="form-input" dir="ltr" value={catForm.nameEn} onChange={e => setCatForm(p=>({...p, nameEn: e.target.value}))} placeholder="Facial Tissues" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">المعرف (Slug) * <span style={{fontSize:'11px',color:'var(--text-light)'}}>أحرف إنجليزية صغيرة فقط</span></label>
+                    <label className="form-label">{lang === 'en' ? 'Slug * (lowercase English only)' : 'المعرف (Slug) * '}<span style={{fontSize:'11px',color:'var(--text-light)'}}>{lang === 'en' ? '' : 'أحرف إنجليزية صغيرة فقط'}</span></label>
                     <input className="form-input" dir="ltr" value={catForm.slug} onChange={e => setCatForm(p=>({...p, slug: e.target.value.toLowerCase().replace(/\s/g,'-')}))} placeholder="facial-tissues" required />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">إيموجي / رمز</label>
+                    <label className="form-label">{lang === 'en' ? 'Emoji / Icon' : 'إيموجي / رمز'}</label>
                     <input className="form-input" value={catForm.emoji} onChange={e => setCatForm(p=>({...p, emoji: e.target.value}))} placeholder="📦" style={{fontSize:'20px'}} />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">الترتيب</label>
+                    <label className="form-label">{lang === 'en' ? 'Sort Order' : 'الترتيب'}</label>
                     <input className="form-input" type="number" min="1" dir="ltr" value={catForm.sortOrder} onChange={e => setCatForm(p=>({...p, sortOrder: parseInt(e.target.value)||1}))} />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">الحالة</label>
+                    <label className="form-label">{dt('common.status')}</label>
                     <select className="form-select" value={catForm.status} onChange={e => setCatForm(p=>({...p, status: e.target.value}))}>
-                      <option value="active">نشطة — تظهر في الموقع</option>
-                      <option value="inactive">مخفية</option>
+                      <option value="active">{lang === 'en' ? 'Active — Visible on site' : 'نشطة — تظهر في الموقع'}</option>
+                      <option value="inactive">{lang === 'en' ? 'Hidden' : 'مخفية'}</option>
                     </select>
                   </div>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">الوصف (اختياري)</label>
-                  <textarea className="form-textarea" style={{minHeight:'70px'}} value={catForm.desc} onChange={e => setCatForm(p=>({...p, desc: e.target.value}))} placeholder="وصف مختصر للفئة..." />
+                  <label className="form-label">{lang === 'en' ? 'Description (optional)' : 'الوصف (اختياري)'}</label>
+                  <textarea className="form-textarea" style={{minHeight:'70px'}} value={catForm.desc} onChange={e => setCatForm(p=>({...p, desc: e.target.value}))} placeholder={lang === 'en' ? 'Short description...' : 'وصف مختصر للفئة...'} />
                 </div>
                 <div style={{ display:'flex', justifyContent:'flex-end', gap:'10px', marginTop:'20px' }}>
-                  <button type="button" className="btn btn-sm btn-outline" style={{color:'var(--text)',borderColor:'var(--border)'}} onClick={closeCatModal}>إلغاء</button>
-                  <button type="submit" className="btn btn-green btn-sm"><i className="fas fa-save"></i> حفظ</button>
+                  <button type="button" className="btn btn-sm btn-outline" style={{color:'var(--text)',borderColor:'var(--border)'}} onClick={closeCatModal}>{dt('common.cancel')}</button>
+                  <button type="submit" className="btn btn-green btn-sm"><i className="fas fa-save"></i> {dt('common.save')}</button>
                 </div>
               </form>
             </div>
@@ -1919,22 +2075,22 @@ const Dashboard = () => {
           <div className="modal-overlay" onClick={e => e.target === e.currentTarget && closeProductModal()}>
             <div className="modal modal-xl" role="dialog">
               <div className="modal-header">
-                <h3>{productModal === 'add' ? 'إضافة منتج جديد' : 'تعديل المنتج'}</h3>
+                <h3>{productModal === 'add' ? (lang === 'en' ? 'Add New Product' : 'إضافة منتج جديد') : (lang === 'en' ? 'Edit Product' : 'تعديل المنتج')}</h3>
                 <button className="modal-close" onClick={closeProductModal}><i className="fas fa-xmark"></i></button>
               </div>
-              {productSaved && <AlertSuccess msg="تم الحفظ بنجاح!" />}
+              {productSaved && <AlertSuccess msg={dt('common.savedOk')} />}
               {productErr   && <AlertError  msg={productErr} />}
               <form onSubmit={handleProductSave}>
 
                 {/* ── Images ── */}
-                <div className="product-lang-divider">🖼️ الصور</div>
+                <div className="product-lang-divider">🖼️ {lang === 'en' ? 'Images' : 'الصور'}</div>
                 <div className="modal-grid2">
                   <div className="form-group">
-                    <label className="form-label">الصورة الرئيسية</label>
+                    <label className="form-label">{dt('products.image')}</label>
                     <label className="img-upload-box">
                       {(productForm.image || productImagePreview)
                         ? <img src={productForm.image || productImagePreview} alt="main" className="img-upload-preview" />
-                        : <div className="img-upload-placeholder"><i className="fas fa-image"></i><span>اختر صورة</span></div>}
+                        : <div className="img-upload-placeholder"><i className="fas fa-image"></i><span>{lang === 'en' ? 'Choose image' : 'اختر صورة'}</span></div>}
                       <input type="file" accept="image/*" onChange={handleMainImageChange} style={{display:'none'}} />
                       {(productForm.image || productImagePreview) && (
                         <button type="button" className="img-upload-remove" onClick={e => { e.preventDefault(); setProductForm(p=>({...p,image:''})); setProductImagePreview(''); }}>
@@ -1942,10 +2098,10 @@ const Dashboard = () => {
                         </button>
                       )}
                     </label>
-                    {uploadingImg && <div style={{fontSize:'11px',color:'var(--text-light)',marginTop:'4px'}}><i className="fas fa-spinner fa-spin"></i> جاري الرفع...</div>}
+                    {uploadingImg && <div style={{fontSize:'11px',color:'var(--text-light)',marginTop:'4px'}}><i className="fas fa-spinner fa-spin"></i> {lang === 'en' ? 'Uploading...' : 'جاري الرفع...'}</div>}
                   </div>
                   <div className="form-group">
-                    <label className="form-label">معرض الصور (Gallery)</label>
+                    <label className="form-label">{dt('products.gallery')}</label>
                     <div className="gallery-upload-grid">
                       {(productForm.gallery || []).map((url, idx) => (
                         <div key={idx} className="gallery-thumb">
@@ -1966,8 +2122,8 @@ const Dashboard = () => {
                 {/* ── Arabic ── */}
                 <div className="product-lang-divider">🇸🇦 عربي</div>
                 <div className="modal-grid2">
-                  <div className="form-group"><label className="form-label">اسم المنتج (عربي) *</label><input className="form-input" name="name" value={productForm.name} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required /></div>
-                  <div className="form-group"><label className="form-label">الوصف (عربي)</label><input className="form-input" name="desc" value={productForm.desc} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Product Name (Arabic) *' : 'اسم المنتج (عربي) *'}</label><input className="form-input" name="name" value={productForm.name} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required /></div>
+                  <div className="form-group"><label className="form-label">{dt('products.desc')}</label><input className="form-input" name="desc" value={productForm.desc} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
                 </div>
 
                 {/* ── English ── */}
@@ -1978,37 +2134,37 @@ const Dashboard = () => {
                 </div>
 
                 {/* ── Product Data ── */}
-                <div className="product-lang-divider">⚙️ بيانات المنتج</div>
+                <div className="product-lang-divider">⚙️ {lang === 'en' ? 'Product Data' : 'بيانات المنتج'}</div>
                 <div className="modal-grid2">
-                  <div className="form-group"><label className="form-label">SKU (رمز المنتج)</label><input className="form-input" name="sku" value={productForm.sku} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="e.g. JAW-FAC-001" /></div>
-                  <div className="form-group"><label className="form-label">الشارة (اختياري)</label><input className="form-input" name="badge" value={productForm.badge} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
+                  <div className="form-group"><label className="form-label">SKU ({lang === 'en' ? 'Product Code' : 'رمز المنتج'})</label><input className="form-input" name="sku" value={productForm.sku} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="e.g. JAW-FAC-001" /></div>
+                  <div className="form-group"><label className="form-label">{dt('products.badge')} ({lang === 'en' ? 'optional' : 'اختياري'})</label><input className="form-input" name="badge" value={productForm.badge} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
                 </div>
                 <div className="modal-grid2">
-                  <div className="form-group"><label className="form-label">الفئة</label><select className="form-select" name="category" value={productForm.category} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))}>{Object.entries(categoryLabels).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select></div>
-                  <div className="form-group"><label className="form-label">الحالة</label><select className="form-select" name="status" value={productForm.status} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))}>{Object.entries(productStatusLabels).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select></div>
+                  <div className="form-group"><label className="form-label">{dt('products.category')}</label><select className="form-select" name="category" value={productForm.category} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))}>{Object.entries(categoryLabels).map(([k,v])=><option key={k} value={k}>{v?.[lang] || v?.ar}</option>)}</select></div>
+                  <div className="form-group"><label className="form-label">{dt('products.status')}</label><select className="form-select" name="status" value={productForm.status} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))}>{Object.entries(productStatusLabels).map(([k,v])=><option key={k} value={k}>{v?.[lang] || v?.ar}</option>)}</select></div>
                 </div>
                 <div className="modal-grid2">
-                  <div className="form-group"><label className="form-label">السعر (د.ك) *</label><input className="form-input" type="number" step="0.001" min="0" name="price" value={productForm.price} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
-                  <div className="form-group"><label className="form-label">المخزون *</label><input className="form-input" type="number" min="0" name="stock" value={productForm.stock} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
+                  <div className="form-group"><label className="form-label">{dt('products.price')} *</label><input className="form-input" type="number" step="0.001" min="0" name="price" value={productForm.price} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
+                  <div className="form-group"><label className="form-label">{dt('products.stock')} *</label><input className="form-input" type="number" min="0" name="stock" value={productForm.stock} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
                 </div>
                 {/* ── Shipping ── */}
-                <div className="product-lang-divider">🚚 الشحن / Shipping</div>
+                <div className="product-lang-divider">🚚 {lang === 'en' ? 'Shipping' : 'الشحن'} / Shipping</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                   <label className="toggle-switch">
                     <input type="checkbox" checked={productForm.isPhysical} onChange={e => setProductForm(p => ({ ...p, isPhysical: e.target.checked }))} />
                     <span className="toggle-slider"></span>
                   </label>
-                  <span style={{ fontWeight: 600, fontSize: '14px' }}>منتج مادي / Physical product</span>
+                  <span style={{ fontWeight: 600, fontSize: '14px' }}>{lang === 'en' ? 'Physical product' : 'منتج مادي'} / Physical product</span>
                 </div>
                 {productForm.isPhysical && (
                   <>
                     <div className="modal-grid2">
                       <div className="form-group">
-                        <label className="form-label">الوزن (كغ)</label>
+                        <label className="form-label">{lang === 'en' ? 'Weight (kg)' : 'الوزن (كغ)'}</label>
                         <input className="form-input" type="number" step="0.01" min="0" value={productForm.weight} onChange={e => setProductForm(p => ({ ...p, weight: e.target.value }))} dir="ltr" placeholder="0.50" />
                       </div>
                       <div className="form-group">
-                        <label className="form-label">الأبعاد: طول × عرض × ارتفاع (سم)</label>
+                        <label className="form-label">{lang === 'en' ? 'Dimensions: L × W × H (cm)' : 'الأبعاد: طول × عرض × ارتفاع (سم)'}</label>
                         <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                           <input className="form-input" type="number" step="0.1" min="0" value={productForm.dimLength} onChange={e => setProductForm(p => ({ ...p, dimLength: e.target.value }))} dir="ltr" placeholder="L" />
                           <span style={{ color: 'var(--text-light)', flexShrink: 0 }}>×</span>
@@ -2020,7 +2176,7 @@ const Dashboard = () => {
                     </div>
                     <div className="modal-grid2">
                       <div className="form-group">
-                        <label className="form-label">بلد المنشأ</label>
+                        <label className="form-label">{lang === 'en' ? 'Country of Origin' : 'بلد المنشأ'}</label>
                         <select className="form-select" value={productForm.countryOfOrigin} onChange={e => setProductForm(p => ({ ...p, countryOfOrigin: e.target.value }))}>
                           <option value="KW">🇰🇼 الكويت (KW)</option>
                           <option value="SA">🇸🇦 السعودية (SA)</option>
@@ -2034,7 +2190,7 @@ const Dashboard = () => {
                         </select>
                       </div>
                       <div className="form-group">
-                        <label className="form-label">HS Code <span style={{ fontSize: '11px', color: 'var(--text-light)' }}>رمز التعريفة الجمركية</span></label>
+                        <label className="form-label">HS Code <span style={{ fontSize: '11px', color: 'var(--text-light)' }}>{lang === 'en' ? 'Customs Tariff Code' : 'رمز التعريفة الجمركية'}</span></label>
                         <input className="form-input" dir="ltr" value={productForm.hsCode} onChange={e => setProductForm(p => ({ ...p, hsCode: e.target.value }))} placeholder="e.g. 4818.10.00" />
                       </div>
                     </div>
@@ -2042,8 +2198,8 @@ const Dashboard = () => {
                 )}
 
                 <div className="modal-actions">
-                  <button type="button" onClick={closeProductModal} className="btn btn-outline">إلغاء</button>
-                  <button type="submit" className="btn btn-green" disabled={uploadingImg}><i className="fas fa-save"></i> حفظ</button>
+                  <button type="button" onClick={closeProductModal} className="btn btn-outline">{dt('common.cancel')}</button>
+                  <button type="submit" className="btn btn-green" disabled={uploadingImg}><i className="fas fa-save"></i> {dt('common.save')}</button>
                 </div>
               </form>
             </div>
@@ -2055,20 +2211,20 @@ const Dashboard = () => {
           <div className="modal-overlay" onClick={e => e.target === e.currentTarget && closeUserModal()}>
             <div className="modal modal-lg" role="dialog">
               <div className="modal-header">
-                <h3>{userModal === 'add' ? 'إضافة مستخدم جديد' : 'تعديل المستخدم'}</h3>
+                <h3>{userModal === 'add' ? (lang === 'en' ? 'Add New User' : 'إضافة مستخدم جديد') : (lang === 'en' ? 'Edit User' : 'تعديل المستخدم')}</h3>
                 <button className="modal-close" onClick={closeUserModal}><i className="fas fa-xmark"></i></button>
               </div>
-              {userSaved && <AlertSuccess msg="تم حفظ المستخدم بنجاح!" />}
+              {userSaved && <AlertSuccess msg={lang === 'en' ? 'User saved successfully!' : 'تم حفظ المستخدم بنجاح!'} />}
               {userErr   && <AlertError  msg={userErr} />}
               <form onSubmit={handleUserSave}>
                 <div className="modal-grid2">
-                  <div className="form-group"><label className="form-label">الاسم الكامل *</label><input className="form-input" name="name" value={userForm.name} onChange={e => setUserForm(p=>({...p,[e.target.name]:e.target.value}))} required /></div>
-                  <div className="form-group"><label className="form-label">اسم المستخدم * (أحرف وأرقام فقط)</label><input className="form-input" name="username" value={userForm.username} onChange={e => setUserForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Full Name *' : 'الاسم الكامل *'}</label><input className="form-input" name="name" value={userForm.name} onChange={e => setUserForm(p=>({...p,[e.target.name]:e.target.value}))} required /></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Username * (letters and numbers only)' : 'اسم المستخدم * (أحرف وأرقام فقط)'}</label><input className="form-input" name="username" value={userForm.username} onChange={e => setUserForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
                 </div>
 
                 {/* Password with strength */}
                 <div className="form-group">
-                  <label className="form-label">{userModal === 'edit' ? 'كلمة المرور الجديدة (اتركها فارغة للإبقاء)' : 'كلمة المرور *'}</label>
+                  <label className="form-label">{userModal === 'edit' ? (lang === 'en' ? 'New Password (leave empty to keep current)' : 'كلمة المرور الجديدة (اتركها فارغة للإبقاء)') : (lang === 'en' ? 'Password *' : 'كلمة المرور *')}</label>
                   <div className="input-pwd-wrap">
                     <input className="form-input" type={showPwd ? 'text' : 'password'} name="password" value={userForm.password} onChange={e => setUserForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" required={userModal === 'add'} />
                     <button type="button" className="pwd-toggle" onClick={() => setShowPwd(p=>!p)}><i className={`fas ${showPwd?'fa-eye-slash':'fa-eye'}`}></i></button>
@@ -2081,10 +2237,10 @@ const Dashboard = () => {
                       <div className="pwd-strength-label" style={{ color: pwdStrength.color }}>{pwdStrength.label}</div>
                       <ul className="pwd-rules">
                         {[
-                          { test: userForm.password.length >= 8,            label: '8 أحرف على الأقل' },
-                          { test: /[A-Z]/.test(userForm.password),          label: 'حرف كبير (A-Z)' },
-                          { test: /[0-9]/.test(userForm.password),          label: 'رقم واحد على الأقل' },
-                          { test: /[^A-Za-z0-9]/.test(userForm.password),  label: 'رمز خاص (!@#$...)' },
+                          { test: userForm.password.length >= 8,            label: lang === 'en' ? 'At least 8 characters' : '8 أحرف على الأقل' },
+                          { test: /[A-Z]/.test(userForm.password),          label: lang === 'en' ? 'Uppercase letter (A-Z)' : 'حرف كبير (A-Z)' },
+                          { test: /[0-9]/.test(userForm.password),          label: lang === 'en' ? 'At least one number' : 'رقم واحد على الأقل' },
+                          { test: /[^A-Za-z0-9]/.test(userForm.password),  label: lang === 'en' ? 'Special character (!@#$...)' : 'رمز خاص (!@#$...)' },
                         ].map((r, i) => (
                           <li key={i} className={r.test ? 'rule-pass' : 'rule-fail'}>
                             <i className={`fas ${r.test ? 'fa-circle-check' : 'fa-circle-xmark'}`}></i> {r.label}
@@ -2096,21 +2252,21 @@ const Dashboard = () => {
                 </div>
 
                 <div className="modal-grid2">
-                  <div className="form-group"><label className="form-label">البريد الإلكتروني</label><input className="form-input" type="email" name="email" value={userForm.email} onChange={e => setUserForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="email@example.com" /></div>
-                  <div className="form-group"><label className="form-label">رقم الهاتف (كويتي)</label><input className="form-input" name="phone" value={userForm.phone} onChange={e => setUserForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="+96512345678" /></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Email' : 'البريد الإلكتروني'}</label><input className="form-input" type="email" name="email" value={userForm.email} onChange={e => setUserForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="email@example.com" /></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Phone (Kuwait)' : 'رقم الهاتف (كويتي)'}</label><input className="form-input" name="phone" value={userForm.phone} onChange={e => setUserForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="+96512345678" /></div>
                 </div>
 
                 <div className="modal-grid2">
                   <div className="form-group">
-                    <label className="form-label">الصلاحية</label>
+                    <label className="form-label">{lang === 'en' ? 'Role' : 'الصلاحية'}</label>
                     <select className="form-select" name="role" value={userForm.role} onChange={e => setUserForm(p=>({...p,[e.target.name]:e.target.value}))}>
-                      {Object.entries(roleLabels).map(([k,v])=><option key={k} value={k}>{v}</option>)}
+                      {Object.entries(roleLabels).map(([k,v])=><option key={k} value={k}>{v?.[lang] || v?.ar}</option>)}
                     </select>
                   </div>
                   <div className="form-group">
-                    <label className="form-label">حالة الحساب</label>
+                    <label className="form-label">{lang === 'en' ? 'Account Status' : 'حالة الحساب'}</label>
                     <select className="form-select" name="status" value={userForm.status || 'active'} onChange={e => setUserForm(p=>({...p,[e.target.name]:e.target.value}))}>
-                      {Object.entries(userStatusLabels).map(([k,v])=><option key={k} value={k}>{v}</option>)}
+                      {Object.entries(userStatusLabels).map(([k,v])=><option key={k} value={k}>{v?.[lang] || v?.ar}</option>)}
                     </select>
                   </div>
                 </div>
@@ -2118,7 +2274,7 @@ const Dashboard = () => {
                 {/* Permissions preview */}
                 <button type="button" className="perms-toggle-btn" onClick={() => setShowPerms(p=>!p)}>
                   <i className={`fas fa-chevron-${showPerms?'up':'down'}`}></i>
-                  صلاحيات هذه الوظيفة ({roleLabels[userForm.role]})
+                  {lang === 'en' ? `Permissions for this role (${roleLabels[userForm.role]?.en || userForm.role})` : `صلاحيات هذه الوظيفة (${roleLabels[userForm.role]?.ar || userForm.role})`}
                 </button>
                 {showPerms && (
                   <div className="perms-grid">
@@ -2132,8 +2288,8 @@ const Dashboard = () => {
                 )}
 
                 <div className="modal-actions">
-                  <button type="button" onClick={closeUserModal} className="btn btn-outline">إلغاء</button>
-                  <button type="submit" className="btn btn-green"><i className="fas fa-save"></i> حفظ</button>
+                  <button type="button" onClick={closeUserModal} className="btn btn-outline">{dt('common.cancel')}</button>
+                  <button type="submit" className="btn btn-green"><i className="fas fa-save"></i> {dt('common.save')}</button>
                 </div>
               </form>
             </div>
@@ -2145,36 +2301,36 @@ const Dashboard = () => {
           <div className="modal-overlay" onClick={e => e.target === e.currentTarget && closeCouponModal()}>
             <div className="modal" role="dialog">
               <div className="modal-header">
-                <h3>{couponModal === 'add' ? 'إضافة كوبون جديد' : 'تعديل الكوبون'}</h3>
+                <h3>{couponModal === 'add' ? (lang === 'en' ? 'Add New Coupon' : 'إضافة كوبون جديد') : (lang === 'en' ? 'Edit Coupon' : 'تعديل الكوبون')}</h3>
                 <button className="modal-close" onClick={closeCouponModal}><i className="fas fa-xmark"></i></button>
               </div>
-              {couponSaved && <AlertSuccess msg="تم حفظ الكوبون بنجاح!" />}
+              {couponSaved && <AlertSuccess msg={lang === 'en' ? 'Coupon saved successfully!' : 'تم حفظ الكوبون بنجاح!'} />}
               {couponErr   && <AlertError  msg={couponErr} />}
               <form onSubmit={handleCouponSave}>
                 <div className="modal-grid2">
-                  <div className="form-group"><label className="form-label">كود الخصم *</label><input className="form-input" name="code" value={couponForm.code} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value.toUpperCase()}))} dir="ltr" placeholder="WELCOME10" required /></div>
-                  <div className="form-group"><label className="form-label">نوع الخصم</label>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Discount Code *' : 'كود الخصم *'}</label><input className="form-input" name="code" value={couponForm.code} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value.toUpperCase()}))} dir="ltr" placeholder="WELCOME10" required /></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Discount Type' : 'نوع الخصم'}</label>
                     <select className="form-select" name="type" value={couponForm.type} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))}>
-                      <option value="percent">نسبة مئوية (%)</option>
-                      <option value="fixed">مبلغ ثابت (د.ك)</option>
+                      <option value="percent">{lang === 'en' ? 'Percentage (%)' : 'نسبة مئوية (%)'}</option>
+                      <option value="fixed">{lang === 'en' ? 'Fixed Amount (KD)' : 'مبلغ ثابت (د.ك)'}</option>
                     </select>
                   </div>
                 </div>
                 <div className="modal-grid2">
-                  <div className="form-group"><label className="form-label">قيمة الخصم * {couponForm.type === 'percent' ? '(%)' : '(د.ك)'}</label><input className="form-input" type="number" min="0" name="value" value={couponForm.value} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" required /></div>
-                  <div className="form-group"><label className="form-label">الحد الأدنى للطلب (د.ك)</label><input className="form-input" type="number" min="0" step="0.001" name="minOrder" value={couponForm.minOrder} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="0" /></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Discount Value *' : 'قيمة الخصم *'} {couponForm.type === 'percent' ? '(%)' : '(د.ك)'}</label><input className="form-input" type="number" min="0" name="value" value={couponForm.value} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" required /></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Min Order (KD)' : 'الحد الأدنى للطلب (د.ك)'}</label><input className="form-input" type="number" min="0" step="0.001" name="minOrder" value={couponForm.minOrder} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="0" /></div>
                 </div>
                 <div className="modal-grid2">
-                  <div className="form-group"><label className="form-label">الحد الأقصى للاستخدام (0 = غير محدود)</label><input className="form-input" type="number" min="0" name="maxUses" value={couponForm.maxUses} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" /></div>
-                  <div className="form-group"><label className="form-label">تاريخ الانتهاء</label><input className="form-input" type="date" name="expiry" value={couponForm.expiry} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" /></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Max Uses (0 = unlimited)' : 'الحد الأقصى للاستخدام (0 = غير محدود)'}</label><input className="form-input" type="number" min="0" name="maxUses" value={couponForm.maxUses} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" /></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Expiry Date' : 'تاريخ الانتهاء'}</label><input className="form-input" type="date" name="expiry" value={couponForm.expiry} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" /></div>
                 </div>
                 <div className="modal-grid2">
-                  <div className="form-group"><label className="form-label">الحالة</label><select className="form-select" name="status" value={couponForm.status} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))}><option value="active">نشط</option><option value="inactive">متوقف</option></select></div>
-                  <div className="form-group"><label className="form-label">وصف الكوبون</label><input className="form-input" name="desc" value={couponForm.desc} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
+                  <div className="form-group"><label className="form-label">{dt('common.status')}</label><select className="form-select" name="status" value={couponForm.status} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))}><option value="active">{dt('common.active')}</option><option value="inactive">{dt('common.inactive')}</option></select></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Coupon Description' : 'وصف الكوبون'}</label><input className="form-input" name="desc" value={couponForm.desc} onChange={e => setCouponForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
                 </div>
                 <div className="modal-actions">
-                  <button type="button" onClick={closeCouponModal} className="btn btn-outline">إلغاء</button>
-                  <button type="submit" className="btn btn-green"><i className="fas fa-save"></i> حفظ</button>
+                  <button type="button" onClick={closeCouponModal} className="btn btn-outline">{dt('common.cancel')}</button>
+                  <button type="submit" className="btn btn-green"><i className="fas fa-save"></i> {dt('common.save')}</button>
                 </div>
               </form>
             </div>
