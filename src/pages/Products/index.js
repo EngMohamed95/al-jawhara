@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
+import Reveal from '../../components/Reveal';
 import './index.css';
 
 const CAT_ICONS = {
@@ -144,8 +145,9 @@ const Products = () => {
                     <i className="fas fa-box-open" aria-hidden="true"></i>
                     <p>{t('products.empty')}</p>
                   </div>
-                ) : filtered.map(p => (
-                  <article key={p.id} className="product-card" role="listitem">
+                ) : filtered.map((p, i) => (
+                  <Reveal key={p.id} delay={(i % 4) * 70} direction="up">
+                  <article className="product-card" role="listitem">
                     <div className="product-card-img" aria-hidden="true">
                       {p.badge && <span className="product-badge">{p.badge}</span>}
                       {p.image
@@ -184,6 +186,7 @@ const Products = () => {
                       </button>
                     </div>
                   </article>
+                  </Reveal>
                 ))}
               </div>
             </>

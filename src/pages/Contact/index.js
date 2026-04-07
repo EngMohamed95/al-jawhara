@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
+import Reveal from '../../components/Reveal';
 import './index.css';
 
 const DEFAULT_SOCIAL = [
@@ -85,6 +86,7 @@ const Contact = () => {
           <div className="contact-layout">
 
             {/* ── Info Panel ── */}
+            <Reveal direction="right">
             <div className="contact-info-card">
               <h2>{t('contact.infoTitle')}</h2>
               <p>{t('contact.infoSub')}</p>
@@ -135,8 +137,10 @@ const Contact = () => {
                 </div>
               </div>
             </div>
+            </Reveal>
 
             {/* ── Form ── */}
+            <Reveal direction="left" delay={100}>
             <div className="contact-form-card">
               <h2 className="contact-form-title">{t('contact.formTitle')}</h2>
               <p className="contact-form-subtitle">{t('contact.formSub')}</p>
@@ -193,6 +197,7 @@ const Contact = () => {
                 </button>
               </form>
             </div>
+            </Reveal>
 
           </div>
 

@@ -2,6 +2,14 @@
    الجوهرة للمناديل الورقية — Global Styles
    ============================================================ */
 
+/* ══════════════════ SCROLL REVEAL (global) ══════════════════ */
+.reveal { transition: opacity 0.55s ease, transform 0.55s ease; }
+.reveal-up    { opacity: 0; transform: translateY(36px); }
+.reveal-down  { opacity: 0; transform: translateY(-36px); }
+.reveal-left  { opacity: 0; transform: translateX(36px); }
+.reveal-right { opacity: 0; transform: translateX(-36px); }
+.reveal-visible { opacity: 1 !important; transform: translate(0, 0) !important; }
+
 :root {
   /* ── Brand Colors (al-jawhara.co) ── */
   --primary: #065089;

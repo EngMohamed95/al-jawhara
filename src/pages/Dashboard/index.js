@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../translations';
 import Seo from '../../components/Seo';
+import Reveal from '../../components/Reveal';
 import './index.css';
 
 /* ── Constants ── */
@@ -1020,7 +1021,8 @@ const Dashboard = () => {
                   { icon: 'fa-hourglass-half', num: pendingOrders,  label: dt('overview.pendingOrds'),      cls: 'dash-stat-orange',  color: '#d97706' },
                   { icon: 'fa-coins',        num: `${totalRevenue} د.ك`, label: dt('overview.totalRev'), cls: 'dash-stat-green', color: 'var(--primary)' },
                 ].map((s, i) => (
-                  <div key={i} className="dash-stat">
+                  <Reveal key={i} delay={i * 70} direction="up">
+                  <div className="dash-stat">
                     <div className={`dash-stat-icon ${s.cls}`}>
                       <i className={`fas ${s.icon}`} style={{ color: s.color }} aria-hidden="true"></i>
                     </div>
@@ -1029,6 +1031,7 @@ const Dashboard = () => {
                       <div className="dash-stat-label">{s.label}</div>
                     </div>
                   </div>
+                  </Reveal>
                 ))}
               </div>
 
@@ -1941,13 +1944,15 @@ const Dashboard = () => {
                   { label: dt('overview.activeProds'),                                       value: activeCount,                                      icon: 'fa-box-open',      cls: 'kpi-orange' },
                   { label: lang === 'en' ? 'Unique Clients' : 'العملاء الفريدون',           value: analyticsData.uniqueClients,                      icon: 'fa-users',         cls: 'kpi-teal'   },
                 ].map((k, i) => (
-                  <div key={i} className={`analytics-kpi-card ${k.cls}`}>
+                  <Reveal key={i} delay={i * 70} direction="up">
+                  <div className={`analytics-kpi-card ${k.cls}`}>
                     <div className="kpi-icon"><i className={`fas ${k.icon}`}></i></div>
                     <div className="kpi-body">
                       <div className="kpi-value">{k.value}</div>
                       <div className="kpi-label">{k.label}</div>
                     </div>
                   </div>
+                  </Reveal>
                 ))}
               </div>
 

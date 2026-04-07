@@ -1,44 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../translations';
 import Seo from '../../components/Seo';
+import Reveal from '../../components/Reveal';
 import './index.css';
-
-/* ── Scroll-reveal hook ── */
-const useScrollReveal = (threshold = 0.15) => {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => { setVisible(entry.isIntersecting); },
-      { threshold }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return [ref, visible];
-};
 
 const DEFAULT_HERO_VIDEO  = 'https://al-jawhara.co/wp-content/uploads/2022/10/JawharaNewIntro.mp4';
 const DEFAULT_HERO_POSTER = 'https://al-jawhara.co/wp-content/uploads/revslider/video-media/JawharaNewIntro_59_layer.jpeg';
-
-/* ── Reveal wrapper ── */
-const Reveal = ({ children, className = '', delay = 0, direction = 'up' }) => {
-  const [ref, visible] = useScrollReveal(0.12);
-  return (
-    <div
-      ref={ref}
-      className={`reveal reveal-${direction} ${visible ? 'reveal-visible' : ''} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  );
-};
 
 const featuredClients = [
   { name: 'Carrefour',     color: '#003087' },

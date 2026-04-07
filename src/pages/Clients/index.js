@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
+import Reveal from '../../components/Reveal';
 import './index.css';
 
 const BASE = 'https://al-jawhara.co/wp-content/uploads';
@@ -193,11 +194,13 @@ const Clients = () => {
 
           <div className="clients-stats" role="list" aria-label="إحصائيات">
             {Array.isArray(stats) && stats.map((s, i) => (
-              <div key={i} className="clients-stat-card" role="listitem">
-                <i className={`fas ${s.icon} clients-stat-icon`} aria-hidden="true"></i>
-                <div className="clients-stat-num">{s.num}</div>
-                <div className="clients-stat-label">{typeof s.label === 'object' ? (s.label[lang] || s.label.ar) : s.label}</div>
-              </div>
+              <Reveal key={i} delay={i * 80} direction="up">
+                <div className="clients-stat-card" role="listitem">
+                  <i className={`fas ${s.icon} clients-stat-icon`} aria-hidden="true"></i>
+                  <div className="clients-stat-num">{s.num}</div>
+                  <div className="clients-stat-label">{typeof s.label === 'object' ? (s.label[lang] || s.label.ar) : s.label}</div>
+                </div>
+              </Reveal>
             ))}
           </div>
 
@@ -216,25 +219,29 @@ const Clients = () => {
 
           <div className="clients-grid" role="list" aria-label="قائمة العملاء">
             {filtered.map((c, i) => (
-              <div key={i} role="listitem">
-                <ClientCard
-                  client={c}
-                  sectorLabel={getSectorLabel(c.sectorKey)}
-                  lang={lang}
-                />
-              </div>
+              <Reveal key={i} delay={(i % 5) * 60} direction="up">
+                <div role="listitem">
+                  <ClientCard
+                    client={c}
+                    sectorLabel={getSectorLabel(c.sectorKey)}
+                    lang={lang}
+                  />
+                </div>
+              </Reveal>
             ))}
           </div>
 
-          <div className="clients-cta">
-            <i className="fas fa-handshake clients-cta-icon" aria-hidden="true"></i>
-            <h3 className="clients-cta-title">{t('clients.ctaTitle')}</h3>
-            <p className="clients-cta-text">{t('clients.ctaText')}</p>
-            <Link to="/contact" className="btn btn-green">
-              <i className="fas fa-envelope" aria-hidden="true"></i>
-              {t('clients.ctaBtn')}
-            </Link>
-          </div>
+          <Reveal direction="up" delay={100}>
+            <div className="clients-cta">
+              <i className="fas fa-handshake clients-cta-icon" aria-hidden="true"></i>
+              <h3 className="clients-cta-title">{t('clients.ctaTitle')}</h3>
+              <p className="clients-cta-text">{t('clients.ctaText')}</p>
+              <Link to="/contact" className="btn btn-green">
+                <i className="fas fa-envelope" aria-hidden="true"></i>
+                {t('clients.ctaBtn')}
+              </Link>
+            </div>
+          </Reveal>
 
         </div>
       </section>

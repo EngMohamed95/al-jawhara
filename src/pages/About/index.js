@@ -2,6 +2,7 @@ import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../translations';
 import Seo from '../../components/Seo';
+import Reveal from '../../components/Reveal';
 import './index.css';
 
 const About = () => {
@@ -61,27 +62,33 @@ const About = () => {
       <section className="section about-story-section" aria-label={t('about.storyBadge')}>
         <div className="container">
           <div className="story-grid">
-            <div>
-              <span className="story-badge">
-                <i className="fas fa-star" aria-hidden="true"></i> {t('about.storyBadge')}
-              </span>
-              <h2 className="story-title">{t('about.storyTitle')} <span>{founded.split('/')[2] || '1998'}</span></h2>
-              <p className="story-text">{story}</p>
-              {story2 && <p className="story-text">{story2}</p>}
-              {!story2 && <p className="story-text">{t('about.story2')}</p>}
-            </div>
-            {aboutStoryImg ? (
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <img src={aboutStoryImg} alt={t('about.storyBadge')} style={{ width:'100%', maxWidth:480, borderRadius:16, boxShadow:'0 8px 32px rgba(0,0,0,0.12)' }} />
+            <Reveal direction="right">
+              <div>
+                <span className="story-badge">
+                  <i className="fas fa-star" aria-hidden="true"></i> {t('about.storyBadge')}
+                </span>
+                <h2 className="story-title">{t('about.storyTitle')} <span>{founded.split('/')[2] || '1998'}</span></h2>
+                <p className="story-text">{story}</p>
+                {story2 && <p className="story-text">{story2}</p>}
+                {!story2 && <p className="story-text">{t('about.story2')}</p>}
               </div>
+            </Reveal>
+            {aboutStoryImg ? (
+              <Reveal direction="left">
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <img src={aboutStoryImg} alt={t('about.storyBadge')} style={{ width:'100%', maxWidth:480, borderRadius:16, boxShadow:'0 8px 32px rgba(0,0,0,0.12)' }} />
+                </div>
+              </Reveal>
             ) : (
               <div className="story-stats-grid">
                 {storyStats.map((s, i) => (
-                  <div key={i} className="story-stat" style={{ background: s.bg }}>
-                    <i className={`fas ${s.icon} story-stat-icon`} aria-hidden="true"></i>
-                    <div className="story-stat-num">{s.num}</div>
-                    <div className="story-stat-label">{s.label[lang] || s.label.ar}</div>
-                  </div>
+                  <Reveal key={i} delay={i * 80} direction="up">
+                    <div className="story-stat" style={{ background: s.bg }}>
+                      <i className={`fas ${s.icon} story-stat-icon`} aria-hidden="true"></i>
+                      <div className="story-stat-num">{s.num}</div>
+                      <div className="story-stat-label">{s.label[lang] || s.label.ar}</div>
+                    </div>
+                  </Reveal>
                 ))}
               </div>
             )}
@@ -92,18 +99,22 @@ const About = () => {
       {/* Info Cards */}
       <section className="section about-info-section" aria-label={t('about.infoTitle')}>
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">{t('about.infoTitle')}</h2>
-            <p className="section-subtitle">{t('about.infoSub')}</p>
-          </div>
+          <Reveal direction="up">
+            <div className="section-header">
+              <h2 className="section-title">{t('about.infoTitle')}</h2>
+              <p className="section-subtitle">{t('about.infoSub')}</p>
+            </div>
+          </Reveal>
           <div className="info-grid">
             {infoCards.map((c, i) => (
-              <div key={i} className="info-card">
-                <div className="info-card-icon" aria-hidden="true"><i className={`fas ${c.icon}`}></i></div>
-                <h3>{c.title[lang] || c.title.ar}</h3>
-                <div className="info-card-value">{c.value}</div>
-                <p>{c.desc[lang] || c.desc.ar}</p>
-              </div>
+              <Reveal key={i} delay={i * 80} direction="up">
+                <div className="info-card">
+                  <div className="info-card-icon" aria-hidden="true"><i className={`fas ${c.icon}`}></i></div>
+                  <h3>{c.title[lang] || c.title.ar}</h3>
+                  <div className="info-card-value">{c.value}</div>
+                  <p>{c.desc[lang] || c.desc.ar}</p>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -113,16 +124,20 @@ const About = () => {
       <section className="section about-mv-section" aria-label={`${t('about.mission')} & ${t('about.vision')}`}>
         <div className="container">
           <div className="mv-grid">
-            <div className="mv-card mv-card-green">
-              <span className="mv-icon" aria-hidden="true">🎯</span>
-              <h3 className="mv-title mv-title-green">{t('about.mission')}</h3>
-              <p className="mv-text">{missionText}</p>
-            </div>
-            <div className="mv-card mv-card-orange">
-              <span className="mv-icon" aria-hidden="true">🔭</span>
-              <h3 className="mv-title mv-title-orange">{t('about.vision')}</h3>
-              <p className="mv-text">{visionText}</p>
-            </div>
+            <Reveal direction="right">
+              <div className="mv-card mv-card-green">
+                <span className="mv-icon" aria-hidden="true">🎯</span>
+                <h3 className="mv-title mv-title-green">{t('about.mission')}</h3>
+                <p className="mv-text">{missionText}</p>
+              </div>
+            </Reveal>
+            <Reveal direction="left" delay={100}>
+              <div className="mv-card mv-card-orange">
+                <span className="mv-icon" aria-hidden="true">🔭</span>
+                <h3 className="mv-title mv-title-orange">{t('about.vision')}</h3>
+                <p className="mv-text">{visionText}</p>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -130,25 +145,29 @@ const About = () => {
       {/* Timeline */}
       <section className="section about-timeline-section" aria-label={t('about.timeline')}>
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">{t('about.timeline')}</h2>
-            <p className="section-subtitle">{t('about.timelineSub')}</p>
-          </div>
+          <Reveal direction="up">
+            <div className="section-header">
+              <h2 className="section-title">{t('about.timeline')}</h2>
+              <p className="section-subtitle">{t('about.timelineSub')}</p>
+            </div>
+          </Reveal>
           <div className="timeline-wrap">
             <div className="timeline-line" aria-hidden="true"></div>
             {milestones.map((m, i) => (
-              <div key={i} className="timeline-item">
-                <div className={`timeline-dot ${m.last ? 'timeline-dot-orange' : 'timeline-dot-green'}`} aria-hidden="true">
-                  {m.year.slice(2)}
-                </div>
-                <div className="timeline-content">
-                  <div className="timeline-header">
-                    <span className="timeline-year-badge">{m.year}</span>
-                    <span className="timeline-title">{m.title[lang] || m.title.ar}</span>
+              <Reveal key={i} delay={(i % 3) * 80} direction={i % 2 === 0 ? 'right' : 'left'}>
+                <div className="timeline-item">
+                  <div className={`timeline-dot ${m.last ? 'timeline-dot-orange' : 'timeline-dot-green'}`} aria-hidden="true">
+                    {m.year.slice(2)}
                   </div>
-                  <p className="timeline-desc">{m.desc[lang] || m.desc.ar}</p>
+                  <div className="timeline-content">
+                    <div className="timeline-header">
+                      <span className="timeline-year-badge">{m.year}</span>
+                      <span className="timeline-title">{m.title[lang] || m.title.ar}</span>
+                    </div>
+                    <p className="timeline-desc">{m.desc[lang] || m.desc.ar}</p>
+                  </div>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -156,25 +175,27 @@ const About = () => {
 
       {/* CEO Card */}
       {ceoQuote && (
-        <section className="section about-ceo-section" aria-label={t('about.ceoWord')}>
-          <div className="container">
-            <div className="ceo-card">
-              <div className="ceo-avatar" aria-hidden="true">
-                {ceoImage
-                  ? <img src={ceoImage} alt={ceoName} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-                  : <i className="fas fa-user-tie"></i>}
-              </div>
-              <div>
-                <div aria-hidden="true" style={{ fontSize: '2.5rem', opacity: 0.25, lineHeight: 1, marginBottom: '-8px' }}>
-                  <i className="fas fa-quote-right"></i>
+        <Reveal direction="up">
+          <section className="section about-ceo-section" aria-label={t('about.ceoWord')}>
+            <div className="container">
+              <div className="ceo-card">
+                <div className="ceo-avatar" aria-hidden="true">
+                  {ceoImage
+                    ? <img src={ceoImage} alt={ceoName} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                    : <i className="fas fa-user-tie"></i>}
                 </div>
-                <blockquote className="ceo-quote">"{ceoQuote}"</blockquote>
-                <cite className="ceo-name">{ceoName}</cite>
-                <p className="ceo-role">{ceoTitle}</p>
+                <div>
+                  <div aria-hidden="true" style={{ fontSize: '2.5rem', opacity: 0.25, lineHeight: 1, marginBottom: '-8px' }}>
+                    <i className="fas fa-quote-right"></i>
+                  </div>
+                  <blockquote className="ceo-quote">"{ceoQuote}"</blockquote>
+                  <cite className="ceo-name">{ceoName}</cite>
+                  <p className="ceo-role">{ceoTitle}</p>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </Reveal>
       )}
     </>
   );
