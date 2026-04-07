@@ -26,7 +26,7 @@
 .home-why-desc  { font-size: 0.86rem; color: var(--text-light); line-height: 1.6; }
 
 .home-clients-section { background: white; }
-.client-tags { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-bottom: 40px; }
+.client-tags { display: flex; flex-wrap: nowrap; gap: 16px; justify-content: center; margin-bottom: 40px; overflow-x: auto; padding-bottom: 8px; }
 .client-tag {
   background: white; border-radius: 12px; padding: 18px 30px;
   box-shadow: var(--shadow); display: flex; align-items: center; gap: 10px;
