@@ -706,3 +706,19 @@
   .perms-grid      { grid-template-columns: 1fr 1fr; }
   .analytics-kpi-row { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── Variants / Packages ── */
+.variants-list { display: flex; flex-direction: column; gap: 10px; }
+.variant-row {
+  display: flex; align-items: flex-end; gap: 8px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px;
+}
+.variant-row-fields { display: flex; flex: 1; gap: 8px; flex-wrap: wrap; }
+.variant-row-fields .form-group { margin-bottom: 0; }
+.variant-remove-btn {
+  width: 34px; height: 34px; border-radius: 8px; border: 1px solid #ef4444;
+  background: none; color: #ef4444; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; margin-bottom: 2px;
+}
+.variant-remove-btn:hover { background: #ef4444; color: white; }

@@ -26,7 +26,7 @@ const ROLE_PERMISSIONS = {
   viewer: { products: false, categories: false, inventory: true,  orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false },
 };
 
-const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '', countryOfOrigin: 'KW', hsCode: '' };
+const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '', countryOfOrigin: 'KW', hsCode: '', variants: [] };
 const emptyUser    = { username: '', password: '', name: '', email: '', phone: '', role: 'viewer', status: 'active' };
 const emptyCoupon  = { code: '', type: 'percent', value: '', minOrder: '', maxUses: '', expiry: '', status: 'active', desc: '' };
 
@@ -437,7 +437,7 @@ const Dashboard = () => {
 
   const openAddProduct  = () => { setProductForm(emptyProduct); setProductErr(''); setProductSaved(false); setProductModal('add'); };
   const openEditProduct = (p) => {
-    setProductForm({ name: p.name, nameEn: p.nameEn || '', sku: p.sku || '', category: p.category, price: p.price, stock: p.stock, status: p.status, image: p.image || '', gallery: p.gallery || [], desc: p.desc || '', descEn: p.descEn || '', badge: p.badge || '', isPhysical: p.isPhysical !== false, weight: p.weight || '', dimLength: p.dimLength || '', dimWidth: p.dimWidth || '', dimHeight: p.dimHeight || '', countryOfOrigin: p.countryOfOrigin || 'KW', hsCode: p.hsCode || '' });
+    setProductForm({ name: p.name, nameEn: p.nameEn || '', sku: p.sku || '', category: p.category, price: p.price, stock: p.stock, status: p.status, image: p.image || '', gallery: p.gallery || [], desc: p.desc || '', descEn: p.descEn || '', badge: p.badge || '', isPhysical: p.isPhysical !== false, weight: p.weight || '', dimLength: p.dimLength || '', dimWidth: p.dimWidth || '', dimHeight: p.dimHeight || '', countryOfOrigin: p.countryOfOrigin || 'KW', hsCode: p.hsCode || '', variants: p.variants || [] });
     setEditProduct(p); setProductErr(''); setProductSaved(false); setProductModal('edit');
   };
   const closeProductModal = () => { setProductModal(null); setEditProduct(null); setProductImagePreview(''); setProductGalleryPreviews([]); };
@@ -2241,6 +2241,48 @@ const Dashboard = () => {
                     </div>
                   </>
                 )}
+
+                {/* ── Variants / Packages ── */}
+                <div className="product-lang-divider">📦 {lang === 'en' ? 'Packages / Variants' : 'الباقات / الأنواع'}</div>
+                <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '12px' }}>
+                  {lang === 'en'
+                    ? 'If the product comes in multiple packages (e.g. 1 box, 5 boxes, carton), add them here. Leave empty to use the main price above.'
+                    : 'إذا كان المنتج يأتي بأحجام أو باقات مختلفة (مثل علبة، 5 علب، كرتون)، أضفها هنا. إذا تركتها فارغة يُستخدم السعر الرئيسي بالأعلى.'}
+                </p>
+                <div className="variants-list">
+                  {(productForm.variants || []).map((v, vi) => (
+                    <div key={vi} className="variant-row">
+                      <div className="variant-row-fields">
+                        <div className="form-group" style={{ flex: 2 }}>
+                          <label className="form-label" style={{ fontSize: '11px' }}>{lang === 'en' ? 'Arabic Name' : 'الاسم بالعربي'}</label>
+                          <input className="form-input" value={v.nameAr} onChange={e => { const vs=[...(productForm.variants||[])]; vs[vi]={...vs[vi],nameAr:e.target.value}; setProductForm(p=>({...p,variants:vs})); }} placeholder="علبة واحدة" />
+                        </div>
+                        <div className="form-group" style={{ flex: 2 }}>
+                          <label className="form-label" style={{ fontSize: '11px' }}>{lang === 'en' ? 'English Name' : 'الاسم بالإنجليزي'}</label>
+                          <input className="form-input" dir="ltr" value={v.nameEn} onChange={e => { const vs=[...(productForm.variants||[])]; vs[vi]={...vs[vi],nameEn:e.target.value}; setProductForm(p=>({...p,variants:vs})); }} placeholder="Single Box" />
+                        </div>
+                        <div className="form-group" style={{ flex: 1 }}>
+                          <label className="form-label" style={{ fontSize: '11px' }}>{lang === 'en' ? 'Price' : 'السعر'} (KD)</label>
+                          <input className="form-input" type="number" step="0.001" min="0" dir="ltr" value={v.price} onChange={e => { const vs=[...(productForm.variants||[])]; vs[vi]={...vs[vi],price:e.target.value}; setProductForm(p=>({...p,variants:vs})); }} placeholder="1.500" />
+                        </div>
+                        <div className="form-group" style={{ flex: 1 }}>
+                          <label className="form-label" style={{ fontSize: '11px' }}>{lang === 'en' ? 'Stock' : 'المخزون'}</label>
+                          <input className="form-input" type="number" min="0" dir="ltr" value={v.stock} onChange={e => { const vs=[...(productForm.variants||[])]; vs[vi]={...vs[vi],stock:e.target.value}; setProductForm(p=>({...p,variants:vs})); }} placeholder="100" />
+                        </div>
+                        <div className="form-group" style={{ flex: 1 }}>
+                          <label className="form-label" style={{ fontSize: '11px' }}>SKU</label>
+                          <input className="form-input" dir="ltr" value={v.sku} onChange={e => { const vs=[...(productForm.variants||[])]; vs[vi]={...vs[vi],sku:e.target.value}; setProductForm(p=>({...p,variants:vs})); }} placeholder="SKU-001-1" />
+                        </div>
+                      </div>
+                      <button type="button" className="variant-remove-btn" onClick={() => setProductForm(p => ({ ...p, variants: (p.variants||[]).filter((_,i)=>i!==vi) }))}>
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  ))}
+                  <button type="button" className="btn btn-sm btn-outline" style={{ marginTop: '8px' }} onClick={() => setProductForm(p => ({ ...p, variants: [...(p.variants||[]), { nameAr: '', nameEn: '', price: '', stock: '', sku: '' }] }))}>
+                    <i className="fas fa-plus"></i> {lang === 'en' ? 'Add Package' : 'إضافة باقة'}
+                  </button>
+                </div>
 
                 <div className="modal-actions">
                   <button type="button" onClick={closeProductModal} className="btn btn-outline">{dt('common.cancel')}</button>

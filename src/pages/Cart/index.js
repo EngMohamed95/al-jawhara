@@ -70,8 +70,10 @@ const Cart = () => {
                 </button>
               </div>
 
-              {cart.map(item => (
-                <div key={item.id} className="cart-row">
+              {cart.map(item => {
+                const cartKey = item._cartKey || item.id;
+                return (
+                <div key={cartKey} className="cart-row">
                   <div className="cart-row-icon" aria-hidden="true">{item.icon}</div>
                   <div className="cart-row-info">
                     <div className="cart-row-name">{item.name}</div>
@@ -82,7 +84,7 @@ const Cart = () => {
                   <div className="cart-qty-ctrl">
                     <button
                       className="qty-btn"
-                      onClick={() => updateCartQty(item.id, item.qty - 1)}
+                      onClick={() => updateCartQty(cartKey, item.qty - 1)}
                       aria-label="تقليل الكمية"
                     >
                       <i className="fas fa-minus" aria-hidden="true"></i>
@@ -90,7 +92,7 @@ const Cart = () => {
                     <span className="qty-val">{item.qty}</span>
                     <button
                       className="qty-btn"
-                      onClick={() => updateCartQty(item.id, item.qty + 1)}
+                      onClick={() => updateCartQty(cartKey, item.qty + 1)}
                       aria-label="زيادة الكمية"
                     >
                       <i className="fas fa-plus" aria-hidden="true"></i>
@@ -101,13 +103,14 @@ const Cart = () => {
                   </div>
                   <button
                     className="cart-row-remove"
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(cartKey)}
                     aria-label={`حذف ${item.name}`}
                   >
                     <i className="fas fa-trash-can" aria-hidden="true"></i>
                   </button>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* ── Summary ── */}
@@ -119,7 +122,7 @@ const Cart = () => {
 
               <div className="cart-summary-rows">
                 {cart.map(item => (
-                  <div key={item.id} className="cart-summary-row">
+                  <div key={item._cartKey || item.id} className="cart-summary-row">
                     <span>{item.name} × {item.qty}</span>
                     <span>{(item.price * item.qty).toFixed(3)} {t('products.currency')}</span>
                   </div>

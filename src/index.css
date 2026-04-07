@@ -605,3 +605,20 @@ tr:hover td { background: var(--bg); }
   .hero-actions { flex-direction: column; }
   .dashboard-stats { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ── Variant / Package Picker ── */
+.variant-picker {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;
+}
+.variant-picker-sm { gap: 4px; margin-bottom: 8px; }
+.variant-pill {
+  padding: 5px 12px; border-radius: 99px; border: 2px solid var(--border);
+  background: white; color: var(--text); font-family: 'Tajawal', sans-serif;
+  font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
+  white-space: nowrap;
+}
+.variant-pill:hover { border-color: var(--primary); color: var(--primary); }
+.variant-pill.active {
+  background: var(--primary); color: white; border-color: var(--primary);
+}
+.variant-picker-sm .variant-pill { padding: 3px 9px; font-size: 0.75rem; }

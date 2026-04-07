@@ -16,10 +16,11 @@ const Products = () => {
   const { t, lang } = useLanguage();
   const [activeCat,   setActiveCat]   = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [addedId,     setAddedId]     = useState(null);
-  const [localQtys,   setLocalQtys]   = useState({});
+  const [addedId,          setAddedId]          = useState(null);
+  const [localQtys,        setLocalQtys]        = useState({});
+  const [selectedVariants, setSelectedVariants] = useState({});
 
-  const getCartItem = (id) => cart.find(i => i.id === id);
+  const getCartItem = (cartKey) => cart.find(i => (i._cartKey || i.id) === cartKey);
   const getLocalQty = (id) => localQtys[id] ?? 1;
   const changeLocalQty = (id, delta) => setLocalQtys(prev => ({
     ...prev, [id]: Math.max(1, (prev[id] ?? 1) + delta)
@@ -48,9 +49,17 @@ const Products = () => {
 
   const handleAdd = (p) => {
     const qty = getLocalQty(p.id);
-    const cartItem = getCartItem(p.id);
-    if (cartItem) { updateCartQty(p.id, qty); }
-    else { addToCart(p); if (qty > 1) updateCartQty(p.id, qty); }
+    const variants = p.variants || [];
+    const hasVariants = variants.length > 0;
+    const selVarIdx = selectedVariants[p.id] ?? 0;
+    const selVar = hasVariants ? variants[selVarIdx] : null;
+    const cartKey = hasVariants ? `${p.id}_v${selVarIdx}` : String(p.id);
+    const productToAdd = hasVariants
+      ? { ...p, _cartKey: cartKey, price: selVar.price, name: `${p.name} — ${selVar.nameAr}`, nameEn: p.nameEn ? `${p.nameEn} — ${selVar.nameEn}` : undefined }
+      : { ...p, _cartKey: cartKey };
+    const cartItem = getCartItem(cartKey);
+    if (cartItem) { updateCartQty(cartKey, cartItem.qty + qty); }
+    else { addToCart(productToAdd, qty); }
     setAddedId(p.id);
     setTimeout(() => setAddedId(null), 1200);
   };
@@ -174,9 +183,29 @@ const Products = () => {
                       <div className="product-specs">
                         {p.specs?.map((s, i) => <span key={i} className="product-spec">{s}</span>)}
                       </div>
+                      {/* Variant picker */}
+                      {(p.variants || []).length > 0 && (
+                        <div className="variant-picker">
+                          {p.variants.map((v, vi) => (
+                            <button
+                              key={vi}
+                              type="button"
+                              className={`variant-pill${(selectedVariants[p.id] ?? 0) === vi ? ' active' : ''}`}
+                              onClick={() => setSelectedVariants(prev => ({ ...prev, [p.id]: vi }))}
+                            >
+                              {lang === 'en' && v.nameEn ? v.nameEn : v.nameAr}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                       <div className="product-footer">
                         <div className="product-price">
-                          {Number(p.price).toFixed(3)} <span>{t('products.currency')}</span>
+                          {(() => {
+                            const variants = p.variants || [];
+                            const selVar = variants.length > 0 ? variants[selectedVariants[p.id] ?? 0] : null;
+                            const price = selVar ? selVar.price : p.price;
+                            return <>{Number(price).toFixed(3)} <span>{t('products.currency')}</span></>;
+                          })()}
                         </div>
                         <div className="product-qty-controls">
                           <button className="qty-btn qty-btn-plus" onClick={() => changeLocalQty(p.id, 1)} aria-label="زيادة">

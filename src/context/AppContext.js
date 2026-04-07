@@ -117,20 +117,22 @@ export const AppProvider = ({ children }) => {
   };
 
   /* ── Cart ── */
-  const addToCart = (product) =>
+  const addToCart = (product, qty = 1) => {
+    const cartKey = product._cartKey || product.id;
     setCart(prev => {
-      const ex = prev.find(i => i.id === product.id);
+      const ex = prev.find(i => (i._cartKey || i.id) === cartKey);
       return ex
-        ? prev.map(i => i.id === product.id ? { ...i, qty: i.qty + 1 } : i)
-        : [...prev, { ...product, qty: 1 }];
+        ? prev.map(i => (i._cartKey || i.id) === cartKey ? { ...i, qty: i.qty + qty } : i)
+        : [...prev, { ...product, _cartKey: cartKey, qty }];
     });
+  };
 
-  const removeFromCart = (id) => setCart(prev => prev.filter(i => i.id !== id));
+  const removeFromCart = (cartKey) => setCart(prev => prev.filter(i => (i._cartKey || i.id) !== cartKey));
 
-  const updateCartQty = (id, qty) =>
+  const updateCartQty = (cartKey, qty) =>
     setCart(prev => qty <= 0
-      ? prev.filter(i => i.id !== id)
-      : prev.map(i => i.id === id ? { ...i, qty } : i)
+      ? prev.filter(i => (i._cartKey || i.id) !== cartKey)
+      : prev.map(i => (i._cartKey || i.id) === cartKey ? { ...i, qty } : i)
     );
 
   const clearCart = () => setCart([]);
