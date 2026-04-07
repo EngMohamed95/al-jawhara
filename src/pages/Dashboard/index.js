@@ -20,7 +20,7 @@ const ROLE_PERMISSIONS = {
   viewer: { products: false, categories: false, inventory: true,  orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false },
 };
 
-const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '' };
+const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '', countryOfOrigin: 'KW', hsCode: '' };
 const emptyUser    = { username: '', password: '', name: '', email: '', phone: '', role: 'viewer', status: 'active' };
 const emptyCoupon  = { code: '', type: 'percent', value: '', minOrder: '', maxUses: '', expiry: '', status: 'active', desc: '' };
 
@@ -167,7 +167,7 @@ const Dashboard = () => {
 
   const openAddProduct  = () => { setProductForm(emptyProduct); setProductErr(''); setProductSaved(false); setProductModal('add'); };
   const openEditProduct = (p) => {
-    setProductForm({ name: p.name, nameEn: p.nameEn || '', sku: p.sku || '', category: p.category, price: p.price, stock: p.stock, status: p.status, image: p.image || '', gallery: p.gallery || [], desc: p.desc || '', descEn: p.descEn || '', badge: p.badge || '' });
+    setProductForm({ name: p.name, nameEn: p.nameEn || '', sku: p.sku || '', category: p.category, price: p.price, stock: p.stock, status: p.status, image: p.image || '', gallery: p.gallery || [], desc: p.desc || '', descEn: p.descEn || '', badge: p.badge || '', isPhysical: p.isPhysical !== false, weight: p.weight || '', dimLength: p.dimLength || '', dimWidth: p.dimWidth || '', dimHeight: p.dimHeight || '', countryOfOrigin: p.countryOfOrigin || 'KW', hsCode: p.hsCode || '' });
     setEditProduct(p); setProductErr(''); setProductSaved(false); setProductModal('edit');
   };
   const closeProductModal = () => { setProductModal(null); setEditProduct(null); setProductImagePreview(''); setProductGalleryPreviews([]); };
@@ -224,7 +224,7 @@ const Dashboard = () => {
 
   const handleProductSave = async (e) => {
     e.preventDefault(); setProductErr('');
-    const data = { ...productForm, price: parseFloat(productForm.price), stock: parseInt(productForm.stock), specs: [], badge: productForm.badge || null };
+    const data = { ...productForm, price: parseFloat(productForm.price), stock: parseInt(productForm.stock), specs: [], badge: productForm.badge || null, weight: productForm.weight ? parseFloat(productForm.weight) : null, dimLength: productForm.dimLength ? parseFloat(productForm.dimLength) : null, dimWidth: productForm.dimWidth ? parseFloat(productForm.dimWidth) : null, dimHeight: productForm.dimHeight ? parseFloat(productForm.dimHeight) : null };
     try {
       if (productModal === 'add') await addProduct(data);
       else await updateProduct(editProduct.id, { ...editProduct, ...data });
@@ -336,21 +336,36 @@ const Dashboard = () => {
   /* ── Shipping tab (local edits then save via siteContent) ── */
   const [shippingZones, setShippingZones] = useState(null);
   const [shippingSaved, setShippingSaved] = useState(false);
+  const [shippingTab,   setShippingTab]   = useState('zones'); // 'zones' | 'companies'
+
+  const defaultShipCompanies = {
+    aramex:    { enabled: false, apiKey: '', accountNumber: '' },
+    dhl:       { enabled: false, apiKey: '', accountNumber: '' },
+    zajel:     { enabled: false, apiKey: '', accountNumber: '' },
+    fetchr:    { enabled: false, apiKey: '', accountNumber: '' },
+    mawasalat: { enabled: false, apiKey: '', accountNumber: '' },
+  };
+  const [shipCompanies, setShipCompanies] = useState(null);
 
   const openShippingTab = () => {
     if (!shippingZones && siteContent?.shippingZones)
       setShippingZones(JSON.parse(JSON.stringify(siteContent.shippingZones)));
     else if (!shippingZones)
       setShippingZones(translations.kuwaitZones.map(z => ({ ...z, enabled: true })));
+    if (!shipCompanies)
+      setShipCompanies(siteContent?.shipCompanies ? JSON.parse(JSON.stringify(siteContent.shipCompanies)) : { ...defaultShipCompanies });
     setView('shipping');
   };
 
   const updateZoneFee     = (id, fee)     => setShippingZones(z => z.map(x => x.id === id ? { ...x, fee: parseFloat(fee) || 0 } : x));
   const toggleZone        = (id)          => setShippingZones(z => z.map(x => x.id === id ? { ...x, enabled: !x.enabled } : x));
 
+  const toggleShipCompany   = (key)       => setShipCompanies(p => ({ ...p, [key]: { ...p[key], enabled: !p[key].enabled } }));
+  const setShipCompanyField = (key, f, v) => setShipCompanies(p => ({ ...p, [key]: { ...p[key], [f]: v } }));
+
   const saveShipping = async () => {
     try {
-      await saveSiteContent({ ...siteContent, shippingZones });
+      await saveSiteContent({ ...siteContent, shippingZones, shipCompanies });
       setShippingSaved(true); setTimeout(() => setShippingSaved(false), 2500);
     } catch { alert('حدث خطأ أثناء الحفظ.'); }
   };
@@ -1113,39 +1128,95 @@ const Dashboard = () => {
           )}
 
           {/* ══ SHIPPING ══ */}
-          {view === 'shipping' && shippingZones && (
+          {view === 'shipping' && shippingZones && shipCompanies && (
             <div>
               <div className="dash-header-row">
-                <div className="dashboard-title">الشحن والتوصيل — الكويت</div>
+                <div className="dashboard-title">الشحن والتوصيل</div>
                 <button className="btn btn-green btn-sm" onClick={saveShipping}><i className="fas fa-save"></i> حفظ</button>
               </div>
               {shippingSaved && <AlertSuccess msg="تم حفظ إعدادات الشحن بنجاح!" />}
-              <p className="dash-section-desc">تحكم في مناطق التوصيل ورسومها داخل الكويت.</p>
-              <div className="shipping-zones-grid">
-                {shippingZones.map(zone => (
-                  <div key={zone.id} className={`shipping-zone-card${zone.enabled ? '' : ' disabled-zone'}`}>
-                    <div className="zone-card-header">
-                      <div className="zone-name">{zone.ar}</div>
-                      <label className="toggle-switch">
-                        <input type="checkbox" checked={zone.enabled} onChange={() => toggleZone(zone.id)} />
-                        <span className="toggle-slider"></span>
-                      </label>
-                    </div>
-                    <div className="zone-name-en">{zone.en}</div>
-                    <div className="zone-fee-row">
-                      <label className="form-label" style={{ marginBottom: 0 }}>رسوم التوصيل (د.ك)</label>
-                      <input
-                        className="form-input zone-fee-input"
-                        type="number" step="0.250" min="0"
-                        value={zone.fee}
-                        onChange={e => updateZoneFee(zone.id, e.target.value)}
-                        dir="ltr"
-                        disabled={!zone.enabled}
-                      />
-                    </div>
-                  </div>
-                ))}
+
+              {/* Tab switcher */}
+              <div className="shipping-tabs">
+                <button className={`shipping-tab-btn${shippingTab === 'zones' ? ' active' : ''}`} onClick={() => setShippingTab('zones')}>
+                  <i className="fas fa-map-marker-alt"></i> مناطق التوصيل
+                </button>
+                <button className={`shipping-tab-btn${shippingTab === 'companies' ? ' active' : ''}`} onClick={() => setShippingTab('companies')}>
+                  <i className="fas fa-truck"></i> شركات الشحن
+                </button>
               </div>
+
+              {/* ── Zones ── */}
+              {shippingTab === 'zones' && (
+                <>
+                  <p className="dash-section-desc">تحكم في مناطق التوصيل ورسومها داخل الكويت.</p>
+                  <div className="shipping-zones-grid">
+                    {shippingZones.map(zone => (
+                      <div key={zone.id} className={`shipping-zone-card${zone.enabled ? '' : ' disabled-zone'}`}>
+                        <div className="zone-card-header">
+                          <div className="zone-name">{zone.ar}</div>
+                          <label className="toggle-switch">
+                            <input type="checkbox" checked={zone.enabled} onChange={() => toggleZone(zone.id)} />
+                            <span className="toggle-slider"></span>
+                          </label>
+                        </div>
+                        <div className="zone-name-en">{zone.en}</div>
+                        <div className="zone-fee-row">
+                          <label className="form-label" style={{ marginBottom: 0 }}>رسوم التوصيل (د.ك)</label>
+                          <input className="form-input zone-fee-input" type="number" step="0.250" min="0" value={zone.fee} onChange={e => updateZoneFee(zone.id, e.target.value)} dir="ltr" disabled={!zone.enabled} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* ── Companies ── */}
+              {shippingTab === 'companies' && (
+                <>
+                  <p className="dash-section-desc">فعّل شركات الشحن وأدخل بيانات API لكل شركة لتفعيل التتبع التلقائي.</p>
+                  <div className="payment-gateways-grid">
+                    {[
+                      { key: 'aramex',    nameAr: 'أرامكس الكويت',  nameEn: 'Aramex Kuwait',     emoji: '📦', bg: '#fff3e0', color: '#e65100', site: 'aramex.com' },
+                      { key: 'dhl',       nameAr: 'DHL الكويت',      nameEn: 'DHL Express Kuwait', emoji: '✈️', bg: '#fff9c4', color: '#d32f2f', site: 'dhl.com' },
+                      { key: 'zajel',     nameAr: 'زاجل إكسبريس',   nameEn: 'Zajel Express',      emoji: '🚀', bg: '#e8f5e9', color: '#2e7d32', site: 'zajel.com' },
+                      { key: 'fetchr',    nameAr: 'فيتشر الكويت',   nameEn: 'Fetchr Kuwait',      emoji: '🔄', bg: '#e3f2fd', color: '#1565c0', site: 'fetchr.com' },
+                      { key: 'mawasalat', nameAr: 'مواصلات',         nameEn: 'Mawasalat Express',  emoji: '🏠', bg: '#f3e5f5', color: '#6a1b9a', site: 'mawasalat.com' },
+                    ].map(co => (
+                      <div key={co.key} className="gateway-card">
+                        <div className="gateway-header">
+                          <div className="gateway-info">
+                            <div className="gateway-icon" style={{ background: co.bg, fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{co.emoji}</div>
+                            <div>
+                              <div className="gateway-name">{co.nameAr}</div>
+                              <div className="gateway-sub">{co.nameEn}</div>
+                            </div>
+                          </div>
+                          <label className="toggle-switch">
+                            <input type="checkbox" checked={shipCompanies[co.key]?.enabled || false} onChange={() => toggleShipCompany(co.key)} />
+                            <span className="toggle-slider"></span>
+                          </label>
+                        </div>
+                        {shipCompanies[co.key]?.enabled && (
+                          <div className="gateway-fields">
+                            <div className="form-group">
+                              <label className="form-label">API Key</label>
+                              <input className="form-input" dir="ltr" value={shipCompanies[co.key]?.apiKey || ''} onChange={e => setShipCompanyField(co.key, 'apiKey', e.target.value)} placeholder={`Enter ${co.nameEn} API key...`} />
+                            </div>
+                            <div className="form-group">
+                              <label className="form-label">رقم الحساب</label>
+                              <input className="form-input" dir="ltr" value={shipCompanies[co.key]?.accountNumber || ''} onChange={e => setShipCompanyField(co.key, 'accountNumber', e.target.value)} placeholder="Account / Customer Number" />
+                            </div>
+                            <p className="gateway-coming-soon">
+                              <i className="fas fa-circle-info"></i> للحصول على API Key تفضل بزيارة <a href={`https://${co.site}`} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>{co.site}</a>
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           )}
 
@@ -1459,6 +1530,56 @@ const Dashboard = () => {
                   <div className="form-group"><label className="form-label">السعر (د.ك) *</label><input className="form-input" type="number" step="0.001" min="0" name="price" value={productForm.price} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
                   <div className="form-group"><label className="form-label">المخزون *</label><input className="form-input" type="number" min="0" name="stock" value={productForm.stock} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
                 </div>
+                {/* ── Shipping ── */}
+                <div className="product-lang-divider">🚚 الشحن / Shipping</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                  <label className="toggle-switch">
+                    <input type="checkbox" checked={productForm.isPhysical} onChange={e => setProductForm(p => ({ ...p, isPhysical: e.target.checked }))} />
+                    <span className="toggle-slider"></span>
+                  </label>
+                  <span style={{ fontWeight: 600, fontSize: '14px' }}>منتج مادي / Physical product</span>
+                </div>
+                {productForm.isPhysical && (
+                  <>
+                    <div className="modal-grid2">
+                      <div className="form-group">
+                        <label className="form-label">الوزن (كغ)</label>
+                        <input className="form-input" type="number" step="0.01" min="0" value={productForm.weight} onChange={e => setProductForm(p => ({ ...p, weight: e.target.value }))} dir="ltr" placeholder="0.50" />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">الأبعاد: طول × عرض × ارتفاع (سم)</label>
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          <input className="form-input" type="number" step="0.1" min="0" value={productForm.dimLength} onChange={e => setProductForm(p => ({ ...p, dimLength: e.target.value }))} dir="ltr" placeholder="L" />
+                          <span style={{ color: 'var(--text-light)', flexShrink: 0 }}>×</span>
+                          <input className="form-input" type="number" step="0.1" min="0" value={productForm.dimWidth}  onChange={e => setProductForm(p => ({ ...p, dimWidth:  e.target.value }))} dir="ltr" placeholder="W" />
+                          <span style={{ color: 'var(--text-light)', flexShrink: 0 }}>×</span>
+                          <input className="form-input" type="number" step="0.1" min="0" value={productForm.dimHeight} onChange={e => setProductForm(p => ({ ...p, dimHeight: e.target.value }))} dir="ltr" placeholder="H" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="modal-grid2">
+                      <div className="form-group">
+                        <label className="form-label">بلد المنشأ</label>
+                        <select className="form-select" value={productForm.countryOfOrigin} onChange={e => setProductForm(p => ({ ...p, countryOfOrigin: e.target.value }))}>
+                          <option value="KW">🇰🇼 الكويت (KW)</option>
+                          <option value="SA">🇸🇦 السعودية (SA)</option>
+                          <option value="AE">🇦🇪 الإمارات (AE)</option>
+                          <option value="CN">🇨🇳 الصين (CN)</option>
+                          <option value="TR">🇹🇷 تركيا (TR)</option>
+                          <option value="IN">🇮🇳 الهند (IN)</option>
+                          <option value="US">🇺🇸 أمريكا (US)</option>
+                          <option value="DE">🇩🇪 ألمانيا (DE)</option>
+                          <option value="EG">🇪🇬 مصر (EG)</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">HS Code <span style={{ fontSize: '11px', color: 'var(--text-light)' }}>رمز التعريفة الجمركية</span></label>
+                        <input className="form-input" dir="ltr" value={productForm.hsCode} onChange={e => setProductForm(p => ({ ...p, hsCode: e.target.value }))} placeholder="e.g. 4818.10.00" />
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 <div className="modal-actions">
                   <button type="button" onClick={closeProductModal} className="btn btn-outline">إلغاء</button>
                   <button type="submit" className="btn btn-green" disabled={uploadingImg}><i className="fas fa-save"></i> حفظ</button>
