@@ -36,6 +36,12 @@ const api = {
   getSiteContent:    ()     => req('siteContent/1'),
   updateSiteContent: (data) => req('siteContent/1', { method: 'PUT', body: JSON.stringify(data) }),
 
+  // Categories
+  getCategories:    ()       => req('categories'),
+  createCategory:   (data)   => req('categories',       { method: 'POST',   body: JSON.stringify(data) }),
+  updateCategory:   (id, d)  => req(`categories/${id}`, { method: 'PUT',    body: JSON.stringify(d) }),
+  deleteCategory:   (id)     => req(`categories/${id}`, { method: 'DELETE' }),
+
   // Coupons
   getCoupons:    ()       => req('coupons'),
   createCoupon:  (data)   => req('coupons',       { method: 'POST',   body: JSON.stringify(data) }),

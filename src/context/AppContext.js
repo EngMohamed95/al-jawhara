@@ -13,6 +13,7 @@ export const AppProvider = ({ children }) => {
   const [orders, setOrders]           = useState([]);
   const [users, setUsers]             = useState([]);
   const [coupons, setCoupons]         = useState([]);
+  const [categories, setCategories]   = useState([]);
   const [siteContent, setSiteContent] = useState(null);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState(null);
@@ -24,18 +25,20 @@ export const AppProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const [prods, ords, usrs, content, coups] = await Promise.all([
+      const [prods, ords, usrs, content, coups, cats] = await Promise.all([
         api.getProducts(),
         api.getOrders(),
         api.getUsers(),
         api.getSiteContent(),
         api.getCoupons(),
+        api.getCategories(),
       ]);
       setProducts(prods);
       setOrders(ords);
       setUsers(usrs);
       setSiteContent(content);
       setCoupons(coups);
+      setCategories(cats);
     } catch {
       setError('تعذر الاتصال بالخادم. تأكد من تشغيل قاعدة البيانات (npm start).');
     } finally {
@@ -75,6 +78,11 @@ export const AppProvider = ({ children }) => {
   const addCoupon    = async (d)     => { const n = await api.createCoupon(d);      setCoupons(p => [...p, n]); return n; };
   const updateCoupon = async (id, d) => { const u = await api.updateCoupon(id, d);  setCoupons(p => p.map(x => x.id === id ? u : x)); return u; };
   const deleteCoupon = async (id)    => { await api.deleteCoupon(id);                setCoupons(p => p.filter(x => x.id !== id)); };
+
+  /* ── Categories ── */
+  const addCategory    = async (d)     => { const n = await api.createCategory(d);      setCategories(p => [...p, n]); return n; };
+  const updateCategory = async (id, d) => { const u = await api.updateCategory(id, d);  setCategories(p => p.map(x => x.id === id ? u : x)); return u; };
+  const deleteCategory = async (id)    => { await api.deleteCategory(id);                setCategories(p => p.filter(x => x.id !== id)); };
 
   /* ── Orders ── */
   const updateOrderStatus = async (id, status) => {
@@ -133,11 +141,12 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{
-      products, orders, users, coupons, siteContent, loading, error, auth,
+      products, orders, users, coupons, categories, siteContent, loading, error, auth,
       login, logout,
       addProduct, updateProduct, deleteProduct,
       addUser, updateUser, deleteUser,
       addCoupon, updateCoupon, deleteCoupon,
+      addCategory, updateCategory, deleteCategory,
       updateOrderStatus,
       saveSiteContent,
       cart, addToCart, removeFromCart, updateCartQty, clearCart,

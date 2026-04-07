@@ -1,3 +1,97 @@
+/* ── Sidebar Sub-items (Products > Collections, Inventory...) ── */
+.sidebar-chevron {
+  font-size: 10px;
+  margin-inline-start: auto;
+  opacity: 0.6;
+  transition: transform 0.2s;
+}
+.sidebar-sub-items {
+  margin: 2px 0 6px 0;
+  padding-inline-start: 14px;
+  border-inline-start: 2px solid rgba(255,255,255,0.12);
+  margin-inline-start: 20px;
+}
+.sidebar-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.65);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 2px;
+  border: none;
+  background: none;
+  font-family: 'Tajawal', sans-serif;
+  width: 100%;
+  text-align: right;
+}
+.sidebar-sub-item:hover { background: rgba(255,255,255,0.08); color: white; }
+.sidebar-sub-item.active { background: rgba(255,255,255,0.15); color: white; font-weight: 700; }
+.sidebar-sub-item.disabled { opacity: 0.4; cursor: not-allowed; }
+.sidebar-sub-item i { width: 16px; text-align: center; font-size: 13px; flex-shrink: 0; }
+
+/* ── Category emoji badge ── */
+.cat-emoji-badge {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--primary-xlight);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+
+/* ── Inventory table ── */
+.inv-adjust-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.inv-btn {
+  padding: 4px 9px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-family: 'Tajawal', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.inv-btn:hover { box-shadow: var(--shadow-sm); }
+.inv-minus { color: #dc2626; border-color: #fca5a5; }
+.inv-minus:hover { background: #fee2e2; }
+.inv-plus  { color: #15803d; border-color: #86efac; }
+.inv-plus:hover  { background: #dcfce7; }
+.inv-stock-input {
+  width: 90px;
+  padding: 6px 10px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text);
+  background: var(--surface);
+  transition: border-color 0.2s;
+  direction: ltr;
+}
+.inv-stock-input:focus { outline: none; border-color: var(--primary); }
+.inv-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+}
+.inv-ok  { background: #dcfce7; color: #15803d; }
+.inv-low { background: #fef3c7; color: #d97706; }
+.inv-out { background: #fee2e2; color: #dc2626; }
+
 /* ── Sidebar Header ── */
 .sidebar-header {
   display: flex; align-items: center; gap: 10px;

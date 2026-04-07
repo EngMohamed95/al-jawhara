@@ -222,7 +222,7 @@
           "status": "active",
           "icon": "📦",
           "desc": "مناديل  عرق عرق عرق",
-      "descEn": "Special sweat tissues",
+          "descEn": "Special sweat tissues",
           "badge": "عرض خاص",
           "specs": [],
           "id": 9,
@@ -489,6 +489,74 @@
       "expiry": "2026-12-31",
       "status": "active",
       "desc": "خصم 10% للعملاء الجدد"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "slug": "facial",
+      "nameAr": "مناديل وجه",
+      "nameEn": "Facial Tissues",
+      "icon": "fa-face-smile",
+      "emoji": "🤧",
+      "sortOrder": 1,
+      "status": "active",
+      "desc": ""
+    },
+    {
+      "id": 2,
+      "slug": "rolls",
+      "nameAr": "رولات",
+      "nameEn": "Rolls",
+      "icon": "fa-scroll",
+      "emoji": "🧻",
+      "sortOrder": 2,
+      "status": "active",
+      "desc": ""
+    },
+    {
+      "id": 3,
+      "slug": "pocket",
+      "nameAr": "محارم جيب",
+      "nameEn": "Pocket Tissues",
+      "icon": "fa-briefcase",
+      "emoji": "📋",
+      "sortOrder": 3,
+      "status": "active",
+      "desc": ""
+    },
+    {
+      "id": 4,
+      "slug": "towels",
+      "nameAr": "مناشف",
+      "nameEn": "Paper Towels",
+      "icon": "fa-hand-sparkles",
+      "emoji": "🙌",
+      "sortOrder": 4,
+      "status": "active",
+      "desc": ""
+    },
+    {
+      "id": 5,
+      "slug": "napkins",
+      "nameAr": "مناديل مائدة",
+      "nameEn": "Napkins",
+      "icon": "fa-utensils",
+      "emoji": "🍽️",
+      "sortOrder": 5,
+      "status": "active",
+      "desc": ""
+    },
+    {
+      "id": 6,
+      "slug": "family",
+      "nameAr": "عروض عائلة",
+      "nameEn": "Family Packs",
+      "icon": "fa-box-open",
+      "emoji": "📦",
+      "sortOrder": 6,
+      "status": "active",
+      "desc": ""
     }
   ]
 }
