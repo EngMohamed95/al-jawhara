@@ -101,15 +101,18 @@
   .home-products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
 
-/* ── Why-us section — dot grid (green tones) ── */
+/* ── Why-us section — dark blue + white text ── */
 .home-why-section {
-  background-color: #f0faf5;
+  background-color: #043d6b;
   background-image:
-    radial-gradient(circle at 10% 20%, rgba(22,163,74,0.12) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(22,163,74,0.10) 0%, transparent 40%),
-    radial-gradient(circle, rgba(22,163,74,0.18) 1.5px, transparent 1.5px);
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,0.06) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(255,255,255,0.06) 0%, transparent 40%),
+    radial-gradient(circle, rgba(255,255,255,0.12) 1.5px, transparent 1.5px);
   background-size: auto, auto, 32px 32px;
 }
+.home-why-section .section-title,
+.home-why-section .section-subtitle { color: white; }
+.home-why-section .section-subtitle { opacity: 0.75; }
 .home-why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
 .home-why-card {
   background: white; border-radius: var(--radius); padding: 30px;
@@ -125,14 +128,15 @@
 .home-why-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
 .home-why-desc  { font-size: 0.86rem; color: var(--text-light); line-height: 1.6; }
 
-/* ── Clients section — dot grid (orange/gold tones) ── */
+/* ── Clients section — same as featured (blue dots) ── */
 .home-clients-section {
-  background-color: #fffbf3;
+  background-color: #eaf1fb;
   background-image:
-    radial-gradient(circle at 85% 15%, rgba(240,149,64,0.14) 0%, transparent 40%),
-    radial-gradient(circle at 15% 85%, rgba(240,149,64,0.10) 0%, transparent 40%),
-    radial-gradient(circle, rgba(240,149,64,0.20) 1.5px, transparent 1.5px);
-  background-size: auto, auto, 32px 32px;
+    radial-gradient(circle at 85% 15%, rgba(6,80,137,0.13) 0%, transparent 40%),
+    radial-gradient(circle at 15% 85%, rgba(240,149,64,0.13) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(6,80,137,0.05) 0%, transparent 60%),
+    radial-gradient(circle, rgba(6,80,137,0.18) 1.5px, transparent 1.5px);
+  background-size: auto, auto, auto, 32px 32px;
 }
 .client-tags { display: flex; flex-wrap: nowrap; gap: 16px; justify-content: center; margin-bottom: 40px; overflow-x: auto; padding-bottom: 8px; }
 .client-tag {
