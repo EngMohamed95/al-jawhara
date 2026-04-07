@@ -20,11 +20,12 @@ const normalizeQ = (s = '') =>
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
 
 const Products = () => {
-  const { products, loading, error, addToCart, cartTotalQty, siteContent: sc } = useApp();
+  const { products, loading, error, addToCart, cart, updateCartQty, removeFromCart, cartTotalQty, siteContent: sc } = useApp();
   const { t, lang } = useLanguage();
-  const [activeCat,    setActiveCat]    = useState('all');
-  const [addedId,      setAddedId]      = useState(null);
-  const [searchQuery,  setSearchQuery]  = useState('');
+  const [activeCat,   setActiveCat]   = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const getCartItem = (id) => cart.find(i => i.id === id);
 
   const categories = [
     { id: 'all',     label: t('products.all') },
@@ -43,11 +44,7 @@ const Products = () => {
       f => normalizeQ(f).includes(sq)
     ));
 
-  const handleAdd = (product) => {
-    addToCart(product);
-    setAddedId(product.id);
-    setTimeout(() => setAddedId(null), 1200);
-  };
+  const handleAdd = (product) => addToCart(product);
 
   return (
     <>
@@ -152,16 +149,28 @@ const Products = () => {
                         <div className="product-price">
                           {Number(p.price).toFixed(3)} <span>{t('products.currency')}</span>
                         </div>
-                        <button
-                          className={`btn btn-sm ${addedId === p.id ? 'btn-green' : 'btn-primary'}`}
-                          onClick={() => handleAdd(p)}
-                          aria-label={`${t('products.add')} ${p.name}`}
-                        >
-                          {addedId === p.id
-                            ? <><i className="fas fa-check" aria-hidden="true"></i> {t('products.added')}</>
-                            : <><i className="fas fa-cart-plus" aria-hidden="true"></i> {t('products.add')}</>
-                          }
-                        </button>
+                        {(() => {
+                          const cartItem = getCartItem(p.id);
+                          return cartItem ? (
+                            <div className="product-qty-controls">
+                              <button className="qty-btn" onClick={() => cartItem.qty <= 1 ? removeFromCart(p.id) : updateCartQty(p.id, cartItem.qty - 1)} aria-label="تقليل">
+                                <i className="fas fa-minus"></i>
+                              </button>
+                              <span className="qty-value">{cartItem.qty}</span>
+                              <button className="qty-btn qty-btn-plus" onClick={() => updateCartQty(p.id, cartItem.qty + 1)} aria-label="زيادة">
+                                <i className="fas fa-plus"></i>
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              className="btn btn-sm btn-primary product-add-btn"
+                              onClick={() => handleAdd(p)}
+                              aria-label={`${t('products.add')} ${p.name}`}
+                            >
+                              <i className="fas fa-cart-plus" aria-hidden="true"></i> {t('products.add')}
+                            </button>
+                          );
+                        })()}
                       </div>
                     </div>
                   </article>
