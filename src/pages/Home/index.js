@@ -14,7 +14,7 @@ const useScrollReveal = (threshold = 0.15) => {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.unobserve(el); } },
+      ([entry]) => { setVisible(entry.isIntersecting); },
       { threshold }
     );
     obs.observe(el);
