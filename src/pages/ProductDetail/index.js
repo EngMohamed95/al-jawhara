@@ -9,7 +9,7 @@ import './index.css';
 const ProductDetail = () => {
   const { id } = useParams();
   const { products, loading, addToCart, cart, updateCartQty } = useApp();
-  const { t, lang } = useLanguage();
+  const { lang } = useLanguage();
 
   const [selVarIdx, setSelVarIdx] = useState(0);
   const [qty, setQty] = useState(1);
