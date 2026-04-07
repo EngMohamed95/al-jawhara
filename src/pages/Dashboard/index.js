@@ -1578,8 +1578,16 @@ const Dashboard = () => {
                       </div>
                     ))}
                     <div className="form-group content-span2">
-                      <label className="form-label">العنوان</label>
-                      <input className="form-input" value={cf('companyAddress')} onChange={e => setCf('companyAddress', e.target.value)} />
+                      <label className="form-label">العنوان (عربي)</label>
+                      <input className="form-input" value={cf('companyAddress')} onChange={e => setCf('companyAddress', e.target.value)} placeholder="المنطقة الصناعية — الشعيبة، الكويت" />
+                    </div>
+                    <div className="form-group content-span2">
+                      <label className="form-label">العنوان (إنجليزي)</label>
+                      <input className="form-input" dir="ltr" value={cf('companyAddressEn')} onChange={e => setCf('companyAddressEn', e.target.value)} placeholder="Industrial Area — Shuaiba, Kuwait" />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">ساعات العمل (إنجليزي)</label>
+                      <input className="form-input" dir="ltr" value={cf('workHoursEn')} onChange={e => setCf('workHoursEn', e.target.value)} placeholder="Sunday – Thursday: 8 AM – 5 PM" />
                     </div>
                   </div>
 

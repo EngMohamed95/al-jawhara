@@ -25,8 +25,12 @@ const Contact = () => {
   const phone          = sc?.companyPhone    || '(965) 23263824';
   const whatsapp       = sc?.companyWhatsapp || '(965) 96625306';
   const email          = sc?.companyEmail    || 'info@al-jawhara.com';
-  const address        = sc?.companyAddress  || t('contact.addressFallback');
-  const workHours      = sc?.workHours       || t('contact.workHoursFallback');
+  const address   = lang === 'en'
+    ? (sc?.companyAddressEn || 'Industrial Area — Shuaiba, Kuwait')
+    : (sc?.companyAddress   || t('contact.addressFallback'));
+  const workHours = lang === 'en'
+    ? (sc?.workHoursEn || 'Sunday – Thursday: 8 AM – 5 PM')
+    : (sc?.workHours   || t('contact.workHoursFallback'));
   const mapEmbedUrl    = sc?.mapEmbedUrl     || '';
   const contactHeaderImg = sc?.contactHeaderImg || '';
   const socialLinks    = DEFAULT_SOCIAL.map(s => ({ ...s, href: sc?.[s.field] || '#' })).filter(s => s.href !== '#' || true);
