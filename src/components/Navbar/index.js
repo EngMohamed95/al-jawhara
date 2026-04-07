@@ -61,7 +61,7 @@ const Navbar = () => {
             onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
             aria-label="تغيير اللغة"
           >
-            {lang === 'ar' ? 'عر' : 'EN'}
+            {lang === 'ar' ? 'AR' : 'EN'}
           </button>
 
           {/* Cart */}
