@@ -18,7 +18,21 @@ export const AppProvider = ({ children }) => {
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState(null);
   const [auth, setAuth]               = useState(getStoredAuth);
-  const [cart, setCart]               = useState([]);
+
+  /* ── Cart — persisted per user in localStorage ── */
+  const getCartKey  = (a) => `jawhara_cart_${a?.id || 'guest'}`;
+  const getStoredCart = () => {
+    try { return JSON.parse(localStorage.getItem(getCartKey(getStoredAuth()))) || []; }
+    catch { return []; }
+  };
+  const [cart, setCartState] = useState(getStoredCart);
+
+  const setCart = (updater) =>
+    setCartState(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      try { localStorage.setItem(getCartKey(getStoredAuth()), JSON.stringify(next)); } catch {}
+      return next;
+    });
 
   /* ── Fetch all data ── */
   const fetchAll = useCallback(async () => {
@@ -60,8 +74,10 @@ export const AppProvider = ({ children }) => {
   };
 
   const logout = () => {
+    localStorage.removeItem(getCartKey(auth));
     setAuth(null);
     localStorage.removeItem('jawhara_auth');
+    setCart([]);
   };
 
   /* ── Products ── */
