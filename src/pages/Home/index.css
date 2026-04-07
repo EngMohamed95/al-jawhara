@@ -73,31 +73,31 @@
 .home-prod-price { font-size: 1rem; font-weight: 800; color: var(--primary); }
 .home-prod-price span { font-size: 0.72rem; font-weight: 600; }
 
-/* Add button */
-.home-prod-add-btn {
-  width: 36px; height: 36px; border-radius: 50%; border: none;
-  background: var(--primary); color: white; font-size: 14px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: background 0.2s, transform 0.2s;
-  flex-shrink: 0;
-}
-.home-prod-add-btn:hover { background: var(--primary-dark); transform: scale(1.1); }
-.home-prod-add-btn.added { background: #16a34a; }
-
-/* Qty controls */
+/* Qty stepper */
 .home-prod-qty {
   display: flex; align-items: center; gap: 0;
   border: 2px solid var(--primary); border-radius: 99px; overflow: hidden;
 }
 .hqty-btn {
   width: 30px; height: 30px; background: none; border: none;
-  color: var(--primary); font-size: 12px; cursor: pointer;
+  color: var(--primary); font-size: 11px; cursor: pointer;
   display: flex; align-items: center; justify-content: center; transition: background 0.15s;
 }
 .hqty-btn:hover { background: var(--primary-xlight); }
 .hqty-plus { background: var(--primary); color: white; }
 .hqty-plus:hover { background: var(--primary-dark); }
 .hqty-val { min-width: 26px; text-align: center; font-weight: 700; font-size: 14px; color: var(--primary); }
+
+/* Add to cart button */
+.home-prod-cart-btn {
+  width: 100%; margin-top: 10px; padding: 9px 0;
+  background: var(--primary); color: white; border: none; border-radius: 10px;
+  font-family: 'Tajawal', sans-serif; font-size: 0.88rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+}
+.home-prod-cart-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.home-prod-cart-btn.added { background: #16a34a; }
 
 @media (max-width: 480px) {
   .home-products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }

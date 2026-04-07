@@ -20,12 +20,18 @@ const normalizeQ = (s = '') =>
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
 
 const Products = () => {
-  const { products, loading, error, addToCart, cart, updateCartQty, removeFromCart, cartTotalQty, siteContent: sc } = useApp();
+  const { products, loading, error, addToCart, cart, updateCartQty, cartTotalQty, siteContent: sc } = useApp();
   const { t, lang } = useLanguage();
   const [activeCat,   setActiveCat]   = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [addedId,     setAddedId]     = useState(null);
+  const [localQtys,   setLocalQtys]   = useState({});
 
   const getCartItem = (id) => cart.find(i => i.id === id);
+  const getLocalQty = (id) => localQtys[id] ?? 1;
+  const changeLocalQty = (id, delta) => setLocalQtys(prev => ({
+    ...prev, [id]: Math.max(1, (prev[id] ?? 1) + delta)
+  }));
 
   const categories = [
     { id: 'all',     label: t('products.all') },
@@ -44,7 +50,14 @@ const Products = () => {
       f => normalizeQ(f).includes(sq)
     ));
 
-  const handleAdd = (product) => addToCart(product);
+  const handleAdd = (p) => {
+    const qty = getLocalQty(p.id);
+    const cartItem = getCartItem(p.id);
+    if (cartItem) { updateCartQty(p.id, qty); }
+    else { addToCart(p); if (qty > 1) updateCartQty(p.id, qty); }
+    setAddedId(p.id);
+    setTimeout(() => setAddedId(null), 1200);
+  };
 
   return (
     <>
@@ -149,29 +162,26 @@ const Products = () => {
                         <div className="product-price">
                           {Number(p.price).toFixed(3)} <span>{t('products.currency')}</span>
                         </div>
-                        {(() => {
-                          const cartItem = getCartItem(p.id);
-                          return cartItem ? (
-                            <div className="product-qty-controls">
-                              <button className="qty-btn" onClick={() => cartItem.qty <= 1 ? removeFromCart(p.id) : updateCartQty(p.id, cartItem.qty - 1)} aria-label="تقليل">
-                                <i className="fas fa-minus"></i>
-                              </button>
-                              <span className="qty-value">{cartItem.qty}</span>
-                              <button className="qty-btn qty-btn-plus" onClick={() => updateCartQty(p.id, cartItem.qty + 1)} aria-label="زيادة">
-                                <i className="fas fa-plus"></i>
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              className="btn btn-sm btn-primary product-add-btn"
-                              onClick={() => handleAdd(p)}
-                              aria-label={`${t('products.add')} ${p.name}`}
-                            >
-                              <i className="fas fa-cart-plus" aria-hidden="true"></i> {t('products.add')}
-                            </button>
-                          );
-                        })()}
+                        <div className="product-qty-controls">
+                          <button className="qty-btn qty-btn-plus" onClick={() => changeLocalQty(p.id, 1)} aria-label="زيادة">
+                            <i className="fas fa-plus"></i>
+                          </button>
+                          <span className="qty-value">{getLocalQty(p.id)}</span>
+                          <button className="qty-btn" onClick={() => changeLocalQty(p.id, -1)} aria-label="تقليل">
+                            <i className="fas fa-minus"></i>
+                          </button>
+                        </div>
                       </div>
+                      <button
+                        className={`product-add-to-cart-btn${addedId === p.id ? ' added' : ''}`}
+                        onClick={() => handleAdd(p)}
+                        aria-label={`${t('products.add')} ${p.name}`}
+                      >
+                        <i className={`fas ${addedId === p.id ? 'fa-check' : 'fa-shopping-cart'}`} aria-hidden="true"></i>
+                        {addedId === p.id
+                          ? (lang === 'ar' ? 'تمت الإضافة' : 'Added!')
+                          : t('products.add')}
+                      </button>
                     </div>
                   </article>
                 ))}

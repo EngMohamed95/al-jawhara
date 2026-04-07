@@ -50,12 +50,24 @@ const featuredClients = [
 ];
 
 const Home = () => {
-  const { products, loading, siteContent: sc, addToCart, cart, updateCartQty, removeFromCart } = useApp();
+  const { products, loading, siteContent: sc, addToCart, cart, updateCartQty } = useApp();
   const { t, lang } = useLanguage();
   const [addedId, setAddedId] = useState(null);
+  const [localQtys, setLocalQtys] = useState({});
   const featured = products.filter(p => p.status === 'active').slice(0, 8);
   const getCartItem = (id) => cart.find(i => i.id === id);
-  const handleAdd = (p) => { addToCart(p); setAddedId(p.id); setTimeout(() => setAddedId(null), 1200); };
+  const getLocalQty = (id) => localQtys[id] ?? 1;
+  const changeLocalQty = (id, delta) => setLocalQtys(prev => ({
+    ...prev, [id]: Math.max(1, (prev[id] ?? 1) + delta)
+  }));
+  const handleAdd = (p) => {
+    const qty = getLocalQty(p.id);
+    const cartItem = getCartItem(p.id);
+    if (cartItem) { updateCartQty(p.id, qty); }
+    else { addToCart(p); if (qty > 1) updateCartQty(p.id, qty); }
+    setAddedId(p.id);
+    setTimeout(() => setAddedId(null), 1200);
+  };
 
   /* Hero content — use DB value only in Arabic, always use translation in English */
   const heroBadge   = lang === 'ar' ? (sc?.heroBadge    || t('home.heroBadge'))    : t('home.heroBadge');
@@ -194,18 +206,21 @@ const Home = () => {
                           <div className="home-prod-price">
                             {Number(p.price).toFixed(3)} <span>{t('products.currency')}</span>
                           </div>
-                          {cartItem ? (
-                            <div className="home-prod-qty">
-                              <button className="hqty-btn" onClick={() => cartItem.qty <= 1 ? removeFromCart(p.id) : updateCartQty(p.id, cartItem.qty - 1)}><i className="fas fa-minus"></i></button>
-                              <span className="hqty-val">{cartItem.qty}</span>
-                              <button className="hqty-btn hqty-plus" onClick={() => updateCartQty(p.id, cartItem.qty + 1)}><i className="fas fa-plus"></i></button>
-                            </div>
-                          ) : (
-                            <button className={`home-prod-add-btn${addedId === p.id ? ' added' : ''}`} onClick={() => handleAdd(p)}>
-                              {addedId === p.id ? <i className="fas fa-check"></i> : <i className="fas fa-cart-plus"></i>}
-                            </button>
-                          )}
+                          <div className="home-prod-qty">
+                            <button className="hqty-btn hqty-plus" onClick={() => changeLocalQty(p.id, 1)}><i className="fas fa-plus"></i></button>
+                            <span className="hqty-val">{getLocalQty(p.id)}</span>
+                            <button className="hqty-btn" onClick={() => changeLocalQty(p.id, -1)}><i className="fas fa-minus"></i></button>
+                          </div>
                         </div>
+                        <button
+                          className={`home-prod-cart-btn${addedId === p.id ? ' added' : ''}`}
+                          onClick={() => handleAdd(p)}
+                        >
+                          <i className={`fas ${addedId === p.id ? 'fa-check' : 'fa-shopping-cart'}`}></i>
+                          {addedId === p.id
+                            ? (lang === 'ar' ? 'تمت الإضافة' : 'Added!')
+                            : t('products.add')}
+                        </button>
                       </div>
                     </article>
                   </Reveal>
