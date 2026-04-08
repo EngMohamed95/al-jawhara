@@ -160,6 +160,29 @@ export const AppProvider = ({ children }) => {
     };
     const saved = await api.createOrder(order);
     setOrders(prev => [...prev, saved]);
+
+    /* ── Auto-create customer account if new phone ── */
+    try {
+      const phone = orderData.phone?.replace(/\D/g, '') || '';
+      if (phone) {
+        const existing = users.find(u => u.phone?.replace(/\D/g, '') === phone);
+        if (!existing) {
+          const username = 'c_' + phone;
+          const newUser = await api.createUser({
+            name:     orderData.client || '',
+            username,
+            password: phone.slice(-4),     // كلمة المرور: آخر 4 أرقام
+            phone:    orderData.phone,
+            email:    orderData.email || '',
+            role:     'customer',
+            governorate: orderData.governorate || '',
+            createdAt: new Date().toISOString(),
+          });
+          setUsers(prev => [...prev, newUser]);
+        }
+      }
+    } catch {}
+
     clearCart();
     return saved;
   };
