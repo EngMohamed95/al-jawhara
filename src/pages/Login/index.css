@@ -130,6 +130,79 @@
   font-family: monospace;
 }
 
+/* ── Social Buttons ── */
+.social-login-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.social-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: white;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
+  color: var(--text);
+}
+.social-btn:hover:not(:disabled) {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+.social-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.social-btn-google { border-color: #dadce0; }
+.social-btn-google:hover:not(:disabled) { border-color: #4285F4; }
+
+.social-btn-facebook { background: #1877F2; color: white; border-color: #1877F2; }
+.social-btn-facebook:hover:not(:disabled) { background: #0e6dd9; border-color: #0e6dd9; }
+.social-btn-facebook i { font-size: 17px; }
+
+/* ── Divider ── */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: var(--text-light);
+  font-size: 12px;
+}
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Register row ── */
+.login-register-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--text-light);
+}
+.login-register-link {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.login-register-link:hover { opacity: 0.75; text-decoration: underline; }
+
 /* ── Back link ── */
 .login-back {
   display: flex;

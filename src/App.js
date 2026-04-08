@@ -17,6 +17,7 @@ import OrderSuccess from './pages/OrderSuccess';
 import ProductDetail from './pages/ProductDetail';
 import NotFound    from './pages/NotFound';
 import MyAccount   from './pages/MyAccount';
+import Register    from './pages/Register';
 
 const ProtectedRoute = ({ children }) => {
   const { auth } = useApp();
@@ -25,7 +26,7 @@ const ProtectedRoute = ({ children }) => {
 
 const AppContent = () => {
   const location = useLocation();
-  const isLogin = location.pathname === '/login';
+  const isLogin = location.pathname === '/login' || location.pathname === '/register';
 
   return (
     <div className="app">
@@ -44,6 +45,7 @@ const AppContent = () => {
           <Route path="/order-success" element={<OrderSuccess />} />
           <Route path="/dashboard"     element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/my-account"    element={<MyAccount />} />
+          <Route path="/register"      element={<Register />} />
           <Route path="*"              element={<NotFound />} />
         </Routes>
       </main>

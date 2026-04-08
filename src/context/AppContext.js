@@ -86,6 +86,62 @@ export const AppProvider = ({ children }) => {
     setCart([]);
   };
 
+  /* ── Register new customer ── */
+  const registerCustomer = async ({ name, username, password, phone, email }) => {
+    const allUsers = await api.getUsers();
+    if (allUsers.find(u => u.username === username))
+      throw new Error('اسم المستخدم مستخدم بالفعل');
+    if (email && allUsers.find(u => u.email === email))
+      throw new Error('البريد الإلكتروني مستخدم بالفعل');
+
+    const newUser = await api.createUser({
+      name, username, password,
+      phone: phone || '', email: email || '',
+      role: 'customer',
+      createdAt: new Date().toISOString(),
+    });
+    setUsers(prev => [...prev, newUser]);
+
+    const { password: _, ...safe } = newUser;
+    setAuth(safe);
+    localStorage.setItem('jawhara_auth', JSON.stringify(safe));
+    return safe;
+  };
+
+  /* ── Social login (Google / Facebook) ── */
+  const socialLogin = async ({ name, email, uid, provider }) => {
+    /* check if user already exists by uid or email */
+    const allUsers = await api.getUsers();
+    let user = allUsers.find(u => u.uid === uid) || allUsers.find(u => u.email && u.email === email);
+
+    if (!user) {
+      /* auto-create customer account */
+      const username = (email ? email.split('@')[0] : uid).replace(/[^a-z0-9_]/gi, '_').toLowerCase();
+      const base     = username;
+      let   final    = base;
+      let   i        = 1;
+      while (allUsers.find(u => u.username === final)) { final = `${base}${i++}`; }
+
+      user = await api.createUser({
+        name,
+        username: final,
+        password: uid.slice(-8),
+        email:    email || '',
+        phone:    '',
+        role:     'customer',
+        uid,
+        provider,
+        createdAt: new Date().toISOString(),
+      });
+      setUsers(prev => [...prev, user]);
+    }
+
+    const { password: _, ...safe } = user;
+    setAuth(safe);
+    localStorage.setItem('jawhara_auth', JSON.stringify(safe));
+    return safe;
+  };
+
   /* ── Products ── */
   const addProduct    = async (d)     => { const n = await api.createProduct(d);      setProducts(p => [...p, n]); return n; };
   const updateProduct = async (id, d) => { const u = await api.updateProduct(id, d);  setProducts(p => p.map(x => x.id === id ? u : x)); return u; };
@@ -190,7 +246,7 @@ export const AppProvider = ({ children }) => {
   return (
     <AppContext.Provider value={{
       products, orders, users, coupons, categories, siteContent, loading, error, auth,
-      login, logout,
+      login, logout, socialLogin, registerCustomer,
       addProduct, updateProduct, deleteProduct,
       addUser, updateUser, deleteUser,
       addCoupon, updateCoupon, deleteCoupon,
