@@ -25,7 +25,6 @@ const productStatusLabels = {
   inactive:{ ar: 'متوقف',         en: 'Inactive' },
 };
 
-
 const AlertSuccess = ({ msg }) => (
   <div className="pf-alert pf-alert-success"><i className="fas fa-circle-check"></i> {msg}</div>
 );
@@ -33,11 +32,25 @@ const AlertError = ({ msg }) => (
   <div className="pf-alert pf-alert-error"><i className="fas fa-triangle-exclamation"></i> {msg}</div>
 );
 
-/* ── Props:
-   - mode: 'add' | 'edit'
-   - productId: number (edit mode)
-   - onBack: () => void  — called when done/cancel
-── */
+/* ── Accordion Section ── */
+const AccSection = ({ id, icon, title, badge, open, onToggle, children }) => (
+  <div className={`pf-acc${open ? ' pf-acc-open' : ''}`}>
+    <button type="button" className="pf-acc-header" onClick={() => onToggle(id)}>
+      <span className="pf-acc-icon-wrap">
+        <i className={`fas ${icon}`}></i>
+      </span>
+      <span className="pf-acc-title">{title}</span>
+      {badge != null && <span className="pf-acc-badge">{badge}</span>}
+      <i className={`fas fa-chevron-down pf-acc-arrow`}></i>
+    </button>
+    <div className="pf-acc-body">
+      <div className="pf-acc-inner">
+        {children}
+      </div>
+    </div>
+  </div>
+);
+
 export default function ProductForm({ mode, productId, onBack }) {
   const isEdit = mode === 'edit';
   const { products, categories, addProduct, updateProduct } = useApp();
@@ -49,6 +62,16 @@ export default function ProductForm({ mode, productId, onBack }) {
   const [saved,     setSaved]     = useState(false);
   const [err,       setErr]       = useState('');
   const [uploading, setUploading] = useState(false);
+
+  /* All sections open by default */
+  const [openSections, setOpenSections] = useState(new Set(['images','content','details','shipping','variants']));
+  const toggleSection = (id) => setOpenSections(s => {
+    const n = new Set(s);
+    n.has(id) ? n.delete(id) : n.add(id);
+    return n;
+  });
+  const expandAll  = () => setOpenSections(new Set(['images','content','details','shipping','variants']));
+  const collapseAll = () => setOpenSections(new Set());
 
   /* Load existing product when editing */
   useEffect(() => {
@@ -127,7 +150,7 @@ export default function ProductForm({ mode, productId, onBack }) {
       return { ...p, variants: vs };
     });
 
-  const addVariant   = () => setForm(p => ({ ...p, variants: [...p.variants, emptyVariant()] }));
+  const addVariant    = () => setForm(p => ({ ...p, variants: [...p.variants, emptyVariant()] }));
   const removeVariant = (vi) => setForm(p => ({ ...p, variants: p.variants.filter((_, i) => i !== vi) }));
   const moveVariant   = (vi, dir) => setForm(p => {
     const vs = [...p.variants]; const to = vi + dir;
@@ -144,7 +167,7 @@ export default function ProductForm({ mode, productId, onBack }) {
     setUploading(false);
   };
 
-  const set    = (field, val) => setForm(p => ({ ...p, [field]: val }));
+  const set     = (field, val) => setForm(p => ({ ...p, [field]: val }));
   const onInput = (e) => set(e.target.name, e.target.value);
 
   /* Save */
@@ -211,12 +234,7 @@ export default function ProductForm({ mode, productId, onBack }) {
           <button type="button" className="btn btn-outline btn-sm" onClick={onBack}>
             {ar('إلغاء', 'Cancel')}
           </button>
-          <button
-            type="button"
-            className="btn btn-green btn-sm"
-            onClick={handleSave}
-            disabled={saving || uploading}
-          >
+          <button type="button" className="btn btn-green btn-sm" onClick={handleSave} disabled={saving || uploading}>
             {saving
               ? <><i className="fas fa-spinner fa-spin"></i> {ar('جاري الحفظ...', 'Saving...')}</>
               : <><i className="fas fa-save"></i> {ar('حفظ المنتج', 'Save')}</>}
@@ -233,17 +251,23 @@ export default function ProductForm({ mode, productId, onBack }) {
         </div>
       )}
 
+      {/* ── Expand / Collapse all ── */}
+      <div className="pf-acc-controls">
+        <button type="button" className="pf-acc-ctrl-btn" onClick={expandAll}>
+          <i className="fas fa-expand"></i> {ar('فتح الكل', 'Expand All')}
+        </button>
+        <button type="button" className="pf-acc-ctrl-btn" onClick={collapseAll}>
+          <i className="fas fa-compress"></i> {ar('إغلاق الكل', 'Collapse All')}
+        </button>
+      </div>
+
       <form onSubmit={handleSave} noValidate>
 
         {/* ══ IMAGES ══ */}
-        <div className="pf-section">
-          <div className="pf-section-header">
-            <i className="fas fa-image pf-sec-icon"></i>
-            <h3>{ar('الصور', 'Images')}</h3>
-          </div>
+        <AccSection id="images" icon="fa-image" title={ar('الصور', 'Images')}
+          badge={form.image ? (1 + (form.gallery?.length || 0)) : null}
+          open={openSections.has('images')} onToggle={toggleSection}>
           <div className="pf-images-layout">
-
-            {/* Main image */}
             <div>
               <div className="pf-field-label">{ar('الصورة الرئيسية', 'Main Image')}</div>
               <label className="pf-img-box pf-img-main">
@@ -262,8 +286,6 @@ export default function ProductForm({ mode, productId, onBack }) {
                 )}
               </label>
             </div>
-
-            {/* Gallery */}
             <div>
               <div className="pf-field-label">
                 {ar('معرض الصور', 'Gallery')}
@@ -287,16 +309,12 @@ export default function ProductForm({ mode, productId, onBack }) {
                 )}
               </div>
             </div>
-
           </div>
-        </div>
+        </AccSection>
 
         {/* ══ CONTENT ══ */}
-        <div className="pf-section">
-          <div className="pf-section-header">
-            <i className="fas fa-pen pf-sec-icon"></i>
-            <h3>{ar('المحتوى', 'Content')}</h3>
-          </div>
+        <AccSection id="content" icon="fa-pen" title={ar('المحتوى (عربي / إنجليزي)', 'Content (AR / EN)')}
+          open={openSections.has('content')} onToggle={toggleSection}>
           <div className="pf-two-col">
             <div>
               <div className="pf-lang-badge pf-lang-ar">🇸🇦 عربي</div>
@@ -325,14 +343,11 @@ export default function ProductForm({ mode, productId, onBack }) {
               </div>
             </div>
           </div>
-        </div>
+        </AccSection>
 
         {/* ══ DETAILS ══ */}
-        <div className="pf-section">
-          <div className="pf-section-header">
-            <i className="fas fa-sliders pf-sec-icon"></i>
-            <h3>{ar('تفاصيل المنتج', 'Product Details')}</h3>
-          </div>
+        <AccSection id="details" icon="fa-sliders" title={ar('تفاصيل المنتج', 'Product Details')}
+          open={openSections.has('details')} onToggle={toggleSection}>
           <div className="pf-grid-3">
             <div className="pf-field">
               <label className="pf-label">SKU / {ar('رمز المنتج', 'Code')}</label>
@@ -377,14 +392,11 @@ export default function ProductForm({ mode, productId, onBack }) {
               <span className="pf-field-hint">{ar('المجموع إن لم تكن هناك فاريشنات', 'Total if no variants')}</span>
             </div>
           </div>
-        </div>
+        </AccSection>
 
         {/* ══ SHIPPING ══ */}
-        <div className="pf-section">
-          <div className="pf-section-header">
-            <i className="fas fa-truck pf-sec-icon"></i>
-            <h3>{ar('الشحن', 'Shipping')}</h3>
-          </div>
+        <AccSection id="shipping" icon="fa-truck" title={ar('الشحن', 'Shipping')}
+          open={openSections.has('shipping')} onToggle={toggleSection}>
           <div className="pf-toggle-row">
             <label className="toggle-switch">
               <input type="checkbox" checked={form.isPhysical}
@@ -442,19 +454,17 @@ export default function ProductForm({ mode, productId, onBack }) {
               </div>
             </>
           )}
-        </div>
+        </AccSection>
 
         {/* ══ VARIANTS ══ */}
-        <div className="pf-section">
-          <div className="pf-section-header">
-            <i className="fas fa-layer-group pf-sec-icon"></i>
-            <h3>{ar('الفاريشنات / الباقات', 'Variants / Packages')}</h3>
-            <span className="pf-variant-count">{form.variants.length}</span>
-          </div>
+        <AccSection id="variants" icon="fa-layer-group"
+          title={ar('الفاريشنات / الباقات', 'Variants / Packages')}
+          badge={form.variants.length || null}
+          open={openSections.has('variants')} onToggle={toggleSection}>
           <p className="pf-section-desc">
             {ar(
               'أضف فاريشنات أو باقات مختلفة للمنتج (مثل علبة، 5 علب، كرتون). كل فاريشن له سعر ومخزون وصورة مستقلة.',
-              'Add variants or packages (e.g. Single Box, 5 Boxes, Carton). Each variant has its own price, stock and image.'
+              'Add variants or packages (e.g. Single Box, 5 Boxes, Carton). Each has its own price, stock and image.'
             )}
           </p>
 
@@ -473,23 +483,23 @@ export default function ProductForm({ mode, productId, onBack }) {
                   <span className="pf-variant-name-preview">
                     {v.nameAr || v.nameEn || ar('فاريشن جديد', 'New Variant')}
                   </span>
+                  {v.price && <span style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: 700 }}>{Number(v.price).toFixed(3)} د.ك</span>}
                   <div className="pf-variant-controls">
                     <button type="button" className="pf-variant-ctrl-btn"
-                      onClick={() => moveVariant(vi, -1)} disabled={vi === 0} title={ar('للأعلى', 'Up')}>
+                      onClick={() => moveVariant(vi, -1)} disabled={vi === 0}>
                       <i className="fas fa-chevron-up"></i>
                     </button>
                     <button type="button" className="pf-variant-ctrl-btn"
-                      onClick={() => moveVariant(vi, 1)} disabled={vi === form.variants.length - 1} title={ar('للأسفل', 'Down')}>
+                      onClick={() => moveVariant(vi, 1)} disabled={vi === form.variants.length - 1}>
                       <i className="fas fa-chevron-down"></i>
                     </button>
                     <button type="button" className="pf-variant-ctrl-btn pf-variant-del"
-                      onClick={() => removeVariant(vi)} title={ar('حذف', 'Delete')}>
+                      onClick={() => removeVariant(vi)}>
                       <i className="fas fa-trash"></i>
                     </button>
                   </div>
                 </div>
                 <div className="pf-variant-body">
-                  {/* Image */}
                   <div className="pf-variant-img-col">
                     <label className="pf-img-box pf-variant-img-box">
                       {v.image
@@ -508,7 +518,6 @@ export default function ProductForm({ mode, productId, onBack }) {
                       )}
                     </label>
                   </div>
-                  {/* Fields */}
                   <div className="pf-variant-fields">
                     <div className="modal-grid2">
                       <div className="pf-field">
@@ -554,7 +563,7 @@ export default function ProductForm({ mode, productId, onBack }) {
             <i className="fas fa-plus"></i>
             {ar('إضافة فاريشن جديد', 'Add New Variant')}
           </button>
-        </div>
+        </AccSection>
 
         {/* ── Bottom save ── */}
         <div className="pf-bottom-bar">
