@@ -76,12 +76,19 @@ const Navbar = () => {
               <div className="nav-user-group">
                 <span className="nav-user-name">
                   <i className="fas fa-user-circle" aria-hidden="true"></i>
-                  {auth.name.split(' ')[0]}
+                  {(auth.name || auth.username).split(' ')[0]}
                 </span>
-                <Link to="/dashboard" className={`nav-link nav-dash-link${isActive('/dashboard') ? ' active' : ''}`}>
-                  <i className="fas fa-chart-pie" aria-hidden="true"></i>
-                  {t('nav.dashboard')}
-                </Link>
+                {auth.role === 'customer' ? (
+                  <Link to="/my-account" className={`nav-link nav-dash-link${isActive('/my-account') ? ' active' : ''}`}>
+                    <i className="fas fa-user" aria-hidden="true"></i>
+                    {lang === 'ar' ? 'حسابي' : 'My Account'}
+                  </Link>
+                ) : (
+                  <Link to="/dashboard" className={`nav-link nav-dash-link${isActive('/dashboard') ? ' active' : ''}`}>
+                    <i className="fas fa-chart-pie" aria-hidden="true"></i>
+                    {t('nav.dashboard')}
+                  </Link>
+                )}
                 <button className="nav-logout-btn" onClick={handleLogout} aria-label="تسجيل خروج">
                   <i className="fas fa-right-from-bracket" aria-hidden="true"></i>
                   {t('nav.logout')}
@@ -154,14 +161,25 @@ const Navbar = () => {
 
           {auth ? (
             <>
-              <Link
-                to="/dashboard"
-                className={`mobile-nav-link${isActive('/dashboard') ? ' active' : ''}`}
-                onClick={() => setMenuOpen(false)}
-              >
-                <i className="fas fa-chart-pie" aria-hidden="true"></i>
-                {t('nav.dashboard')}
-              </Link>
+              {auth.role === 'customer' ? (
+                <Link
+                  to="/my-account"
+                  className={`mobile-nav-link${isActive('/my-account') ? ' active' : ''}`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <i className="fas fa-user" aria-hidden="true"></i>
+                  {lang === 'ar' ? 'حسابي' : 'My Account'}
+                </Link>
+              ) : (
+                <Link
+                  to="/dashboard"
+                  className={`mobile-nav-link${isActive('/dashboard') ? ' active' : ''}`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <i className="fas fa-chart-pie" aria-hidden="true"></i>
+                  {t('nav.dashboard')}
+                </Link>
+              )}
               <button className="mobile-logout-btn" onClick={handleLogout}>
                 <i className="fas fa-right-from-bracket" aria-hidden="true"></i>
                 {t('nav.logout')}

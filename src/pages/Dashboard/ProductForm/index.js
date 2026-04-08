@@ -269,7 +269,7 @@ export default function ProductForm({ mode, productId, onBack }) {
           </div>
           <div className="pf-page-sub">
             {isEdit
-              ? ar('تعديل بيانات المنتج والفاريشنات', 'Edit product data and variants')
+              ? ar('تعديل بيانات المنتج والخيارات', 'Edit product data and options')
               : ar('أدخل بيانات المنتج الجديد', 'Enter new product details')}
           </div>
         </div>
@@ -426,13 +426,13 @@ export default function ProductForm({ mode, productId, onBack }) {
               <label className="pf-label">{ar('السعر (د.ك) *', 'Price (KD) *')}</label>
               <input className="form-input" type="number" step="0.001" min="0" name="price"
                 value={form.price} onChange={onInput} dir="ltr" placeholder="0.000" required />
-              <span className="pf-field-hint">{ar('يُستخدم إن لم تكن هناك فاريشنات', 'Used if no variants')}</span>
+              <span className="pf-field-hint">{ar('يُستخدم إن لم تكن هناك خيارات', 'Used if no options')}</span>
             </div>
             <div className="pf-field">
               <label className="pf-label">{ar('المخزون *', 'Stock *')}</label>
               <input className="form-input" type="number" min="0" name="stock"
                 value={form.stock} onChange={onInput} dir="ltr" placeholder="0" required />
-              <span className="pf-field-hint">{ar('المجموع إن لم تكن هناك فاريشنات', 'Total if no variants')}</span>
+              <span className="pf-field-hint">{ar('المجموع إن لم تكن هناك خيارات', 'Total if no options')}</span>
             </div>
           </div>
         </AccSection>
@@ -501,20 +501,20 @@ export default function ProductForm({ mode, productId, onBack }) {
 
         {/* ══ VARIANTS ══ */}
         <AccSection id="variants" icon="fa-layer-group"
-          title={ar('الفاريشنات / الباقات', 'Variants / Packages')}
+          title={ar('الخيارات / الباقات', 'Options / Packages')}
           badge={form.variants.length || null}
           open={openSections.has('variants')} onToggle={toggleSection} {...secProps('variants')}>
           <p className="pf-section-desc">
             {ar(
-              'أضف فاريشنات أو باقات مختلفة للمنتج (مثل علبة، 5 علب، كرتون). كل فاريشن له سعر ومخزون وصورة مستقلة.',
-              'Add variants or packages (e.g. Single Box, 5 Boxes, Carton). Each has its own price, stock and image.'
+              'أضف خيارات أو باقات مختلفة للمنتج (مثل علبة، 5 علب، كرتون). كل خيار له سعر ومخزون وصورة مستقلة.',
+              'Add options or packages (e.g. Single Box, 5 Boxes, Carton). Each has its own price, stock and image.'
             )}
           </p>
 
           {form.variants.length === 0 && (
             <div className="pf-variants-empty">
               <i className="fas fa-layer-group"></i>
-              <p>{ar('لا توجد فاريشنات — اضغط الزر أدناه للإضافة', 'No variants yet — click below to add')}</p>
+              <p>{ar('لا توجد خيارات — اضغط الزر أدناه للإضافة', 'No options yet — click below to add')}</p>
             </div>
           )}
 
@@ -524,7 +524,7 @@ export default function ProductForm({ mode, productId, onBack }) {
                 <div className="pf-variant-header">
                   <span className="pf-variant-num">#{vi + 1}</span>
                   <span className="pf-variant-name-preview">
-                    {v.nameAr || v.nameEn || ar('فاريشن جديد', 'New Variant')}
+                    {v.nameAr || v.nameEn || ar('خيار جديد', 'New Option')}
                   </span>
                   {v.price && <span style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: 700 }}>{Number(v.price).toFixed(3)} د.ك</span>}
                   <div className="pf-variant-controls">
@@ -604,7 +604,7 @@ export default function ProductForm({ mode, productId, onBack }) {
 
           <button type="button" className="pf-add-variant-btn" onClick={addVariant}>
             <i className="fas fa-plus"></i>
-            {ar('إضافة فاريشن جديد', 'Add New Variant')}
+            {ar('إضافة خيار جديد', 'Add New Option')}
           </button>
         </AccSection>
 

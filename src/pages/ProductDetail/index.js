@@ -74,10 +74,13 @@ const ProductDetail = () => {
   const name = lang === 'en' && p.nameEn ? p.nameEn : p.name;
   const desc = lang === 'en' && p.descEn ? p.descEn : p.desc;
 
+  /* Show variant image first if selected variant has one */
+  const variantImg = hasVariants && selVar?.image ? selVar.image : null;
   const allImages = [];
-  if (p.image) allImages.push(p.image);
+  if (variantImg) allImages.push(variantImg);
+  if (p.image && p.image !== variantImg) allImages.push(p.image);
   if (p.gallery && p.gallery.length) {
-    p.gallery.forEach(img => { if (img && img !== p.image) allImages.push(img); });
+    p.gallery.forEach(img => { if (img && img !== p.image && img !== variantImg) allImages.push(img); });
   }
 
   const related = products
@@ -151,23 +154,40 @@ const ProductDetail = () => {
 
             <hr className="pd-divider" />
 
-            {/* Variants */}
+            {/* Options / Packages */}
             {hasVariants && (
-              <div className="pd-variants">
-                <p className="pd-variants-label">
-                  {lang === 'ar' ? 'الحجم / النوع' : 'Size / Type'}
+              <div className="pd-options">
+                <p className="pd-options-label">
+                  {lang === 'ar' ? 'الخيارات / الباقات' : 'Options / Packages'}
                 </p>
-                <div className="variant-picker">
-                  {variants.map((v, vi) => (
-                    <button
-                      key={vi}
-                      type="button"
-                      className={`variant-pill${selVarIdx === vi ? ' active' : ''}`}
-                      onClick={() => { setSelVarIdx(vi); setActiveImg(0); }}
-                    >
-                      {lang === 'en' && v.nameEn ? v.nameEn : v.nameAr}
-                    </button>
-                  ))}
+                <div className="pd-option-cards">
+                  {variants.map((v, vi) => {
+                    const vStock = v.stock ?? p.stock;
+                    const vOut   = vStock === 0;
+                    const vLow   = vStock > 0 && vStock <= 10;
+                    return (
+                      <button
+                        key={vi}
+                        type="button"
+                        className={`pd-option-card${selVarIdx === vi ? ' active' : ''}${vOut ? ' disabled' : ''}`}
+                        onClick={() => { if (!vOut) { setSelVarIdx(vi); setActiveImg(0); } }}
+                      >
+                        {v.image && (
+                          <div className="pd-option-card-img">
+                            <img src={v.image} alt={lang === 'en' && v.nameEn ? v.nameEn : v.nameAr} />
+                          </div>
+                        )}
+                        <span className="pd-option-card-name">
+                          {lang === 'en' && v.nameEn ? v.nameEn : v.nameAr}
+                        </span>
+                        <span className="pd-option-card-price">
+                          {Number(v.price).toFixed(3)}<small> {lang === 'ar' ? 'د.ك' : 'KWD'}</small>
+                        </span>
+                        {vOut && <span className="pd-option-badge pd-option-badge-out">{lang === 'ar' ? 'نفذ' : 'Out'}</span>}
+                        {vLow && !vOut && <span className="pd-option-badge pd-option-badge-low">{vStock} {lang === 'ar' ? 'متبقي' : 'left'}</span>}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}

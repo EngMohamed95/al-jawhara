@@ -16,8 +16,10 @@ const Login = () => {
   const { t }                 = useLanguage();
   const navigate              = useNavigate();
 
+  const destFor = (user) => user?.role === 'customer' ? '/my-account' : '/dashboard';
+
   useEffect(() => {
-    if (auth) navigate('/dashboard', { replace: true });
+    if (auth) navigate(destFor(auth), { replace: true });
   }, [auth, navigate]);
 
   const handleChange = (e) =>
@@ -28,8 +30,8 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
-      await login(form.username, form.password);
-      navigate('/dashboard', { replace: true });
+      const user = await login(form.username, form.password);
+      navigate(destFor(user), { replace: true });
     } catch (err) {
       setError(err.message || 'حدث خطأ، حاول مجدداً');
     } finally {

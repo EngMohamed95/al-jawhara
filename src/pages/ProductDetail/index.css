@@ -154,17 +154,115 @@
   margin: 20px 0;
 }
 
-.pd-variants {
+.pd-options {
   margin-bottom: 8px;
 }
 
-.pd-variants-label {
+.pd-options-label {
   font-size: 13px;
   font-weight: 700;
   color: var(--text-light);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* ── Option / Package Cards ── */
+.pd-option-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pd-option-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 12px;
+  min-width: 90px;
+  max-width: 120px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  font-family: 'Tajawal', sans-serif;
+  text-align: center;
+}
+
+.pd-option-card:hover:not(.disabled) {
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(6, 80, 137, 0.1);
+  transform: translateY(-2px);
+}
+
+.pd-option-card.active {
+  border-color: var(--primary);
+  background: var(--primary-xlight);
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.pd-option-card.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+}
+
+.pd-option-card-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.pd-option-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pd-option-card-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.pd-option-card-price {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.pd-option-card-price small {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.pd-option-badge {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 99px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.pd-option-badge-out {
+  background: #ef4444;
+  color: white;
+}
+
+.pd-option-badge-low {
+  background: #f59e0b;
+  color: white;
 }
 
 .pd-price {

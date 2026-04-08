@@ -12,19 +12,10 @@ const normalizeQ = (s = '') =>
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
 
 const Products = () => {
-  const { products, loading, error, addToCart, cart, updateCartQty, cartTotalQty, siteContent: sc, categories } = useApp();
+  const { products, loading, error, cartTotalQty, siteContent: sc, categories } = useApp();
   const { t, lang } = useLanguage();
   const [activeCat,   setActiveCat]   = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [addedId,          setAddedId]          = useState(null);
-  const [localQtys,        setLocalQtys]        = useState({});
-  const [selectedVariants, setSelectedVariants] = useState({});
-
-  const getCartItem = (cartKey) => cart.find(i => (i._cartKey || i.id) === cartKey);
-  const getLocalQty = (id) => localQtys[id] ?? 1;
-  const changeLocalQty = (id, delta) => setLocalQtys(prev => ({
-    ...prev, [id]: Math.max(1, (prev[id] ?? 1) + delta)
-  }));
 
   const getDescendantSlugs = (slug) => {
     const cat = (categories || []).find(c => c.slug === slug);
@@ -47,22 +38,6 @@ const Products = () => {
       f => normalizeQ(f).includes(sq)
     ));
 
-  const handleAdd = (p) => {
-    const qty = getLocalQty(p.id);
-    const variants = p.variants || [];
-    const hasVariants = variants.length > 0;
-    const selVarIdx = selectedVariants[p.id] ?? 0;
-    const selVar = hasVariants ? variants[selVarIdx] : null;
-    const cartKey = hasVariants ? `${p.id}_v${selVarIdx}` : String(p.id);
-    const productToAdd = hasVariants
-      ? { ...p, _cartKey: cartKey, price: selVar.price, name: `${p.name} — ${selVar.nameAr}`, nameEn: p.nameEn ? `${p.nameEn} — ${selVar.nameEn}` : undefined }
-      : { ...p, _cartKey: cartKey };
-    const cartItem = getCartItem(cartKey);
-    if (cartItem) { updateCartQty(cartKey, cartItem.qty + qty); }
-    else { addToCart(productToAdd, qty); }
-    setAddedId(p.id);
-    setTimeout(() => setAddedId(null), 1200);
-  };
 
   return (
     <>
@@ -170,65 +145,22 @@ const Products = () => {
                   </div>
                 ) : filtered.map((p, i) => (
                   <Reveal key={p.id} delay={(i % 4) * 70} direction="up">
-                  <article className="product-card" role="listitem">
-                    <Link to={`/products/${p.id}`} className="product-card-img" aria-label={lang === 'en' && p.nameEn ? p.nameEn : p.name}>
+                  <Link to={`/products/${p.id}`} className="product-card" role="listitem" style={{ textDecoration: 'none' }}>
+                    <div className="product-card-img">
                       {p.badge && <span className="product-badge">{p.badge}</span>}
                       {p.image
                         ? <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} className="product-card-photo" />
                         : p.icon || '📦'}
-                    </Link>
-                    <div className="product-card-body">
-                      <Link to={`/products/${p.id}`} className="product-name" style={{ textDecoration: 'none', color: 'inherit' }}>{lang === 'en' && p.nameEn ? p.nameEn : p.name}</Link>
-                      <p className="product-description">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
-                      <div className="product-specs">
-                        {p.specs?.map((s, i) => <span key={i} className="product-spec">{s}</span>)}
-                      </div>
-                      {/* Variant picker */}
-                      {(p.variants || []).length > 0 && (
-                        <div className="variant-picker">
-                          {p.variants.map((v, vi) => (
-                            <button
-                              key={vi}
-                              type="button"
-                              className={`variant-pill${(selectedVariants[p.id] ?? 0) === vi ? ' active' : ''}`}
-                              onClick={() => setSelectedVariants(prev => ({ ...prev, [p.id]: vi }))}
-                            >
-                              {lang === 'en' && v.nameEn ? v.nameEn : v.nameAr}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                      <div className="product-footer">
-                        <div className="product-price">
-                          {(() => {
-                            const variants = p.variants || [];
-                            const selVar = variants.length > 0 ? variants[selectedVariants[p.id] ?? 0] : null;
-                            const price = selVar ? selVar.price : p.price;
-                            return <>{Number(price).toFixed(3)} <span>{t('products.currency')}</span></>;
-                          })()}
-                        </div>
-                        <div className="product-qty-controls">
-                          <button className="qty-btn qty-btn-plus" onClick={() => changeLocalQty(p.id, 1)} aria-label="زيادة">
-                            <i className="fas fa-plus"></i>
-                          </button>
-                          <span className="qty-value">{getLocalQty(p.id)}</span>
-                          <button className="qty-btn" onClick={() => changeLocalQty(p.id, -1)} aria-label="تقليل">
-                            <i className="fas fa-minus"></i>
-                          </button>
-                        </div>
-                      </div>
-                      <button
-                        className={`product-add-to-cart-btn${addedId === p.id ? ' added' : ''}`}
-                        onClick={() => handleAdd(p)}
-                        aria-label={`${t('products.add')} ${p.name}`}
-                      >
-                        <i className={`fas ${addedId === p.id ? 'fa-check' : 'fa-shopping-cart'}`} aria-hidden="true"></i>
-                        {addedId === p.id
-                          ? (lang === 'ar' ? 'تمت الإضافة' : 'Added!')
-                          : t('products.add')}
-                      </button>
                     </div>
-                  </article>
+                    <div className="product-card-body">
+                      <span className="product-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</span>
+                      <p className="product-description">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
+                      <span className="product-view-btn">
+                        <i className="fas fa-eye" aria-hidden="true"></i>
+                        {lang === 'ar' ? 'عرض المنتج' : 'View Product'}
+                      </span>
+                    </div>
+                  </Link>
                   </Reveal>
                 ))}
               </div>

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -20,33 +19,9 @@ const featuredClients = [
 ];
 
 const Home = () => {
-  const { products, loading, siteContent: sc, addToCart, cart, updateCartQty } = useApp();
+  const { products, loading, siteContent: sc } = useApp();
   const { t, lang } = useLanguage();
-  const [addedId,          setAddedId]          = useState(null);
-  const [localQtys,        setLocalQtys]        = useState({});
-  const [selectedVariants, setSelectedVariants] = useState({});
   const featured = products.filter(p => p.status === 'active').slice(0, 8);
-  const getCartItem = (cartKey) => cart.find(i => (i._cartKey || i.id) === cartKey);
-  const getLocalQty = (id) => localQtys[id] ?? 1;
-  const changeLocalQty = (id, delta) => setLocalQtys(prev => ({
-    ...prev, [id]: Math.max(1, (prev[id] ?? 1) + delta)
-  }));
-  const handleAdd = (p) => {
-    const qty = getLocalQty(p.id);
-    const variants = p.variants || [];
-    const hasVariants = variants.length > 0;
-    const selVarIdx = selectedVariants[p.id] ?? 0;
-    const selVar = hasVariants ? variants[selVarIdx] : null;
-    const cartKey = hasVariants ? `${p.id}_v${selVarIdx}` : String(p.id);
-    const productToAdd = hasVariants
-      ? { ...p, _cartKey: cartKey, price: selVar.price, name: `${p.name} — ${selVar.nameAr}`, nameEn: p.nameEn ? `${p.nameEn} — ${selVar.nameEn}` : undefined }
-      : { ...p, _cartKey: cartKey };
-    const cartItem = getCartItem(cartKey);
-    if (cartItem) { updateCartQty(cartKey, cartItem.qty + qty); }
-    else { addToCart(productToAdd, qty); }
-    setAddedId(p.id);
-    setTimeout(() => setAddedId(null), 1200);
-  };
 
   /* Hero content — use DB value only in Arabic, always use translation in English */
   const heroBadge   = lang === 'ar' ? (sc?.heroBadge    || t('home.heroBadge'))    : t('home.heroBadge');
@@ -167,64 +142,26 @@ const Home = () => {
             </div>
           ) : (
             <div className="home-products-grid">
-              {featured.map((p, i) => {
-                const cartItem = getCartItem(p.id);
-                return (
-                  <Reveal key={p.id} delay={(i % 4) * 80} direction="up">
-                    <article className="home-product-card">
-                      {p.badge && <span className="home-prod-badge">{p.badge}</span>}
-                      <Link to={`/products/${p.id}`} className="home-prod-img-wrap" style={{ textDecoration: 'none' }}>
-                        {p.image
-                          ? <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} className="home-prod-img" loading="lazy" />
-                          : <span className="home-prod-emoji">{p.icon || '📦'}</span>}
-                      </Link>
-                      <div className="home-prod-body">
-                        <Link to={`/products/${p.id}`} className="home-prod-name" style={{ textDecoration: 'none', color: 'inherit' }}>{lang === 'en' && p.nameEn ? p.nameEn : p.name}</Link>
-                        <p className="home-prod-desc">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
-                        {/* Variant picker */}
-                        {(p.variants || []).length > 0 && (
-                          <div className="variant-picker variant-picker-sm">
-                            {p.variants.map((v, vi) => (
-                              <button
-                                key={vi}
-                                type="button"
-                                className={`variant-pill${(selectedVariants[p.id] ?? 0) === vi ? ' active' : ''}`}
-                                onClick={() => setSelectedVariants(prev => ({ ...prev, [p.id]: vi }))}
-                              >
-                                {lang === 'en' && v.nameEn ? v.nameEn : v.nameAr}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                        <div className="home-prod-footer">
-                          <div className="home-prod-price">
-                            {(() => {
-                              const variants = p.variants || [];
-                              const selVar = variants.length > 0 ? variants[selectedVariants[p.id] ?? 0] : null;
-                              const price = selVar ? selVar.price : p.price;
-                              return <>{Number(price).toFixed(3)} <span>{t('products.currency')}</span></>;
-                            })()}
-                          </div>
-                          <div className="home-prod-qty">
-                            <button className="hqty-btn hqty-plus" onClick={() => changeLocalQty(p.id, 1)}><i className="fas fa-plus"></i></button>
-                            <span className="hqty-val">{getLocalQty(p.id)}</span>
-                            <button className="hqty-btn" onClick={() => changeLocalQty(p.id, -1)}><i className="fas fa-minus"></i></button>
-                          </div>
-                        </div>
-                        <button
-                          className={`home-prod-cart-btn${addedId === p.id ? ' added' : ''}`}
-                          onClick={() => handleAdd(p)}
-                        >
-                          <i className={`fas ${addedId === p.id ? 'fa-check' : 'fa-shopping-cart'}`}></i>
-                          {addedId === p.id
-                            ? (lang === 'ar' ? 'تمت الإضافة' : 'Added!')
-                            : t('products.add')}
-                        </button>
-                      </div>
-                    </article>
-                  </Reveal>
-                );
-              })}
+              {featured.map((p, i) => (
+                <Reveal key={p.id} delay={(i % 4) * 80} direction="up">
+                  <Link to={`/products/${p.id}`} className="home-product-card" style={{ textDecoration: 'none' }}>
+                    {p.badge && <span className="home-prod-badge">{p.badge}</span>}
+                    <div className="home-prod-img-wrap">
+                      {p.image
+                        ? <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} className="home-prod-img" loading="lazy" />
+                        : <span className="home-prod-emoji">{p.icon || '📦'}</span>}
+                    </div>
+                    <div className="home-prod-body">
+                      <span className="home-prod-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</span>
+                      <p className="home-prod-desc">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
+                      <span className="home-prod-view-btn">
+                        <i className="fas fa-eye"></i>
+                        {lang === 'ar' ? 'عرض المنتج' : 'View Product'}
+                      </span>
+                    </div>
+                  </Link>
+                </Reveal>
+              ))}
             </div>
           )}
           <Reveal direction="up" delay={200}>
