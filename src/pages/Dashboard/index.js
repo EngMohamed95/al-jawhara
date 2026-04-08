@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../translations';
@@ -333,6 +334,7 @@ const Dashboard = () => {
     saveSiteContent,
   } = useApp();
 
+  const navigate = useNavigate();
   const { lang } = useLanguage();
   const dt = (key) => DASH_T[key]?.[lang] ?? DASH_T[key]?.ar ?? key;
 
@@ -1121,7 +1123,7 @@ const Dashboard = () => {
               <div className="dash-header-row">
                 <div className="dashboard-title">{dt('nav.allProducts')}</div>
                 {perms.products && (
-                  <button className="btn btn-green btn-sm" onClick={openAddProduct}>
+                  <button className="btn btn-green btn-sm" onClick={() => navigate('/dashboard/product/new')}>
                     <i className="fas fa-plus" aria-hidden="true"></i> {dt('products.add')}
                   </button>
                 )}
@@ -1145,7 +1147,7 @@ const Dashboard = () => {
                         <td className={Number(p.stock) < 100 ? 'td-warn' : ''}>{Number(p.stock).toLocaleString()}</td>
                         <td><span className={`status-badge status-${p.status}`}>{productStatusLabels[p.status]?.[lang] || productStatusLabels[p.status]?.ar}</span></td>
                         <td>
-                          <button className="action-btn action-btn-edit" onClick={() => openEditProduct(p)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
+                          <button className="action-btn action-btn-edit" onClick={() => navigate(`/dashboard/product/${p.id}/edit`)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
                           <button className="action-btn action-btn-delete" onClick={() => handleDeleteProduct(p.id)}><i className="fas fa-trash"></i> {dt('common.delete')}</button>
                         </td>
                       </tr>

@@ -10,6 +10,7 @@ import Products from './pages/Products';
 import Clients  from './pages/Clients';
 import Contact  from './pages/Contact';
 import Dashboard    from './pages/Dashboard';
+import ProductForm  from './pages/Dashboard/ProductForm';
 import Login        from './pages/Login';
 import Cart         from './pages/Cart';
 import Checkout     from './pages/Checkout';
@@ -24,11 +25,12 @@ const ProtectedRoute = ({ children }) => {
 
 const AppContent = () => {
   const location = useLocation();
-  const isLogin = location.pathname === '/login';
+  const isLogin   = location.pathname === '/login';
+  const isAdminForm = location.pathname.startsWith('/dashboard/product');
 
   return (
     <div className="app">
-      {!isLogin && <Navbar />}
+      {!isLogin && !isAdminForm && <Navbar />}
       <main>
         <Routes>
           <Route path="/"          element={<Home />} />
@@ -42,10 +44,12 @@ const AppContent = () => {
           <Route path="/checkout"      element={<Checkout />} />
           <Route path="/order-success" element={<OrderSuccess />} />
           <Route path="/dashboard"     element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard/product/new"      element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
+          <Route path="/dashboard/product/:id/edit" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
           <Route path="*"              element={<NotFound />} />
         </Routes>
       </main>
-      {!isLogin && <Footer />}
+      {!isLogin && !isAdminForm && <Footer />}
     </div>
   );
 };
