@@ -59,7 +59,9 @@ const Checkout = () => {
     e.preventDefault();
     if (!form.client.trim())     { setError(lang === 'ar' ? 'الرجاء إدخال الاسم الكامل' : 'Please enter your full name'); return; }
     if (!form.phone.trim())      { setError(lang === 'ar' ? 'الرجاء إدخال رقم الهاتف' : 'Please enter your phone number'); return; }
-    if (form.phone.replace(/\D/g, '').length < 11) { setError(lang === 'ar' ? 'رقم الهاتف يجب أن يكون 11 رقماً على الأقل' : 'Phone number must be at least 11 digits'); return; }
+    { const digits = form.phone.replace(/\D/g, '').replace(/^965/, '');
+      if (digits.length < 5 || digits.length > 8) { setError(lang === 'ar' ? 'رقم الهاتف يجب أن يكون من 5 إلى 8 أرقام' : 'Phone number must be 5–8 digits'); return; }
+    }
     if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { setError(lang === 'ar' ? 'البريد الإلكتروني غير صحيح' : 'Invalid email address'); return; }
     if (!form.governorate)       { setError(lang === 'ar' ? 'الرجاء اختيار المحافظة' : 'Please select a governorate'); return; }
     if (!form.block.trim())      { setError(lang === 'ar' ? 'الرجاء إدخال القطعة' : 'Please enter your block'); return; }
@@ -163,7 +165,7 @@ const Checkout = () => {
                 <div className="form-row">
                   <div className="form-group">
                     <label className="form-label">{t('checkout.phone')} <span style={{color:'#dc2626'}}>*</span></label>
-                    <input className="form-input" name="phone" value={form.phone} onChange={handleChange} placeholder="+965XXXXXXXX" dir="ltr" />
+                    <input className="form-input" name="phone" value={form.phone} onChange={handleChange} placeholder="+965XXXXXXXX" dir="ltr" maxLength={12} />
                   </div>
                   <div className="form-group">
                     <label className="form-label">{t('checkout.email')}</label>
