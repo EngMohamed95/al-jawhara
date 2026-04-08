@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -28,24 +28,27 @@ const Checkout = () => {
   const { t, lang } = useLanguage();
   const navigate  = useNavigate();
 
-  /* Pre-fill from logged-in customer account */
-  const initialForm = useMemo(() => ({
-    ...emptyForm,
-    client:     auth?.name           || '',
-    phone:      auth?.phone          || '',
-    email:      auth?.email          || '',
-    governorate: auth?.lastGovernorate || '',
-    block:      auth?.lastBlock      || '',
-    street:     auth?.lastStreet     || '',
-    avenue:     auth?.lastAvenue     || '',
-    building:   auth?.lastBuilding   || '',
-    floor:      auth?.lastFloor      || '',
-    apartment:  auth?.lastApartment  || '',
-  }), [auth]);
-
-  const [form,    setForm]    = useState(initialForm);
+  const [form,    setForm]    = useState(emptyForm);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
+
+  /* Pre-fill from logged-in account — runs once on mount */
+  useEffect(() => {
+    if (!auth) return;
+    setForm(prev => ({
+      ...prev,
+      client:      prev.client      || auth.name             || '',
+      phone:       prev.phone       || auth.phone            || '',
+      email:       prev.email       || auth.email            || '',
+      governorate: prev.governorate || auth.lastGovernorate  || '',
+      block:       prev.block       || auth.lastBlock        || '',
+      street:      prev.street      || auth.lastStreet       || '',
+      avenue:      prev.avenue      || auth.lastAvenue       || '',
+      building:    prev.building    || auth.lastBuilding     || '',
+      floor:       prev.floor       || auth.lastFloor        || '',
+      apartment:   prev.apartment   || auth.lastApartment    || '',
+    }));
+  }, [auth]);
 
   const zones = translations.kuwaitZones;
   const selectedZone = zones.find(z => z.id === form.governorate);
