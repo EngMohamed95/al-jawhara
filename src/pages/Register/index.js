@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { auth, googleProvider, facebookProvider, signInWithPopup, isConfigured } from '../../services/firebase';
+import { auth, googleProvider, signInWithPopup, isConfigured } from '../../services/firebase';
 import Seo from '../../components/Seo';
 import '../Login/index.css';
 import './index.css';
@@ -132,18 +132,6 @@ const Register = () => {
               {lang === 'ar' ? 'التسجيل بـ Google' : 'Sign up with Google'}
             </button>
 
-            <button
-              type="button"
-              className="social-btn social-btn-facebook"
-              onClick={() => handleSocial(facebookProvider, 'facebook')}
-              disabled={!!socialLoading || loading}
-            >
-              {socialLoading === 'facebook'
-                ? <i className="fas fa-spinner fa-spin"></i>
-                : <i className="fab fa-facebook-f" aria-hidden="true"></i>
-              }
-              {lang === 'ar' ? 'التسجيل بـ Facebook' : 'Sign up with Facebook'}
-            </button>
           </div>
 
           <div className="login-divider">

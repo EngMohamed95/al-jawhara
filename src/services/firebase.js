@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey:            process.env.REACT_APP_FIREBASE_API_KEY             || 'AIzaSyBk-poWIml6b_URhWopIhA1uFz60GJ0zN0',
@@ -14,13 +14,11 @@ const isConfigured = Boolean(firebaseConfig.apiKey);
 
 let auth = null;
 let googleProvider = null;
-let facebookProvider = null;
 
 if (isConfigured) {
   const app = initializeApp(firebaseConfig);
   auth = getAuth(app);
   googleProvider = new GoogleAuthProvider();
-  facebookProvider = new FacebookAuthProvider();
 }
 
-export { auth, googleProvider, facebookProvider, signInWithPopup, isConfigured };
+export { auth, googleProvider, signInWithPopup, isConfigured };
