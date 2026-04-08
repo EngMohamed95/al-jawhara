@@ -362,6 +362,7 @@ const Dashboard = () => {
 
   const [view, setView]               = useState('overview');
   const [productsTab, setProductsTab] = useState('list'); // 'list' | 'collections' | 'inventory'
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   /* ── Category modal ── */
   const [catModal,  setCatModal]  = useState(null); // 'add' | 'edit'
@@ -948,8 +949,13 @@ const Dashboard = () => {
 
       <div className="dashboard-layout">
 
+        {/* ── Mobile sidebar overlay ── */}
+        {sidebarOpen && (
+          <div className="dash-sidebar-overlay" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
+        )}
+
         {/* ── Sidebar ── */}
-        <aside className="dashboard-sidebar" aria-label="القائمة الجانبية">
+        <aside className={`dashboard-sidebar${sidebarOpen ? ' dash-sidebar-open' : ''}`} aria-label="القائمة الجانبية">
           <div className="sidebar-header">
             <div className="sidebar-logo-icon"><i className="fas fa-gem" aria-hidden="true"></i></div>
             <div>
@@ -974,6 +980,7 @@ const Dashboard = () => {
                   className={`sidebar-nav-item${isProductsParent ? (isProductsActive ? ' active' : '') : (view === item.id ? ' active' : '')}${blocked ? ' disabled' : ''}`}
                   onClick={() => {
                     if (blocked) return;
+                    setSidebarOpen(false);
                     if (item.id === 'content')   openContentTab();
                     else if (item.id === 'shipping') openShippingTab();
                     else if (item.id === 'payments') openPaymentsTab();
@@ -1019,6 +1026,15 @@ const Dashboard = () => {
 
         {/* ── Main ── */}
         <div className="dashboard-main">
+          {/* Mobile hamburger */}
+          <button
+            className="dash-mobile-menu-btn"
+            onClick={() => setSidebarOpen(o => !o)}
+            aria-label="فتح القائمة"
+          >
+            <i className="fas fa-bars" aria-hidden="true"></i>
+          </button>
+
           {error && (
             <div className="dash-error-banner" role="alert">
               <i className="fas fa-triangle-exclamation" aria-hidden="true"></i> {error}

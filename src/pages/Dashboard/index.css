@@ -699,12 +699,18 @@
   .analytics-kpi-row { grid-template-columns: 1fr 1fr; }
   .analytics-row2    { grid-template-columns: 1fr; }
   .analytics-row3    { grid-template-columns: 1fr; }
-  .hbar-row          { grid-template-columns: 100px 1fr 60px; }
+  .hbar-row          { grid-template-columns: 80px 1fr 55px; }
+  .client-summary-stats { gap: 12px; }
+  .client-stat-num { font-size: 1.2rem; }
+  .shipping-tabs { flex-wrap: wrap; }
 }
 @media (max-width: 480px) {
   .reports-grid    { grid-template-columns: 1fr; }
   .perms-grid      { grid-template-columns: 1fr 1fr; }
   .analytics-kpi-row { grid-template-columns: 1fr 1fr; }
+  .client-summary-banner { flex-direction: column; align-items: flex-start; }
+  .client-summary-stats { flex-wrap: wrap; gap: 10px; }
+  .modal { margin: 10px; width: calc(100% - 20px); }
 }
 
 /* ── Variants / Packages ── */
