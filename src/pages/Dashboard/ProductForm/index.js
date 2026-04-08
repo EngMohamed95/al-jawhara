@@ -33,20 +33,32 @@ const AlertError = ({ msg }) => (
 );
 
 /* ── Accordion Section ── */
-const AccSection = ({ id, icon, title, badge, open, onToggle, children }) => (
-  <div className={`pf-acc${open ? ' pf-acc-open' : ''}`}>
-    <button type="button" className="pf-acc-header" onClick={() => onToggle(id)}>
-      <span className="pf-acc-icon-wrap">
-        <i className={`fas ${icon}`}></i>
+const AccSection = ({ id, icon, title, badge, open, onToggle, order, isDragging, isDragOver, onDragStart, onDragOver, onDrop, onDragEnd, children }) => (
+  <div
+    className={`pf-acc${open ? ' pf-acc-open' : ''}${isDragOver ? ' pf-acc-drag-over' : ''}`}
+    style={{ order, opacity: isDragging ? 0.35 : 1, transition: 'opacity 0.15s' }}
+    onDragOver={e => { e.preventDefault(); onDragOver(id); }}
+    onDrop={e => { e.preventDefault(); onDrop(id); }}
+  >
+    <div className="pf-acc-header-row">
+      <span
+        className="pf-acc-grip"
+        draggable="true"
+        onDragStart={e => { e.stopPropagation(); onDragStart(id); }}
+        onDragEnd={onDragEnd}
+        title="اسحب لتغيير الترتيب"
+      >
+        <i className="fas fa-grip-vertical"></i>
       </span>
-      <span className="pf-acc-title">{title}</span>
-      {badge != null && <span className="pf-acc-badge">{badge}</span>}
-      <i className={`fas fa-chevron-down pf-acc-arrow`}></i>
-    </button>
+      <button type="button" className="pf-acc-header" onClick={() => onToggle(id)}>
+        <span className="pf-acc-icon-wrap"><i className={`fas ${icon}`}></i></span>
+        <span className="pf-acc-title">{title}</span>
+        {badge != null && <span className="pf-acc-badge">{badge}</span>}
+        <i className="fas fa-chevron-down pf-acc-arrow"></i>
+      </button>
+    </div>
     <div className="pf-acc-body">
-      <div className="pf-acc-inner">
-        {children}
-      </div>
+      <div className="pf-acc-inner">{children}</div>
     </div>
   </div>
 );
@@ -72,6 +84,37 @@ export default function ProductForm({ mode, productId, onBack }) {
   });
   const expandAll  = () => setOpenSections(new Set(['images','content','details','shipping','variants']));
   const collapseAll = () => setOpenSections(new Set());
+
+  /* Section drag-and-drop ordering */
+  const [sectionOrder, setSectionOrder] = useState(['images','content','details','shipping','variants']);
+  const [dragId,       setDragId]       = useState(null);
+  const [dragOverId,   setDragOverId]   = useState(null);
+
+  const onSecDragStart  = (id) => setDragId(id);
+  const onSecDragOver   = (id) => { if (id !== dragId) setDragOverId(id); };
+  const onSecDrop       = (targetId) => {
+    if (!dragId || dragId === targetId) { setDragId(null); setDragOverId(null); return; }
+    setSectionOrder(prev => {
+      const arr = [...prev];
+      const from = arr.indexOf(dragId);
+      const to   = arr.indexOf(targetId);
+      arr.splice(from, 1);
+      arr.splice(to, 0, dragId);
+      return arr;
+    });
+    setDragId(null); setDragOverId(null);
+  };
+  const onSecDragEnd = () => { setDragId(null); setDragOverId(null); };
+
+  const secProps = (id) => ({
+    order:      sectionOrder.indexOf(id),
+    isDragging: dragId === id,
+    isDragOver: dragOverId === id,
+    onDragStart: onSecDragStart,
+    onDragOver:  onSecDragOver,
+    onDrop:      onSecDrop,
+    onDragEnd:   onSecDragEnd,
+  });
 
   /* Load existing product when editing */
   useEffect(() => {
@@ -261,12 +304,12 @@ export default function ProductForm({ mode, productId, onBack }) {
         </button>
       </div>
 
-      <form onSubmit={handleSave} noValidate>
+      <form onSubmit={handleSave} noValidate style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
 
         {/* ══ IMAGES ══ */}
         <AccSection id="images" icon="fa-image" title={ar('الصور', 'Images')}
           badge={form.image ? (1 + (form.gallery?.length || 0)) : null}
-          open={openSections.has('images')} onToggle={toggleSection}>
+          open={openSections.has('images')} onToggle={toggleSection} {...secProps('images')}>
           <div className="pf-images-layout">
             <div>
               <div className="pf-field-label">{ar('الصورة الرئيسية', 'Main Image')}</div>
@@ -314,7 +357,7 @@ export default function ProductForm({ mode, productId, onBack }) {
 
         {/* ══ CONTENT ══ */}
         <AccSection id="content" icon="fa-pen" title={ar('المحتوى (عربي / إنجليزي)', 'Content (AR / EN)')}
-          open={openSections.has('content')} onToggle={toggleSection}>
+          open={openSections.has('content')} onToggle={toggleSection} {...secProps('content')}>
           <div className="pf-two-col">
             <div>
               <div className="pf-lang-badge pf-lang-ar">🇸🇦 عربي</div>
@@ -347,7 +390,7 @@ export default function ProductForm({ mode, productId, onBack }) {
 
         {/* ══ DETAILS ══ */}
         <AccSection id="details" icon="fa-sliders" title={ar('تفاصيل المنتج', 'Product Details')}
-          open={openSections.has('details')} onToggle={toggleSection}>
+          open={openSections.has('details')} onToggle={toggleSection} {...secProps('details')}>
           <div className="pf-grid-3">
             <div className="pf-field">
               <label className="pf-label">SKU / {ar('رمز المنتج', 'Code')}</label>
@@ -396,7 +439,7 @@ export default function ProductForm({ mode, productId, onBack }) {
 
         {/* ══ SHIPPING ══ */}
         <AccSection id="shipping" icon="fa-truck" title={ar('الشحن', 'Shipping')}
-          open={openSections.has('shipping')} onToggle={toggleSection}>
+          open={openSections.has('shipping')} onToggle={toggleSection} {...secProps('shipping')}>
           <div className="pf-toggle-row">
             <label className="toggle-switch">
               <input type="checkbox" checked={form.isPhysical}
@@ -460,7 +503,7 @@ export default function ProductForm({ mode, productId, onBack }) {
         <AccSection id="variants" icon="fa-layer-group"
           title={ar('الفاريشنات / الباقات', 'Variants / Packages')}
           badge={form.variants.length || null}
-          open={openSections.has('variants')} onToggle={toggleSection}>
+          open={openSections.has('variants')} onToggle={toggleSection} {...secProps('variants')}>
           <p className="pf-section-desc">
             {ar(
               'أضف فاريشنات أو باقات مختلفة للمنتج (مثل علبة، 5 علب، كرتون). كل فاريشن له سعر ومخزون وصورة مستقلة.',
@@ -565,8 +608,8 @@ export default function ProductForm({ mode, productId, onBack }) {
           </button>
         </AccSection>
 
-        {/* ── Bottom save ── */}
-        <div className="pf-bottom-bar">
+        {/* ── Bottom save — order:999 keeps it always last ── */}
+        <div className="pf-bottom-bar" style={{ order: 999 }}>
           <button type="button" className="btn btn-outline" onClick={onBack}>
             {ar('إلغاء والرجوع', 'Cancel')}
           </button>

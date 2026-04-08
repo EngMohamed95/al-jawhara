@@ -37,7 +37,7 @@ const DASH_T = {
   'nav.overview':    { ar: 'نظرة عامة',       en: 'Overview' },
   'nav.products':    { ar: 'المنتجات',         en: 'Products' },
   'nav.allProducts': { ar: 'كل المنتجات',      en: 'All Products' },
-  'nav.collections': { ar: 'الفئات',           en: 'Collections' },
+  'nav.collections': { ar: 'الأقسام',          en: 'Sections' },
   'nav.inventory':   { ar: 'المخزون',          en: 'Inventory' },
   'nav.orders':      { ar: 'الطلبات',          en: 'Orders' },
   'nav.invoices':    { ar: 'الفواتير',         en: 'Invoices' },
@@ -108,8 +108,8 @@ const DASH_T = {
   'coupons.status':  { ar: 'الحالة',       en: 'Status' },
   'coupons.actions': { ar: 'إجراءات',      en: 'Actions' },
   // Collections
-  'collections.title':    { ar: 'الفئات',           en: 'Collections' },
-  'collections.add':      { ar: 'إضافة فئة',        en: 'Add Collection' },
+  'collections.title':    { ar: 'الأقسام',          en: 'Sections' },
+  'collections.add':      { ar: 'إضافة قسم',        en: 'Add Section' },
   'collections.name':     { ar: 'الاسم',            en: 'Name' },
   'collections.slug':     { ar: 'Slug',             en: 'Slug' },
   'collections.products': { ar: 'المنتجات',         en: 'Products' },
@@ -371,30 +371,37 @@ const Dashboard = () => {
   const openEditProductForm = (id) => { setProductFormMode('edit'); setProductFormId(id);  setView('products'); setProductsTab('list'); };
   const closeProductForm    = () => { setProductFormMode(null); setProductFormId(null); };
 
-  /* ── Category modal ── */
-  const [catModal,  setCatModal]  = useState(null); // 'add' | 'edit'
-  const [editCat,   setEditCat]   = useState(null);
-  const [catForm,   setCatForm]   = useState(emptyCategory);
-  const [catSaved,  setCatSaved]  = useState(false);
-  const [catErr,    setCatErr]    = useState('');
 
-  const openAddCat  = () => { setCatForm(emptyCategory); setCatErr(''); setCatSaved(false); setCatModal('add'); };
-  const openEditCat = (c) => {
-    setCatForm({ slug: c.slug, nameAr: c.nameAr, nameEn: c.nameEn, emoji: c.emoji || '📦', icon: c.icon || 'fa-box', sortOrder: c.sortOrder || 1, status: c.status, desc: c.desc || '', parentId: c.parentId ?? null });
-    setEditCat(c); setCatErr(''); setCatSaved(false); setCatModal('edit');
+  /* ── Category inline form (add/edit view) ── */
+  const [catViewMode,     setCatViewMode]     = useState(null); // null | 'add' | 'edit'
+  const [catEditData,     setCatEditData]     = useState(null);
+  const [catEditForm,     setCatEditForm]     = useState(emptyCategory);
+  const [catEditOpenSecs, setCatEditOpenSecs] = useState(new Set(['basic', 'settings']));
+  const [catEditErr,      setCatEditErr]      = useState('');
+  const [catEditSaved,    setCatEditSaved]    = useState(false);
+
+  const openCatAdd  = () => {
+    setCatEditForm(emptyCategory); setCatEditErr(''); setCatEditSaved(false);
+    setCatEditData(null); setCatViewMode('add'); setCatEditOpenSecs(new Set(['basic','settings']));
   };
-  const closeCatModal = () => { setCatModal(null); setEditCat(null); };
+  const openCatEdit = (c) => {
+    setCatEditForm({ slug: c.slug, nameAr: c.nameAr, nameEn: c.nameEn||'', emoji: c.emoji||'📦', sortOrder: c.sortOrder||1, status: c.status, desc: c.desc||'', parentId: c.parentId??null });
+    setCatEditData(c); setCatEditErr(''); setCatEditSaved(false);
+    setCatViewMode('edit'); setCatEditOpenSecs(new Set(['basic','settings']));
+  };
+  const closeCatView     = () => { setCatViewMode(null); setCatEditData(null); };
+  const toggleCatEditSec = (id) => setCatEditOpenSecs(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
-  const handleCatSave = async (e) => {
-    e.preventDefault(); setCatErr('');
-    if (!catForm.nameAr.trim()) { setCatErr('الاسم العربي مطلوب'); return; }
-    if (!catForm.slug.trim())   { setCatErr('المعرف (Slug) مطلوب'); return; }
-    if (!/^[a-z0-9_-]+$/.test(catForm.slug)) { setCatErr('الـ Slug: أحرف إنجليزية صغيرة وأرقام وشرطة فقط'); return; }
+  const handleCatEditSave = async () => {
+    if (!catEditForm.nameAr.trim()) { setCatEditErr('الاسم العربي مطلوب'); return; }
+    if (!catEditForm.slug.trim())   { setCatEditErr('المعرف (Slug) مطلوب'); return; }
+    if (!/^[a-z0-9_-]+$/.test(catEditForm.slug)) { setCatEditErr('الـ Slug: أحرف إنجليزية صغيرة وأرقام وشرطة فقط'); return; }
+    setCatEditErr('');
     try {
-      if (catModal === 'add') await addCategory({ ...catForm });
-      else await updateCategory(editCat.id, { ...editCat, ...catForm });
-      setCatSaved(true); setTimeout(closeCatModal, 900);
-    } catch { setCatErr('حدث خطأ أثناء الحفظ.'); }
+      if (catViewMode === 'add') await addCategory({ ...catEditForm });
+      else await updateCategory(catEditData.id, { ...catEditData, ...catEditForm });
+      setCatEditSaved(true); setTimeout(closeCatView, 900);
+    } catch { setCatEditErr('حدث خطأ أثناء الحفظ.'); }
   };
 
   const handleDeleteCat = async (c) => {
@@ -822,7 +829,15 @@ const Dashboard = () => {
   const [prodStatusFilter, setProdStatusFilter] = useState('all');
   const [prodSort,      setProdSort]      = useState({ col: 'id', dir: 'desc' });
   const [selectedProds, setSelectedProds] = useState(new Set());
-  useEffect(() => { setDashSearch(''); setClientFilter(null); setProdCatFilter('all'); setProdStatusFilter('all'); setSelectedProds(new Set()); }, [view]);
+  const [prodPage,      setProdPage]      = useState(1);
+  const [prodPerPage,   setProdPerPage]   = useState(50);
+  useEffect(() => { setDashSearch(''); setClientFilter(null); setProdCatFilter('all'); setProdStatusFilter('all'); setSelectedProds(new Set()); setProdPage(1); }, [view]);
+  useEffect(() => { setProdPage(1); }, [dashSearch, prodCatFilter, prodStatusFilter, prodSort]);
+
+  /* ── Category filters ── */
+  const [catSearch,       setCatSearch]       = useState('');
+  const [catStatusFilter, setCatStatusFilter] = useState('all'); // 'all' | 'active' | 'inactive'
+  const [catLevelFilter,  setCatLevelFilter]  = useState('all'); // 'all' | 'root' | 'sub'
 
   const ns = (s = '') => String(s).toLowerCase()
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
@@ -845,6 +860,21 @@ const Dashboard = () => {
     });
     return list;
   }, [products, dashSearch, prodCatFilter, prodStatusFilter, prodSort]);
+
+  const prodTotalPages  = Math.max(1, Math.ceil(filteredDashProducts.length / prodPerPage));
+  const prodPageSafe    = Math.min(prodPage, prodTotalPages);
+  const pagedProducts   = filteredDashProducts.slice((prodPageSafe - 1) * prodPerPage, prodPageSafe * prodPerPage);
+
+  const filteredCats = useMemo(() => {
+    const q = ns(catSearch);
+    return flattenTree(buildCatTree(categories)).filter(c => {
+      if (catStatusFilter !== 'all' && c.status !== catStatusFilter) return false;
+      if (catLevelFilter === 'root' && c.parentId != null) return false;
+      if (catLevelFilter === 'sub'  && c.parentId == null) return false;
+      if (q && ![c.nameAr, c.nameEn, c.slug].some(f => ns(f).includes(q))) return false;
+      return true;
+    });
+  }, [categories, catSearch, catStatusFilter, catLevelFilter]);
 
   const toggleProdSelect = (id) => setSelectedProds(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const toggleAllProds   = () => setSelectedProds(s => s.size === filteredDashProducts.length ? new Set() : new Set(filteredDashProducts.map(p => p.id)));
@@ -1168,6 +1198,7 @@ const Dashboard = () => {
                     <div className="dashboard-title">{dt('nav.allProducts')}</div>
                     <div style={{ fontSize: '13px', color: 'var(--text-light)', marginTop: '2px' }}>
                       {filteredDashProducts.length} {lang === 'en' ? 'products' : 'منتج'} · {products.filter(p=>p.status==='active').length} {lang === 'en' ? 'active' : 'نشط'}
+                      {prodTotalPages > 1 && <> · {lang === 'en' ? `Page ${prodPageSafe} of ${prodTotalPages}` : `صفحة ${prodPageSafe} من ${prodTotalPages}`}</>}
                     </div>
                   </div>
                   {perms.products && (
@@ -1196,6 +1227,13 @@ const Dashboard = () => {
                     <option value="all">{lang === 'en' ? 'All Status' : 'كل الحالات'}</option>
                     {Object.entries(productStatusLabels).map(([k,v]) => <option key={k} value={k}>{v.ar}</option>)}
                   </select>
+                  <select className="prod-filter-select" value={prodPerPage} onChange={e => { setProdPerPage(Number(e.target.value)); setProdPage(1); }} title={lang === 'en' ? 'Per page' : 'عدد في الصفحة'}>
+                    <option value={10}>10 {lang === 'en' ? '/ page' : '/ صفحة'}</option>
+                    <option value={25}>25 {lang === 'en' ? '/ page' : '/ صفحة'}</option>
+                    <option value={50}>50 {lang === 'en' ? '/ page' : '/ صفحة'}</option>
+                    <option value={100}>100 {lang === 'en' ? '/ page' : '/ صفحة'}</option>
+                    <option value={999}>{lang === 'en' ? 'Show all' : 'عرض الكل'}</option>
+                  </select>
                   {selectedProds.size > 0 && (
                     <button className="btn btn-sm" style={{ background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5' }} onClick={bulkDeleteProds}>
                       <i className="fas fa-trash"></i> {lang === 'en' ? 'Delete' : 'حذف'} ({selectedProds.size})
@@ -1204,7 +1242,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Table */}
-                <div className="data-table">
+                <div className="data-table prod-table-wrap">
                   <table className="prod-grid-table">
                     <thead>
                       <tr>
@@ -1241,7 +1279,7 @@ const Dashboard = () => {
                           {dt('products.noResults')}
                         </td></tr>
                       )}
-                      {filteredDashProducts.map(p => (
+                      {pagedProducts.map(p => (
                         <tr key={p.id} className={selectedProds.has(p.id) ? 'prod-row-selected' : ''}>
                           <td>
                             <input type="checkbox" checked={selectedProds.has(p.id)} onChange={() => toggleProdSelect(p.id)} />
@@ -1285,67 +1323,246 @@ const Dashboard = () => {
                               {productStatusLabels[p.status]?.[lang] || productStatusLabels[p.status]?.ar}
                             </span>
                           </td>
-                          <td className="prod-actions-td">
-                            <button className="action-btn action-btn-edit" onClick={() => openEditProductForm(p.id)}>
-                              <i className="fas fa-pen"></i> {dt('common.edit')}
-                            </button>
-                            <button className="action-btn action-btn-delete" onClick={() => handleDeleteProduct(p.id)}>
-                              <i className="fas fa-trash"></i>
-                            </button>
+                          <td>
+                            <div className="prod-actions-td">
+                              <button className="action-btn action-btn-edit" onClick={() => openEditProductForm(p.id)}>
+                                <i className="fas fa-pen"></i> {dt('common.edit')}
+                              </button>
+                              <button className="action-btn action-btn-delete" onClick={() => handleDeleteProduct(p.id)}>
+                                <i className="fas fa-trash"></i>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
+
+                {/* ── Pagination bar ── */}
+                {prodTotalPages > 1 && (
+                  <div className="prod-pagination">
+                    <div className="prod-pag-info">
+                      {lang === 'en'
+                        ? `Showing ${(prodPageSafe-1)*prodPerPage+1}–${Math.min(prodPageSafe*prodPerPage, filteredDashProducts.length)} of ${filteredDashProducts.length}`
+                        : `عرض ${(prodPageSafe-1)*prodPerPage+1}–${Math.min(prodPageSafe*prodPerPage, filteredDashProducts.length)} من ${filteredDashProducts.length}`}
+                    </div>
+                    <div className="prod-pag-btns">
+                      <button className="prod-pag-btn" onClick={() => setProdPage(1)} disabled={prodPageSafe === 1} title={lang==='en'?'First':'الأول'}>
+                        <i className="fas fa-angles-right"></i>
+                      </button>
+                      <button className="prod-pag-btn" onClick={() => setProdPage(p => Math.max(1, p-1))} disabled={prodPageSafe === 1} title={lang==='en'?'Prev':'السابق'}>
+                        <i className="fas fa-chevron-right"></i>
+                      </button>
+                      {Array.from({ length: prodTotalPages }, (_, i) => i + 1)
+                        .filter(n => n === 1 || n === prodTotalPages || Math.abs(n - prodPageSafe) <= 2)
+                        .reduce((acc, n, idx, arr) => {
+                          if (idx > 0 && n - arr[idx-1] > 1) acc.push('…');
+                          acc.push(n);
+                          return acc;
+                        }, [])
+                        .map((n, i) => n === '…'
+                          ? <span key={`ellipsis-${i}`} className="prod-pag-ellipsis">…</span>
+                          : <button key={n} className={`prod-pag-btn${n === prodPageSafe ? ' prod-pag-active' : ''}`} onClick={() => setProdPage(n)}>{n}</button>
+                        )}
+                      <button className="prod-pag-btn" onClick={() => setProdPage(p => Math.min(prodTotalPages, p+1))} disabled={prodPageSafe === prodTotalPages} title={lang==='en'?'Next':'التالي'}>
+                        <i className="fas fa-chevron-left"></i>
+                      </button>
+                      <button className="prod-pag-btn" onClick={() => setProdPage(prodTotalPages)} disabled={prodPageSafe === prodTotalPages} title={lang==='en'?'Last':'الأخير'}>
+                        <i className="fas fa-angles-left"></i>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
               </div>
               )}
 
-              {/* ── Collections / Categories ── */}
-              {productsTab === 'collections' && (
+              {/* ── الأقسام — inline edit form ── */}
+              {productsTab === 'collections' && catViewMode && (
+              <div className="pf-wrap">
+                <div className="pf-page-header">
+                  <button className="pf-back-btn" type="button" onClick={closeCatView}><i className="fas fa-arrow-right"></i></button>
+                  <div>
+                    <div className="pf-page-title">{catViewMode === 'add' ? (lang === 'en' ? 'New Section' : 'قسم جديد') : (lang === 'en' ? `Edit: ${catEditData?.nameEn || catEditData?.nameAr}` : `تعديل: ${catEditData?.nameAr}`)}</div>
+                    <div className="pf-page-sub">{dt('collections.title')}</div>
+                  </div>
+                  <div className="pf-header-actions">
+                    <button className="btn btn-primary btn-sm" type="button" onClick={handleCatEditSave}>
+                      <i className="fas fa-save"></i> {lang === 'en' ? 'Save Section' : 'حفظ القسم'}
+                    </button>
+                  </div>
+                </div>
+
+                {catEditSaved && <div className="pf-alert pf-alert-success"><i className="fas fa-check-circle"></i> {lang === 'en' ? 'Saved!' : 'تم الحفظ بنجاح!'}</div>}
+                {catEditErr   && <div className="pf-alert pf-alert-error"><i className="fas fa-exclamation-circle"></i> {catEditErr}</div>}
+
+                {/* Section 1: Basic Info */}
+                <div className={`pf-acc${catEditOpenSecs.has('basic') ? ' pf-acc-open' : ''}`}>
+                  <button type="button" className="pf-acc-header" onClick={() => toggleCatEditSec('basic')}>
+                    <span className="pf-acc-icon-wrap"><i className="fas fa-tag"></i></span>
+                    <span className="pf-acc-title">{lang === 'en' ? 'Basic Information' : 'المعلومات الأساسية'}</span>
+                    <i className="fas fa-chevron-down pf-acc-arrow"></i>
+                  </button>
+                  <div className="pf-acc-body"><div className="pf-acc-inner">
+                    <div className="pf-two-col">
+                      <div className="pf-field">
+                        <label className="pf-label">{lang === 'en' ? 'Arabic Name *' : 'الاسم بالعربي *'}</label>
+                        <input className="form-input" value={catEditForm.nameAr} onChange={e => setCatEditForm(f => ({...f, nameAr: e.target.value}))} placeholder="مثال: مناديل وجه" />
+                      </div>
+                      <div className="pf-field">
+                        <label className="pf-label">{lang === 'en' ? 'English Name' : 'الاسم بالإنجليزي'}</label>
+                        <input className="form-input" dir="ltr" value={catEditForm.nameEn} onChange={e => setCatEditForm(f => ({...f, nameEn: e.target.value}))} placeholder="Facial Tissues" />
+                      </div>
+                    </div>
+                    <div className="pf-two-col" style={{marginTop:'12px'}}>
+                      <div className="pf-field">
+                        <label className="pf-label">Slug * <span style={{fontSize:'11px', color:'var(--text-light)', fontWeight:400}}>أحرف إنجليزية صغيرة وأرقام وشرطة</span></label>
+                        <input className="form-input" dir="ltr" value={catEditForm.slug} onChange={e => setCatEditForm(f => ({...f, slug: e.target.value.toLowerCase().replace(/\s/g,'-')}))} placeholder="facial-tissues" />
+                      </div>
+                      <div className="pf-field">
+                        <label className="pf-label">{lang === 'en' ? 'Emoji / Icon' : 'الأيقونة / إيموجي'}</label>
+                        <input className="form-input" value={catEditForm.emoji} onChange={e => setCatEditForm(f => ({...f, emoji: e.target.value}))} placeholder="📦" style={{fontSize:'20px'}} />
+                      </div>
+                    </div>
+                  </div></div>
+                </div>
+
+                {/* Section 2: Settings */}
+                <div className={`pf-acc${catEditOpenSecs.has('settings') ? ' pf-acc-open' : ''}`}>
+                  <button type="button" className="pf-acc-header" onClick={() => toggleCatEditSec('settings')}>
+                    <span className="pf-acc-icon-wrap"><i className="fas fa-sliders"></i></span>
+                    <span className="pf-acc-title">{lang === 'en' ? 'Settings' : 'الإعدادات'}</span>
+                    <i className="fas fa-chevron-down pf-acc-arrow"></i>
+                  </button>
+                  <div className="pf-acc-body"><div className="pf-acc-inner">
+                    <div className="pf-two-col">
+                      <div className="pf-field">
+                        <label className="pf-label">{lang === 'en' ? 'Status' : 'الحالة'}</label>
+                        <select className="form-select" value={catEditForm.status} onChange={e => setCatEditForm(f => ({...f, status: e.target.value}))}>
+                          <option value="active">{lang === 'en' ? 'Active — Visible on site' : 'نشط — يظهر في الموقع'}</option>
+                          <option value="inactive">{lang === 'en' ? 'Hidden' : 'مخفي'}</option>
+                        </select>
+                      </div>
+                      <div className="pf-field">
+                        <label className="pf-label">{lang === 'en' ? 'Sort Order' : 'الترتيب'}</label>
+                        <input className="form-input" type="number" min="1" dir="ltr" value={catEditForm.sortOrder} onChange={e => setCatEditForm(f => ({...f, sortOrder: parseInt(e.target.value)||1}))} />
+                      </div>
+                    </div>
+                    <div className="pf-field" style={{marginTop:'12px'}}>
+                      <label className="pf-label">{lang === 'en' ? 'Parent Section' : 'القسم الأب'}</label>
+                      <select className="form-select" value={catEditForm.parentId ?? ''} onChange={e => setCatEditForm(f => ({...f, parentId: e.target.value ? parseInt(e.target.value) : null}))}>
+                        <option value="">{lang === 'en' ? '— None (Top Level) —' : '— بدون — قسم رئيسي —'}</option>
+                        {flattenTree(buildCatTree(categories)).filter(c => catViewMode === 'add' || c.id !== catEditData?.id).map(c => (
+                          <option key={c.id} value={c.id}>{'　'.repeat(c.depth)}{c.depth > 0 ? '└ ' : ''}{c.nameAr}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div></div>
+                </div>
+
+                {/* Section 3: Description */}
+                <div className={`pf-acc${catEditOpenSecs.has('desc') ? ' pf-acc-open' : ''}`}>
+                  <button type="button" className="pf-acc-header" onClick={() => toggleCatEditSec('desc')}>
+                    <span className="pf-acc-icon-wrap"><i className="fas fa-align-right"></i></span>
+                    <span className="pf-acc-title">{lang === 'en' ? 'Description' : 'الوصف'}</span>
+                    <i className="fas fa-chevron-down pf-acc-arrow"></i>
+                  </button>
+                  <div className="pf-acc-body"><div className="pf-acc-inner">
+                    <textarea className="form-textarea" style={{minHeight:'100px'}} value={catEditForm.desc} onChange={e => setCatEditForm(f => ({...f, desc: e.target.value}))} placeholder={lang === 'en' ? 'Short description of this section...' : 'وصف مختصر للقسم...'} />
+                  </div></div>
+                </div>
+
+                <div className="pf-bottom-bar">
+                  <button className="btn btn-outline btn-sm" type="button" onClick={closeCatView}><i className="fas fa-arrow-right"></i> {lang === 'en' ? 'Back' : 'رجوع'}</button>
+                  <button className="btn btn-primary" type="button" onClick={handleCatEditSave}><i className="fas fa-save"></i> {lang === 'en' ? 'Save Section' : 'حفظ القسم'}</button>
+                </div>
+              </div>
+              )}
+
+              {/* ── الأقسام — table list ── */}
+              {productsTab === 'collections' && !catViewMode && (
               <div>
                 <div className="dash-header-row">
-                  <div className="dashboard-title">{dt('collections.title')}</div>
+                  <div>
+                    <div className="dashboard-title">{dt('collections.title')}</div>
+                    <div style={{fontSize:'13px', color:'var(--text-light)', marginTop:'2px'}}>
+                      {filteredCats.length} {lang === 'en' ? 'sections' : 'قسم'} · {categories.filter(c=>c.status==='active').length} {lang === 'en' ? 'active' : 'نشط'}
+                    </div>
+                  </div>
                   {perms.categories && (
-                    <button className="btn btn-green btn-sm" onClick={openAddCat}>
-                      <i className="fas fa-plus" aria-hidden="true"></i> {dt('collections.add')}
+                    <button className="btn btn-green btn-sm" type="button" onClick={openCatAdd}>
+                      <i className="fas fa-plus"></i> {dt('collections.add')}
                     </button>
                   )}
                 </div>
-                <p className="dash-section-desc">{lang === 'en' ? 'Manage product collections — displayed on the products page and search filters.' : 'إدارة فئات المنتجات — تظهر في صفحة المنتجات وفلاتر البحث.'}</p>
+
+                {/* Filters bar */}
+                <div className="prod-filters-bar">
+                  <div className="dash-search-bar" style={{flex:1, minWidth:'180px'}}>
+                    <i className="fas fa-magnifying-glass dash-search-icon"></i>
+                    <input type="search" className="dash-search-input"
+                      placeholder={lang === 'en' ? 'Search name, slug...' : 'ابحث بالاسم أو الـ Slug...'}
+                      value={catSearch} onChange={e => setCatSearch(e.target.value)} autoComplete="off" />
+                    {catSearch && <button className="dash-search-clear" onClick={() => setCatSearch('')}><i className="fas fa-xmark"></i></button>}
+                  </div>
+                  <select className="prod-filter-select" value={catStatusFilter} onChange={e => setCatStatusFilter(e.target.value)}>
+                    <option value="all">{lang === 'en' ? 'All Status' : 'كل الحالات'}</option>
+                    <option value="active">{lang === 'en' ? 'Active' : 'نشط'}</option>
+                    <option value="inactive">{lang === 'en' ? 'Hidden' : 'مخفي'}</option>
+                  </select>
+                  <select className="prod-filter-select" value={catLevelFilter} onChange={e => setCatLevelFilter(e.target.value)}>
+                    <option value="all">{lang === 'en' ? 'All Levels' : 'كل المستويات'}</option>
+                    <option value="root">{lang === 'en' ? 'Top Level Only' : 'رئيسية فقط'}</option>
+                    <option value="sub">{lang === 'en' ? 'Sub-sections Only' : 'فرعية فقط'}</option>
+                  </select>
+                </div>
+
                 <div className="data-table">
                   <table>
                     <thead>
-                      <tr><th>{dt('collections.name')}</th><th>{lang === 'en' ? 'English Name' : 'الاسم الإنجليزي'}</th><th>{dt('collections.slug')}</th><th>{lang === 'en' ? 'Parent' : 'الفئة الأم'}</th><th>{dt('collections.products')}</th><th>{dt('collections.status')}</th><th>{dt('collections.actions')}</th></tr>
+                      <tr>
+                        <th>{lang === 'en' ? 'Section' : 'القسم'}</th>
+                        <th>{lang === 'en' ? 'English Name' : 'الاسم الإنجليزي'}</th>
+                        <th>Slug</th>
+                        <th>{lang === 'en' ? 'Parent' : 'القسم الأب'}</th>
+                        <th>{lang === 'en' ? 'Products' : 'المنتجات'}</th>
+                        <th>{lang === 'en' ? 'Status' : 'الحالة'}</th>
+                        <th>{lang === 'en' ? 'Actions' : 'إجراءات'}</th>
+                      </tr>
                     </thead>
                     <tbody>
-                      {categories.length === 0 && (
-                        <tr><td colSpan="7" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>{lang === 'en' ? 'No collections' : 'لا توجد فئات'}</td></tr>
+                      {filteredCats.length === 0 && (
+                        <tr><td colSpan="7" style={{textAlign:'center', color:'var(--text-light)', padding:'40px'}}>
+                          {catSearch || catStatusFilter !== 'all' || catLevelFilter !== 'all'
+                            ? (lang === 'en' ? 'No sections match the filters.' : 'لا توجد أقسام تطابق الفلتر.')
+                            : (lang === 'en' ? 'No sections yet.' : 'لا توجد أقسام.')}
+                        </td></tr>
                       )}
-                      {flattenTree(buildCatTree(categories)).map(c => {
-                        const prodCount = products.filter(p => p.category === c.slug).length;
+                      {filteredCats.map(c => {
+                        const prodCount   = products.filter(p => p.category === c.slug).length;
                         const hasChildren = categories.some(ch => ch.parentId === c.id);
-                        const parent = categories.find(p => p.id === c.parentId);
+                        const parent      = categories.find(p => p.id === c.parentId);
                         return (
                           <tr key={c.id}>
                             <td>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingInlineStart: `${c.depth * 24}px` }}>
-                                {c.depth > 0 && <span style={{ color: 'var(--text-light)', fontSize: '12px' }}>└</span>}
-                                <span className="cat-emoji-badge">{c.emoji}</span>
+                              <div style={{display:'flex', alignItems:'center', gap:'8px', paddingInlineStart: catLevelFilter !== 'all' ? '0' : `${c.depth * 24}px`}}>
+                                {c.depth > 0 && catLevelFilter === 'all' && <span style={{color:'var(--text-light)', fontSize:'12px'}}>└</span>}
+                                <span className="cat-emoji-badge">{c.emoji || '📦'}</span>
                                 <div>
                                   <div className="td-bold">{c.nameAr}</div>
-                                  {hasChildren && <div style={{ fontSize: '11px', color: 'var(--primary)', marginTop: '2px' }}><i className="fas fa-sitemap"></i> {lang === 'en' ? 'Has subcategories' : 'لها فئات فرعية'}</div>}
+                                  {hasChildren && <div style={{fontSize:'11px', color:'var(--primary)', marginTop:'2px'}}><i className="fas fa-sitemap"></i> {lang === 'en' ? 'Has sub-sections' : 'لها أقسام فرعية'}</div>}
                                 </div>
                               </div>
                             </td>
-                            <td className="td-light" dir="ltr">{c.nameEn}</td>
+                            <td className="td-light" dir="ltr">{c.nameEn || '—'}</td>
                             <td><span className="badge-cat" dir="ltr">{c.slug}</span></td>
-                            <td className="td-light">{parent ? <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span>{parent.emoji}</span><span>{parent.nameAr}</span></span> : <span style={{ color: 'var(--text-light)', fontSize: '12px' }}>{lang === 'en' ? 'Top Level' : 'رئيسية'}</span>}</td>
+                            <td className="td-light">{parent ? <span style={{display:'flex', alignItems:'center', gap:'4px'}}><span>{parent.emoji}</span><span>{parent.nameAr}</span></span> : <span style={{color:'var(--text-light)', fontSize:'12px'}}>{lang === 'en' ? 'Top Level' : 'رئيسي'}</span>}</td>
                             <td className="td-bold">{prodCount} {lang === 'en' ? 'product' : 'منتج'}</td>
-                            <td><span className={`status-badge status-${c.status}`}>{c.status === 'active' ? (lang === 'en' ? 'Active' : 'نشطة') : (lang === 'en' ? 'Hidden' : 'مخفية')}</span></td>
+                            <td><span className={`status-badge status-${c.status}`}>{c.status === 'active' ? (lang === 'en' ? 'Active' : 'نشط') : (lang === 'en' ? 'Hidden' : 'مخفي')}</span></td>
                             <td>
-                              <button className="action-btn action-btn-edit" onClick={() => openEditCat(c)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
-                              <button className="action-btn action-btn-delete" onClick={() => handleDeleteCat(c)}><i className="fas fa-trash"></i> {dt('common.delete')}</button>
+                              <button className="action-btn action-btn-edit" onClick={() => openCatEdit(c)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
+                              <button className="action-btn action-btn-delete" onClick={() => handleDeleteCat(c)}><i className="fas fa-trash"></i></button>
                             </td>
                           </tr>
                         );
@@ -2213,68 +2430,6 @@ const Dashboard = () => {
           )}
 
         </div>{/* /dashboard-main */}
-
-        {/* ══ Category Modal ══ */}
-        {catModal && (
-          <div className="modal-overlay" onClick={e => e.target === e.currentTarget && closeCatModal()}>
-            <div className="modal" role="dialog">
-              <div className="modal-header">
-                <h3>{catModal === 'add' ? (lang === 'en' ? 'Add New Collection' : 'إضافة فئة جديدة') : (lang === 'en' ? 'Edit Collection' : 'تعديل الفئة')}</h3>
-                <button className="modal-close" onClick={closeCatModal}><i className="fas fa-xmark"></i></button>
-              </div>
-              {catSaved && <AlertSuccess msg={dt('common.savedOk')} />}
-              {catErr   && <AlertError  msg={catErr} />}
-              <form onSubmit={handleCatSave}>
-                <div className="modal-grid2">
-                  <div className="form-group">
-                    <label className="form-label">{lang === 'en' ? 'Arabic Name *' : 'الاسم بالعربي *'}</label>
-                    <input className="form-input" value={catForm.nameAr} onChange={e => setCatForm(p=>({...p, nameAr: e.target.value}))} placeholder="مثال: مناديل وجه" required />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">{lang === 'en' ? 'English Name' : 'الاسم بالإنجليزي'}</label>
-                    <input className="form-input" dir="ltr" value={catForm.nameEn} onChange={e => setCatForm(p=>({...p, nameEn: e.target.value}))} placeholder="Facial Tissues" />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">{lang === 'en' ? 'Slug * (lowercase English only)' : 'المعرف (Slug) * '}<span style={{fontSize:'11px',color:'var(--text-light)'}}>{lang === 'en' ? '' : 'أحرف إنجليزية صغيرة فقط'}</span></label>
-                    <input className="form-input" dir="ltr" value={catForm.slug} onChange={e => setCatForm(p=>({...p, slug: e.target.value.toLowerCase().replace(/\s/g,'-')}))} placeholder="facial-tissues" required />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">{lang === 'en' ? 'Emoji / Icon' : 'إيموجي / رمز'}</label>
-                    <input className="form-input" value={catForm.emoji} onChange={e => setCatForm(p=>({...p, emoji: e.target.value}))} placeholder="📦" style={{fontSize:'20px'}} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">{lang === 'en' ? 'Sort Order' : 'الترتيب'}</label>
-                    <input className="form-input" type="number" min="1" dir="ltr" value={catForm.sortOrder} onChange={e => setCatForm(p=>({...p, sortOrder: parseInt(e.target.value)||1}))} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">{dt('common.status')}</label>
-                    <select className="form-select" value={catForm.status} onChange={e => setCatForm(p=>({...p, status: e.target.value}))}>
-                      <option value="active">{lang === 'en' ? 'Active — Visible on site' : 'نشطة — تظهر في الموقع'}</option>
-                      <option value="inactive">{lang === 'en' ? 'Hidden' : 'مخفية'}</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">{lang === 'en' ? 'Parent Category' : 'الفئة الأم'}</label>
-                    <select className="form-select" value={catForm.parentId ?? ''} onChange={e => setCatForm(p => ({ ...p, parentId: e.target.value ? parseInt(e.target.value) : null }))}>
-                      <option value="">{lang === 'en' ? '— None (Top Level) —' : '— بدون — فئة رئيسية —'}</option>
-                      {flattenTree(buildCatTree(categories)).filter(c => catModal === 'add' || c.id !== editCat?.id).map(c => (
-                        <option key={c.id} value={c.id}>{'　'.repeat(c.depth)}{c.depth > 0 ? '└ ' : ''}{c.nameAr}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">{lang === 'en' ? 'Description (optional)' : 'الوصف (اختياري)'}</label>
-                  <textarea className="form-textarea" style={{minHeight:'70px'}} value={catForm.desc} onChange={e => setCatForm(p=>({...p, desc: e.target.value}))} placeholder={lang === 'en' ? 'Short description...' : 'وصف مختصر للفئة...'} />
-                </div>
-                <div style={{ display:'flex', justifyContent:'flex-end', gap:'10px', marginTop:'20px' }}>
-                  <button type="button" className="btn btn-sm btn-outline" style={{color:'var(--text)',borderColor:'var(--border)'}} onClick={closeCatModal}>{dt('common.cancel')}</button>
-                  <button type="submit" className="btn btn-green btn-sm"><i className="fas fa-save"></i> {dt('common.save')}</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
 
         {/* ══ Product Modal ══ */}
         {productModal && (
