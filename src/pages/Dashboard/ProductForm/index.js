@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../../../context/AppContext';
 import { useLanguage } from '../../../context/LanguageContext';
-import Seo from '../../../components/Seo';
 import './index.css';
 
 /* ── helpers ── */
@@ -36,26 +34,27 @@ const AlertError = ({ msg }) => (
   <div className="pf-alert pf-alert-error"><i className="fas fa-triangle-exclamation"></i> {msg}</div>
 );
 
-export default function ProductForm() {
-  const navigate = useNavigate();
-  const { id }   = useParams();           // undefined = new, number string = edit
-  const isEdit   = Boolean(id);
-
+/* ── Props:
+   - mode: 'add' | 'edit'
+   - productId: number (edit mode)
+   - onBack: () => void  — called when done/cancel
+── */
+export default function ProductForm({ mode, productId, onBack }) {
+  const isEdit = mode === 'edit';
   const { products, categories, addProduct, updateProduct } = useApp();
   const { lang } = useLanguage();
   const ar = (a, e) => lang === 'en' ? e : a;
 
-  const [form,    setForm]    = useState(emptyProduct);
-  const [saving,  setSaving]  = useState(false);
-  const [saved,   setSaved]   = useState(false);
-  const [err,     setErr]     = useState('');
+  const [form,      setForm]      = useState(emptyProduct);
+  const [saving,    setSaving]    = useState(false);
+  const [saved,     setSaved]     = useState(false);
+  const [err,       setErr]       = useState('');
   const [uploading, setUploading] = useState(false);
-  const [activeSection, setActiveSection] = useState('images');
 
   /* Load existing product when editing */
   useEffect(() => {
-    if (!isEdit) return;
-    const p = products.find(x => String(x.id) === String(id));
+    if (!isEdit || !productId) { setForm(emptyProduct); return; }
+    const p = products.find(x => x.id === productId);
     if (!p) return;
     setForm({
       name:            p.name            || '',
@@ -80,9 +79,9 @@ export default function ProductForm() {
       variants:        p.variants        || [],
       icon:            p.icon            || '📦',
     });
-  }, [id, isEdit, products]);
+  }, [isEdit, productId, products]);
 
-  /* Upload helper */
+  /* Upload helpers */
   const uploadFile = useCallback(async (file) => {
     const IS_PROD = process.env.NODE_ENV === 'production';
     if (!IS_PROD) return URL.createObjectURL(file);
@@ -129,20 +128,14 @@ export default function ProductForm() {
       return { ...p, variants: vs };
     });
 
-  const addVariant = () =>
-    setForm(p => ({ ...p, variants: [...p.variants, emptyVariant()] }));
-
-  const removeVariant = (vi) =>
-    setForm(p => ({ ...p, variants: p.variants.filter((_, i) => i !== vi) }));
-
-  const moveVariant = (vi, dir) =>
-    setForm(p => {
-      const vs = [...p.variants];
-      const to = vi + dir;
-      if (to < 0 || to >= vs.length) return p;
-      [vs[vi], vs[to]] = [vs[to], vs[vi]];
-      return { ...p, variants: vs };
-    });
+  const addVariant   = () => setForm(p => ({ ...p, variants: [...p.variants, emptyVariant()] }));
+  const removeVariant = (vi) => setForm(p => ({ ...p, variants: p.variants.filter((_, i) => i !== vi) }));
+  const moveVariant   = (vi, dir) => setForm(p => {
+    const vs = [...p.variants]; const to = vi + dir;
+    if (to < 0 || to >= vs.length) return p;
+    [vs[vi], vs[to]] = [vs[to], vs[vi]];
+    return { ...p, variants: vs };
+  });
 
   const handleVariantImage = async (vi, e) => {
     const file = e.target.files[0]; if (!file) return;
@@ -152,7 +145,7 @@ export default function ProductForm() {
     setUploading(false);
   };
 
-  const set = (field, val) => setForm(p => ({ ...p, [field]: val }));
+  const set    = (field, val) => setForm(p => ({ ...p, [field]: val }));
   const onInput = (e) => set(e.target.name, e.target.value);
 
   /* Save */
@@ -161,13 +154,12 @@ export default function ProductForm() {
     setErr('');
     if (!form.name.trim()) { setErr(ar('اسم المنتج مطلوب', 'Product name is required')); return; }
     if (!form.price)        { setErr(ar('السعر مطلوب', 'Price is required')); return; }
-    if (!form.stock && form.stock !== 0) { setErr(ar('المخزون مطلوب', 'Stock is required')); return; }
 
     setSaving(true);
     const data = {
       ...form,
       price:     parseFloat(form.price),
-      stock:     parseInt(form.stock),
+      stock:     parseInt(form.stock) || 0,
       badge:     form.badge || null,
       weight:    form.weight    ? parseFloat(form.weight)    : null,
       dimLength: form.dimLength ? parseFloat(form.dimLength) : null,
@@ -182,13 +174,13 @@ export default function ProductForm() {
 
     try {
       if (isEdit) {
-        const orig = products.find(x => String(x.id) === String(id));
-        await updateProduct(Number(id), { ...orig, ...data });
+        const orig = products.find(x => x.id === productId);
+        await updateProduct(productId, { ...orig, ...data });
       } else {
         await addProduct(data);
       }
       setSaved(true);
-      setTimeout(() => navigate('/dashboard'), 900);
+      setTimeout(() => onBack(), 900);
     } catch {
       setErr(ar('حدث خطأ أثناء الحفظ.', 'An error occurred while saving.'));
     } finally {
@@ -198,448 +190,399 @@ export default function ProductForm() {
 
   const catFlat = flattenTree(buildCatTree(categories));
 
-  const SECTIONS = [
-    { id: 'images',   icon: 'fa-image',      label: ar('الصور', 'Images') },
-    { id: 'content',  icon: 'fa-pen',        label: ar('المحتوى', 'Content') },
-    { id: 'details',  icon: 'fa-sliders',    label: ar('التفاصيل', 'Details') },
-    { id: 'shipping', icon: 'fa-truck',      label: ar('الشحن', 'Shipping') },
-    { id: 'variants', icon: 'fa-layer-group',label: ar('الفاريشنات', 'Variants') },
-  ];
-
   return (
-    <div className="pf-page">
-      <Seo noIndex />
+    <div className="pf-wrap">
 
-      {/* ── Top bar ── */}
-      <div className="pf-topbar">
-        <div className="pf-topbar-inner">
-          <button className="pf-back-btn" onClick={() => navigate('/dashboard')}>
-            <i className="fas fa-arrow-right"></i>
+      {/* ── Page header ── */}
+      <div className="pf-page-header">
+        <button className="pf-back-btn" type="button" onClick={onBack}>
+          <i className="fas fa-arrow-right"></i>
+        </button>
+        <div>
+          <div className="pf-page-title">
+            {isEdit ? ar('تعديل المنتج', 'Edit Product') : ar('إضافة منتج جديد', 'New Product')}
+          </div>
+          <div className="pf-page-sub">
+            {isEdit
+              ? ar('تعديل بيانات المنتج والفاريشنات', 'Edit product data and variants')
+              : ar('أدخل بيانات المنتج الجديد', 'Enter new product details')}
+          </div>
+        </div>
+        <div className="pf-header-actions">
+          <button type="button" className="btn btn-outline btn-sm" onClick={onBack}>
+            {ar('إلغاء', 'Cancel')}
           </button>
-          <div className="pf-breadcrumb">
-            <span className="pf-breadcrumb-link" onClick={() => navigate('/dashboard')}>
-              {ar('لوحة التحكم', 'Dashboard')}
-            </span>
-            <i className="fas fa-chevron-left pf-breadcrumb-sep"></i>
-            <span className="pf-breadcrumb-link" onClick={() => navigate('/dashboard')}>
-              {ar('المنتجات', 'Products')}
-            </span>
-            <i className="fas fa-chevron-left pf-breadcrumb-sep"></i>
-            <span className="pf-breadcrumb-current">
-              {isEdit ? ar('تعديل المنتج', 'Edit Product') : ar('منتج جديد', 'New Product')}
-            </span>
-          </div>
-          <div className="pf-topbar-actions">
-            <button type="button" className="pf-btn pf-btn-outline" onClick={() => navigate('/dashboard')}>
-              {ar('إلغاء', 'Cancel')}
-            </button>
-            <button
-              type="button"
-              className="pf-btn pf-btn-primary"
-              onClick={handleSave}
-              disabled={saving || uploading}
-            >
-              {saving
-                ? <><i className="fas fa-spinner fa-spin"></i> {ar('جاري الحفظ...', 'Saving...')}</>
-                : <><i className="fas fa-save"></i> {ar('حفظ المنتج', 'Save Product')}</>}
-            </button>
-          </div>
+          <button
+            type="button"
+            className="btn btn-green btn-sm"
+            onClick={handleSave}
+            disabled={saving || uploading}
+          >
+            {saving
+              ? <><i className="fas fa-spinner fa-spin"></i> {ar('جاري الحفظ...', 'Saving...')}</>
+              : <><i className="fas fa-save"></i> {ar('حفظ المنتج', 'Save')}</>}
+          </button>
         </div>
       </div>
 
-      <div className="pf-body">
-        {/* ── Section nav ── */}
-        <nav className="pf-section-nav">
-          {SECTIONS.map(s => (
-            <button
-              key={s.id}
-              type="button"
-              className={`pf-section-nav-btn${activeSection === s.id ? ' active' : ''}`}
-              onClick={() => {
-                setActiveSection(s.id);
-                document.getElementById(`pf-sec-${s.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-            >
-              <i className={`fas ${s.icon}`}></i>
-              <span>{s.label}</span>
-            </button>
-          ))}
-        </nav>
+      {/* ── Alerts ── */}
+      {saved     && <AlertSuccess msg={ar('تم الحفظ بنجاح!', 'Saved successfully!')} />}
+      {err       && <AlertError   msg={err} />}
+      {uploading && (
+        <div className="pf-uploading-bar">
+          <i className="fas fa-spinner fa-spin"></i> {ar('جاري رفع الصورة...', 'Uploading image...')}
+        </div>
+      )}
 
-        {/* ── Form ── */}
-        <form className="pf-form" onSubmit={handleSave} noValidate>
-          {saved && <AlertSuccess msg={ar('تم الحفظ بنجاح! جاري الرجوع...', 'Saved! Redirecting...')} />}
-          {err   && <AlertError  msg={err} />}
-          {uploading && (
-            <div className="pf-uploading-bar">
-              <i className="fas fa-spinner fa-spin"></i> {ar('جاري رفع الصورة...', 'Uploading image...')}
+      <form onSubmit={handleSave} noValidate>
+
+        {/* ══ IMAGES ══ */}
+        <div className="pf-section">
+          <div className="pf-section-header">
+            <i className="fas fa-image pf-sec-icon"></i>
+            <h3>{ar('الصور', 'Images')}</h3>
+          </div>
+          <div className="pf-images-layout">
+
+            {/* Main image */}
+            <div>
+              <div className="pf-field-label">{ar('الصورة الرئيسية', 'Main Image')}</div>
+              <label className="pf-img-box pf-img-main">
+                {form.image
+                  ? <img src={form.image} alt="main" className="pf-img-preview" />
+                  : <div className="pf-img-placeholder">
+                      <i className="fas fa-cloud-arrow-up"></i>
+                      <span>{ar('اختر صورة', 'Choose image')}</span>
+                    </div>}
+                <input type="file" accept="image/*" onChange={handleMainImage} style={{ display: 'none' }} />
+                {form.image && (
+                  <button type="button" className="pf-img-remove"
+                    onClick={e => { e.preventDefault(); set('image', ''); }}>
+                    <i className="fas fa-xmark"></i>
+                  </button>
+                )}
+              </label>
+            </div>
+
+            {/* Gallery */}
+            <div>
+              <div className="pf-field-label">
+                {ar('معرض الصور', 'Gallery')}
+                <span className="pf-field-hint"> ({(form.gallery || []).length}/6)</span>
+              </div>
+              <div className="pf-gallery-grid">
+                {(form.gallery || []).map((url, idx) => (
+                  <div key={idx} className="pf-gallery-thumb">
+                    <img src={url} alt="" />
+                    <button type="button" className="pf-img-remove" onClick={() => removeGallery(idx)}>
+                      <i className="fas fa-xmark"></i>
+                    </button>
+                  </div>
+                ))}
+                {(form.gallery || []).length < 6 && (
+                  <label className="pf-gallery-add">
+                    <i className="fas fa-plus"></i>
+                    <span>{ar('إضافة', 'Add')}</span>
+                    <input type="file" accept="image/*" multiple onChange={handleGallery} style={{ display: 'none' }} />
+                  </label>
+                )}
+              </div>
+            </div>
+
+            {/* Icon */}
+            <div>
+              <div className="pf-field-label">{ar('إيموجي المنتج', 'Icon')}</div>
+              <div className="pf-icon-current">{form.icon || '📦'}</div>
+              <div className="pf-icon-grid">
+                {COMMON_ICONS.map(ic => (
+                  <button key={ic} type="button"
+                    className={`pf-icon-btn${form.icon === ic ? ' active' : ''}`}
+                    onClick={() => set('icon', ic)}>{ic}</button>
+                ))}
+                <input className="pf-icon-input" value={form.icon}
+                  onChange={e => set('icon', e.target.value)} placeholder="📦" maxLength={4} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ══ CONTENT ══ */}
+        <div className="pf-section">
+          <div className="pf-section-header">
+            <i className="fas fa-pen pf-sec-icon"></i>
+            <h3>{ar('المحتوى', 'Content')}</h3>
+          </div>
+          <div className="pf-two-col">
+            <div>
+              <div className="pf-lang-badge pf-lang-ar">🇸🇦 عربي</div>
+              <div className="pf-field">
+                <label className="pf-label">{ar('اسم المنتج *', 'Product Name *')}</label>
+                <input className="form-input" name="name" value={form.name} onChange={onInput}
+                  placeholder={ar('مثال: مناديل الوجه الكلاسيكية', 'e.g. Classic Facial Tissues')} required />
+              </div>
+              <div className="pf-field">
+                <label className="pf-label">{ar('الوصف', 'Description')}</label>
+                <textarea className="form-textarea" name="desc" value={form.desc} onChange={onInput}
+                  placeholder={ar('وصف المنتج بالعربي...', 'Product description...')} rows={4} />
+              </div>
+            </div>
+            <div>
+              <div className="pf-lang-badge pf-lang-en">🇬🇧 English</div>
+              <div className="pf-field">
+                <label className="pf-label">Product Name (English)</label>
+                <input className="form-input" name="nameEn" value={form.nameEn} onChange={onInput}
+                  dir="ltr" placeholder="e.g. Classic Facial Tissues" />
+              </div>
+              <div className="pf-field">
+                <label className="pf-label">Description (English)</label>
+                <textarea className="form-textarea" name="descEn" value={form.descEn} onChange={onInput}
+                  dir="ltr" placeholder="Product description in English..." rows={4} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ══ DETAILS ══ */}
+        <div className="pf-section">
+          <div className="pf-section-header">
+            <i className="fas fa-sliders pf-sec-icon"></i>
+            <h3>{ar('تفاصيل المنتج', 'Product Details')}</h3>
+          </div>
+          <div className="pf-grid-3">
+            <div className="pf-field">
+              <label className="pf-label">SKU / {ar('رمز المنتج', 'Code')}</label>
+              <input className="form-input" name="sku" value={form.sku} onChange={onInput}
+                dir="ltr" placeholder="JAW-FAC-001" />
+            </div>
+            <div className="pf-field">
+              <label className="pf-label">{ar('الشارة (اختياري)', 'Badge (optional)')}</label>
+              <input className="form-input" name="badge" value={form.badge} onChange={onInput}
+                placeholder={ar('مثال: الأكثر مبيعاً', 'e.g. Best Seller')} />
+            </div>
+            <div className="pf-field">
+              <label className="pf-label">{ar('الحالة', 'Status')}</label>
+              <select className="form-select" name="status" value={form.status} onChange={onInput}>
+                {Object.entries(productStatusLabels).map(([k, v]) => (
+                  <option key={k} value={k}>{lang === 'en' ? v.en : v.ar}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="pf-grid-3">
+            <div className="pf-field">
+              <label className="pf-label">{ar('الفئة', 'Category')}</label>
+              <select className="form-select" name="category" value={form.category} onChange={onInput}>
+                {catFlat.map(c => (
+                  <option key={c.slug} value={c.slug}>
+                    {'　'.repeat(c.depth)}{c.depth > 0 ? '└ ' : ''}{c.nameAr}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="pf-field">
+              <label className="pf-label">{ar('السعر (د.ك) *', 'Price (KD) *')}</label>
+              <input className="form-input" type="number" step="0.001" min="0" name="price"
+                value={form.price} onChange={onInput} dir="ltr" placeholder="0.000" required />
+              <span className="pf-field-hint">{ar('يُستخدم إن لم تكن هناك فاريشنات', 'Used if no variants')}</span>
+            </div>
+            <div className="pf-field">
+              <label className="pf-label">{ar('المخزون *', 'Stock *')}</label>
+              <input className="form-input" type="number" min="0" name="stock"
+                value={form.stock} onChange={onInput} dir="ltr" placeholder="0" required />
+              <span className="pf-field-hint">{ar('المجموع إن لم تكن هناك فاريشنات', 'Total if no variants')}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ══ SHIPPING ══ */}
+        <div className="pf-section">
+          <div className="pf-section-header">
+            <i className="fas fa-truck pf-sec-icon"></i>
+            <h3>{ar('الشحن', 'Shipping')}</h3>
+          </div>
+          <div className="pf-toggle-row">
+            <label className="toggle-switch">
+              <input type="checkbox" checked={form.isPhysical}
+                onChange={e => set('isPhysical', e.target.checked)} />
+              <span className="toggle-slider"></span>
+            </label>
+            <span style={{ fontWeight: 600, fontSize: '14px' }}>
+              {ar('منتج مادي (يحتاج شحن)', 'Physical product (requires shipping)')}
+            </span>
+          </div>
+          {form.isPhysical && (
+            <>
+              <div className="modal-grid2">
+                <div className="pf-field">
+                  <label className="pf-label">{ar('الوزن (كغ)', 'Weight (kg)')}</label>
+                  <input className="form-input" type="number" step="0.01" min="0"
+                    value={form.weight} onChange={e => set('weight', e.target.value)}
+                    dir="ltr" placeholder="0.50" />
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">{ar('الأبعاد: طول × عرض × ارتفاع (سم)', 'Dimensions: L × W × H (cm)')}</label>
+                  <div className="pf-dims-row">
+                    <input className="form-input" type="number" step="0.1" min="0"
+                      value={form.dimLength} onChange={e => set('dimLength', e.target.value)} dir="ltr" placeholder="L" />
+                    <span className="pf-dims-sep">×</span>
+                    <input className="form-input" type="number" step="0.1" min="0"
+                      value={form.dimWidth} onChange={e => set('dimWidth', e.target.value)} dir="ltr" placeholder="W" />
+                    <span className="pf-dims-sep">×</span>
+                    <input className="form-input" type="number" step="0.1" min="0"
+                      value={form.dimHeight} onChange={e => set('dimHeight', e.target.value)} dir="ltr" placeholder="H" />
+                  </div>
+                </div>
+              </div>
+              <div className="modal-grid2">
+                <div className="pf-field">
+                  <label className="pf-label">{ar('بلد المنشأ', 'Country of Origin')}</label>
+                  <select className="form-select" value={form.countryOfOrigin}
+                    onChange={e => set('countryOfOrigin', e.target.value)}>
+                    <option value="KW">🇰🇼 {ar('الكويت', 'Kuwait')}</option>
+                    <option value="SA">🇸🇦 {ar('السعودية', 'Saudi Arabia')}</option>
+                    <option value="AE">🇦🇪 {ar('الإمارات', 'UAE')}</option>
+                    <option value="CN">🇨🇳 {ar('الصين', 'China')}</option>
+                    <option value="TR">🇹🇷 {ar('تركيا', 'Turkey')}</option>
+                    <option value="IN">🇮🇳 {ar('الهند', 'India')}</option>
+                    <option value="US">🇺🇸 {ar('أمريكا', 'USA')}</option>
+                    <option value="DE">🇩🇪 {ar('ألمانيا', 'Germany')}</option>
+                    <option value="EG">🇪🇬 {ar('مصر', 'Egypt')}</option>
+                  </select>
+                </div>
+                <div className="pf-field">
+                  <label className="pf-label">HS Code <span className="pf-field-hint">{ar('رمز التعريفة الجمركية', 'Customs Tariff Code')}</span></label>
+                  <input className="form-input" dir="ltr" value={form.hsCode}
+                    onChange={e => set('hsCode', e.target.value)} placeholder="e.g. 4818.10.00" />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* ══ VARIANTS ══ */}
+        <div className="pf-section">
+          <div className="pf-section-header">
+            <i className="fas fa-layer-group pf-sec-icon"></i>
+            <h3>{ar('الفاريشنات / الباقات', 'Variants / Packages')}</h3>
+            <span className="pf-variant-count">{form.variants.length}</span>
+          </div>
+          <p className="pf-section-desc">
+            {ar(
+              'أضف فاريشنات أو باقات مختلفة للمنتج (مثل علبة، 5 علب، كرتون). كل فاريشن له سعر ومخزون وصورة مستقلة.',
+              'Add variants or packages (e.g. Single Box, 5 Boxes, Carton). Each variant has its own price, stock and image.'
+            )}
+          </p>
+
+          {form.variants.length === 0 && (
+            <div className="pf-variants-empty">
+              <i className="fas fa-layer-group"></i>
+              <p>{ar('لا توجد فاريشنات — اضغط الزر أدناه للإضافة', 'No variants yet — click below to add')}</p>
             </div>
           )}
 
-          {/* ══ IMAGES ══ */}
-          <div id="pf-sec-images" className="pf-section">
-            <div className="pf-section-header">
-              <i className="fas fa-image"></i>
-              <h2>{ar('الصور', 'Images')}</h2>
-            </div>
-            <div className="pf-images-layout">
-              {/* Main image */}
-              <div className="pf-main-img-wrap">
-                <div className="pf-main-img-label">{ar('الصورة الرئيسية', 'Main Image')}</div>
-                <label className="pf-img-upload-box pf-img-main">
-                  {form.image
-                    ? <img src={form.image} alt="main" className="pf-img-preview" />
-                    : <div className="pf-img-placeholder">
-                        <i className="fas fa-cloud-arrow-up"></i>
-                        <span>{ar('اسحب صورة هنا أو اضغط للاختيار', 'Drop image here or click to choose')}</span>
-                      </div>}
-                  <input type="file" accept="image/*" onChange={handleMainImage} style={{ display: 'none' }} />
-                  {form.image && (
-                    <button
-                      type="button" className="pf-img-remove"
-                      onClick={e => { e.preventDefault(); set('image', ''); }}
-                    ><i className="fas fa-xmark"></i></button>
-                  )}
-                </label>
-              </div>
-
-              {/* Gallery */}
-              <div className="pf-gallery-wrap">
-                <div className="pf-main-img-label">
-                  {ar('معرض الصور', 'Gallery')}
-                  <span className="pf-label-hint">({(form.gallery || []).length}/6)</span>
+          <div className="pf-variants-list">
+            {form.variants.map((v, vi) => (
+              <div key={vi} className="pf-variant-card">
+                <div className="pf-variant-header">
+                  <span className="pf-variant-num">#{vi + 1}</span>
+                  <span className="pf-variant-name-preview">
+                    {v.nameAr || v.nameEn || ar('فاريشن جديد', 'New Variant')}
+                  </span>
+                  <div className="pf-variant-controls">
+                    <button type="button" className="pf-variant-ctrl-btn"
+                      onClick={() => moveVariant(vi, -1)} disabled={vi === 0} title={ar('للأعلى', 'Up')}>
+                      <i className="fas fa-chevron-up"></i>
+                    </button>
+                    <button type="button" className="pf-variant-ctrl-btn"
+                      onClick={() => moveVariant(vi, 1)} disabled={vi === form.variants.length - 1} title={ar('للأسفل', 'Down')}>
+                      <i className="fas fa-chevron-down"></i>
+                    </button>
+                    <button type="button" className="pf-variant-ctrl-btn pf-variant-del"
+                      onClick={() => removeVariant(vi)} title={ar('حذف', 'Delete')}>
+                      <i className="fas fa-trash"></i>
+                    </button>
+                  </div>
                 </div>
-                <div className="pf-gallery-grid">
-                  {(form.gallery || []).map((url, idx) => (
-                    <div key={idx} className="pf-gallery-thumb">
-                      <img src={url} alt={`g${idx}`} />
-                      <button type="button" className="pf-img-remove" onClick={() => removeGallery(idx)}>
-                        <i className="fas fa-xmark"></i>
-                      </button>
-                    </div>
-                  ))}
-                  {(form.gallery || []).length < 6 && (
-                    <label className="pf-gallery-add">
-                      <i className="fas fa-plus"></i>
-                      <span>{ar('إضافة', 'Add')}</span>
-                      <input type="file" accept="image/*" multiple onChange={handleGallery} style={{ display: 'none' }} />
+                <div className="pf-variant-body">
+                  {/* Image */}
+                  <div className="pf-variant-img-col">
+                    <label className="pf-img-box pf-variant-img-box">
+                      {v.image
+                        ? <img src={v.image} alt="" className="pf-img-preview" />
+                        : <div className="pf-img-placeholder pf-img-sm">
+                            <i className="fas fa-image"></i>
+                            <span>{ar('صورة', 'Img')}</span>
+                          </div>}
+                      <input type="file" accept="image/*"
+                        onChange={e => handleVariantImage(vi, e)} style={{ display: 'none' }} />
+                      {v.image && (
+                        <button type="button" className="pf-img-remove"
+                          onClick={e => { e.preventDefault(); setVariant(vi, 'image', ''); }}>
+                          <i className="fas fa-xmark"></i>
+                        </button>
+                      )}
                     </label>
-                  )}
-                </div>
-              </div>
-
-              {/* Icon emoji */}
-              <div className="pf-icon-wrap">
-                <div className="pf-main-img-label">{ar('إيموجي المنتج', 'Product Icon')}</div>
-                <div className="pf-icon-current">{form.icon || '📦'}</div>
-                <div className="pf-icon-grid">
-                  {COMMON_ICONS.map(ic => (
-                    <button
-                      key={ic} type="button"
-                      className={`pf-icon-btn${form.icon === ic ? ' active' : ''}`}
-                      onClick={() => set('icon', ic)}
-                    >{ic}</button>
-                  ))}
-                  <input
-                    className="pf-icon-input"
-                    value={form.icon}
-                    onChange={e => set('icon', e.target.value)}
-                    placeholder="📦"
-                    maxLength={4}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ══ CONTENT ══ */}
-          <div id="pf-sec-content" className="pf-section">
-            <div className="pf-section-header">
-              <i className="fas fa-pen"></i>
-              <h2>{ar('المحتوى', 'Content')}</h2>
-            </div>
-            <div className="pf-two-col">
-              <div className="pf-lang-block">
-                <div className="pf-lang-badge pf-lang-ar">🇸🇦 عربي</div>
-                <div className="pf-field">
-                  <label className="pf-label">{ar('اسم المنتج *', 'Product Name *')}</label>
-                  <input className="pf-input" name="name" value={form.name} onChange={onInput}
-                    placeholder="مثال: مناديل الوجه الكلاسيكية" required />
-                </div>
-                <div className="pf-field">
-                  <label className="pf-label">{ar('الوصف', 'Description')}</label>
-                  <textarea className="pf-textarea" name="desc" value={form.desc} onChange={onInput}
-                    placeholder="وصف المنتج بالعربي..." rows={4} />
-                </div>
-              </div>
-              <div className="pf-lang-block">
-                <div className="pf-lang-badge pf-lang-en">🇬🇧 English</div>
-                <div className="pf-field">
-                  <label className="pf-label">Product Name (English)</label>
-                  <input className="pf-input" name="nameEn" value={form.nameEn} onChange={onInput}
-                    dir="ltr" placeholder="e.g. Classic Facial Tissues" />
-                </div>
-                <div className="pf-field">
-                  <label className="pf-label">Description (English)</label>
-                  <textarea className="pf-textarea" name="descEn" value={form.descEn} onChange={onInput}
-                    dir="ltr" placeholder="Product description in English..." rows={4} />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ══ DETAILS ══ */}
-          <div id="pf-sec-details" className="pf-section">
-            <div className="pf-section-header">
-              <i className="fas fa-sliders"></i>
-              <h2>{ar('تفاصيل المنتج', 'Product Details')}</h2>
-            </div>
-            <div className="pf-grid-3">
-              <div className="pf-field">
-                <label className="pf-label">SKU / {ar('رمز المنتج', 'Product Code')}</label>
-                <input className="pf-input" name="sku" value={form.sku} onChange={onInput}
-                  dir="ltr" placeholder="e.g. JAW-FAC-001" />
-              </div>
-              <div className="pf-field">
-                <label className="pf-label">{ar('الشارة (اختياري)', 'Badge (optional)')}</label>
-                <input className="pf-input" name="badge" value={form.badge} onChange={onInput}
-                  placeholder={ar('مثال: الأكثر مبيعاً', 'e.g. Best Seller')} />
-              </div>
-              <div className="pf-field">
-                <label className="pf-label">{ar('الحالة', 'Status')}</label>
-                <select className="pf-select" name="status" value={form.status} onChange={onInput}>
-                  {Object.entries(productStatusLabels).map(([k, v]) => (
-                    <option key={k} value={k}>{lang === 'en' ? v.en : v.ar}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="pf-grid-3">
-              <div className="pf-field">
-                <label className="pf-label">{ar('الفئة', 'Category')}</label>
-                <select className="pf-select" name="category" value={form.category} onChange={onInput}>
-                  {catFlat.map(c => (
-                    <option key={c.slug} value={c.slug}>
-                      {'　'.repeat(c.depth)}{c.depth > 0 ? '└ ' : ''}{c.nameAr}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="pf-field">
-                <label className="pf-label">{ar('السعر الأساسي (د.ك) *', 'Base Price (KD) *')}</label>
-                <input className="pf-input" type="number" step="0.001" min="0" name="price"
-                  value={form.price} onChange={onInput} dir="ltr" placeholder="0.000" required />
-                <span className="pf-hint">{ar('يُستخدم إذا لم تكن هناك فاريشنات', 'Used if no variants are defined')}</span>
-              </div>
-              <div className="pf-field">
-                <label className="pf-label">{ar('المخزون الأساسي *', 'Base Stock *')}</label>
-                <input className="pf-input" type="number" min="0" name="stock"
-                  value={form.stock} onChange={onInput} dir="ltr" placeholder="0" required />
-                <span className="pf-hint">{ar('مجموع المخزون إذا لم تكن هناك فاريشنات', 'Total stock if no variants')}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* ══ SHIPPING ══ */}
-          <div id="pf-sec-shipping" className="pf-section">
-            <div className="pf-section-header">
-              <i className="fas fa-truck"></i>
-              <h2>{ar('الشحن', 'Shipping')}</h2>
-            </div>
-            <div className="pf-toggle-row">
-              <label className="pf-toggle">
-                <input type="checkbox" checked={form.isPhysical}
-                  onChange={e => set('isPhysical', e.target.checked)} />
-                <span className="pf-toggle-slider"></span>
-              </label>
-              <span className="pf-toggle-label">{ar('منتج مادي (يحتاج شحن)', 'Physical product (requires shipping)')}</span>
-            </div>
-            {form.isPhysical && (
-              <div className="pf-shipping-fields">
-                <div className="pf-grid-2">
-                  <div className="pf-field">
-                    <label className="pf-label">{ar('الوزن (كغ)', 'Weight (kg)')}</label>
-                    <input className="pf-input" type="number" step="0.01" min="0"
-                      value={form.weight} onChange={e => set('weight', e.target.value)}
-                      dir="ltr" placeholder="0.50" />
                   </div>
-                  <div className="pf-field">
-                    <label className="pf-label">{ar('الأبعاد: طول × عرض × ارتفاع (سم)', 'Dimensions: L × W × H (cm)')}</label>
-                    <div className="pf-dims-row">
-                      <input className="pf-input" type="number" step="0.1" min="0"
-                        value={form.dimLength} onChange={e => set('dimLength', e.target.value)}
-                        dir="ltr" placeholder="L" />
-                      <span className="pf-dims-sep">×</span>
-                      <input className="pf-input" type="number" step="0.1" min="0"
-                        value={form.dimWidth} onChange={e => set('dimWidth', e.target.value)}
-                        dir="ltr" placeholder="W" />
-                      <span className="pf-dims-sep">×</span>
-                      <input className="pf-input" type="number" step="0.1" min="0"
-                        value={form.dimHeight} onChange={e => set('dimHeight', e.target.value)}
-                        dir="ltr" placeholder="H" />
-                    </div>
-                  </div>
-                </div>
-                <div className="pf-grid-2">
-                  <div className="pf-field">
-                    <label className="pf-label">{ar('بلد المنشأ', 'Country of Origin')}</label>
-                    <select className="pf-select" value={form.countryOfOrigin}
-                      onChange={e => set('countryOfOrigin', e.target.value)}>
-                      <option value="KW">🇰🇼 {ar('الكويت', 'Kuwait')} (KW)</option>
-                      <option value="SA">🇸🇦 {ar('السعودية', 'Saudi Arabia')} (SA)</option>
-                      <option value="AE">🇦🇪 {ar('الإمارات', 'UAE')} (AE)</option>
-                      <option value="CN">🇨🇳 {ar('الصين', 'China')} (CN)</option>
-                      <option value="TR">🇹🇷 {ar('تركيا', 'Turkey')} (TR)</option>
-                      <option value="IN">🇮🇳 {ar('الهند', 'India')} (IN)</option>
-                      <option value="US">🇺🇸 {ar('أمريكا', 'USA')} (US)</option>
-                      <option value="DE">🇩🇪 {ar('ألمانيا', 'Germany')} (DE)</option>
-                      <option value="EG">🇪🇬 {ar('مصر', 'Egypt')} (EG)</option>
-                    </select>
-                  </div>
-                  <div className="pf-field">
-                    <label className="pf-label">
-                      HS Code <span className="pf-label-hint">{ar('رمز التعريفة الجمركية', 'Customs Tariff Code')}</span>
-                    </label>
-                    <input className="pf-input" dir="ltr" value={form.hsCode}
-                      onChange={e => set('hsCode', e.target.value)} placeholder="e.g. 4818.10.00" />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ══ VARIANTS ══ */}
-          <div id="pf-sec-variants" className="pf-section">
-            <div className="pf-section-header">
-              <i className="fas fa-layer-group"></i>
-              <h2>{ar('الفاريشنات / الباقات', 'Variants / Packages')}</h2>
-              <span className="pf-variant-count">{form.variants.length}</span>
-            </div>
-            <p className="pf-section-desc">
-              {ar(
-                'أضف فاريشنات أو باقات مختلفة للمنتج (مثل علبة واحدة، 5 علب، كرتون). كل فاريشن له سعر ومخزون وصورة مستقلة.',
-                'Add variants or packages for the product (e.g. Single Box, 5 Boxes, Carton). Each variant has its own price, stock, and image.'
-              )}
-            </p>
-
-            {form.variants.length === 0 && (
-              <div className="pf-variants-empty">
-                <i className="fas fa-layer-group"></i>
-                <p>{ar('لا توجد فاريشنات بعد — اضغط الزر أدناه للإضافة', 'No variants yet — click the button below to add')}</p>
-              </div>
-            )}
-
-            <div className="pf-variants-list">
-              {form.variants.map((v, vi) => (
-                <div key={vi} className="pf-variant-card">
-                  {/* Variant header */}
-                  <div className="pf-variant-header">
-                    <div className="pf-variant-num">#{vi + 1}</div>
-                    <div className="pf-variant-name-preview">
-                      {v.nameAr || v.nameEn || ar('فاريشن جديد', 'New Variant')}
-                    </div>
-                    <div className="pf-variant-controls">
-                      <button type="button" className="pf-variant-ctrl-btn"
-                        onClick={() => moveVariant(vi, -1)} disabled={vi === 0}
-                        title={ar('تحريك لأعلى', 'Move up')}>
-                        <i className="fas fa-chevron-up"></i>
-                      </button>
-                      <button type="button" className="pf-variant-ctrl-btn"
-                        onClick={() => moveVariant(vi, 1)} disabled={vi === form.variants.length - 1}
-                        title={ar('تحريك لأسفل', 'Move down')}>
-                        <i className="fas fa-chevron-down"></i>
-                      </button>
-                      <button type="button" className="pf-variant-ctrl-btn pf-variant-del"
-                        onClick={() => removeVariant(vi)}
-                        title={ar('حذف', 'Delete')}>
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Variant body */}
-                  <div className="pf-variant-body">
-                    {/* Variant image */}
-                    <div className="pf-variant-img-col">
-                      <label className="pf-img-upload-box pf-variant-img-box">
-                        {v.image
-                          ? <img src={v.image} alt={`v${vi}`} className="pf-img-preview" />
-                          : <div className="pf-img-placeholder pf-img-placeholder-sm">
-                              <i className="fas fa-image"></i>
-                              <span>{ar('صورة', 'Image')}</span>
-                            </div>}
-                        <input type="file" accept="image/*"
-                          onChange={e => handleVariantImage(vi, e)} style={{ display: 'none' }} />
-                        {v.image && (
-                          <button type="button" className="pf-img-remove"
-                            onClick={e => { e.preventDefault(); setVariant(vi, 'image', ''); }}>
-                            <i className="fas fa-xmark"></i>
-                          </button>
-                        )}
-                      </label>
-                    </div>
-
-                    {/* Variant fields */}
-                    <div className="pf-variant-fields">
-                      <div className="pf-grid-2">
-                        <div className="pf-field">
-                          <label className="pf-label pf-label-sm">🇸🇦 {ar('الاسم بالعربي', 'Arabic Name')}</label>
-                          <input className="pf-input" value={v.nameAr}
-                            onChange={e => setVariant(vi, 'nameAr', e.target.value)}
-                            placeholder={ar('مثال: علبة واحدة', 'e.g. Single Box')} />
-                        </div>
-                        <div className="pf-field">
-                          <label className="pf-label pf-label-sm">🇬🇧 English Name</label>
-                          <input className="pf-input" dir="ltr" value={v.nameEn}
-                            onChange={e => setVariant(vi, 'nameEn', e.target.value)}
-                            placeholder="e.g. Single Box" />
-                        </div>
+                  {/* Fields */}
+                  <div className="pf-variant-fields">
+                    <div className="modal-grid2">
+                      <div className="pf-field">
+                        <label className="pf-label pf-label-sm">🇸🇦 {ar('الاسم عربي', 'Arabic Name')}</label>
+                        <input className="form-input" value={v.nameAr}
+                          onChange={e => setVariant(vi, 'nameAr', e.target.value)}
+                          placeholder={ar('علبة واحدة', 'Single Box')} />
                       </div>
-                      <div className="pf-grid-3">
-                        <div className="pf-field">
-                          <label className="pf-label pf-label-sm">💰 {ar('السعر (د.ك)', 'Price (KD)')}</label>
-                          <input className="pf-input" type="number" step="0.001" min="0" dir="ltr"
-                            value={v.price} onChange={e => setVariant(vi, 'price', e.target.value)}
-                            placeholder="1.500" />
-                        </div>
-                        <div className="pf-field">
-                          <label className="pf-label pf-label-sm">📦 {ar('المخزون', 'Stock')}</label>
-                          <input className="pf-input" type="number" min="0" dir="ltr"
-                            value={v.stock} onChange={e => setVariant(vi, 'stock', e.target.value)}
-                            placeholder="100" />
-                        </div>
-                        <div className="pf-field">
-                          <label className="pf-label pf-label-sm">🏷️ SKU</label>
-                          <input className="pf-input" dir="ltr" value={v.sku}
-                            onChange={e => setVariant(vi, 'sku', e.target.value)}
-                            placeholder="SKU-001-V1" />
-                        </div>
+                      <div className="pf-field">
+                        <label className="pf-label pf-label-sm">🇬🇧 English Name</label>
+                        <input className="form-input" dir="ltr" value={v.nameEn}
+                          onChange={e => setVariant(vi, 'nameEn', e.target.value)}
+                          placeholder="Single Box" />
+                      </div>
+                    </div>
+                    <div className="pf-grid-3">
+                      <div className="pf-field">
+                        <label className="pf-label pf-label-sm">💰 {ar('السعر (د.ك)', 'Price (KD)')}</label>
+                        <input className="form-input" type="number" step="0.001" min="0" dir="ltr"
+                          value={v.price} onChange={e => setVariant(vi, 'price', e.target.value)}
+                          placeholder="1.500" />
+                      </div>
+                      <div className="pf-field">
+                        <label className="pf-label pf-label-sm">📦 {ar('المخزون', 'Stock')}</label>
+                        <input className="form-input" type="number" min="0" dir="ltr"
+                          value={v.stock} onChange={e => setVariant(vi, 'stock', e.target.value)}
+                          placeholder="100" />
+                      </div>
+                      <div className="pf-field">
+                        <label className="pf-label pf-label-sm">🏷️ SKU</label>
+                        <input className="form-input" dir="ltr" value={v.sku}
+                          onChange={e => setVariant(vi, 'sku', e.target.value)}
+                          placeholder="SKU-001-V1" />
                       </div>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            <button type="button" className="pf-add-variant-btn" onClick={addVariant}>
-              <i className="fas fa-plus"></i>
-              {ar('إضافة فاريشن جديد', 'Add New Variant')}
-            </button>
+              </div>
+            ))}
           </div>
 
-          {/* ── Bottom actions ── */}
-          <div className="pf-bottom-actions">
-            <button type="button" className="pf-btn pf-btn-outline" onClick={() => navigate('/dashboard')}>
-              <i className="fas fa-arrow-right"></i> {ar('رجوع بدون حفظ', 'Back without saving')}
-            </button>
-            <button type="submit" className="pf-btn pf-btn-primary pf-btn-lg" disabled={saving || uploading}>
-              {saving
-                ? <><i className="fas fa-spinner fa-spin"></i> {ar('جاري الحفظ...', 'Saving...')}</>
-                : <><i className="fas fa-save"></i> {ar('حفظ المنتج', 'Save Product')}</>}
-            </button>
-          </div>
-        </form>
-      </div>
+          <button type="button" className="pf-add-variant-btn" onClick={addVariant}>
+            <i className="fas fa-plus"></i>
+            {ar('إضافة فاريشن جديد', 'Add New Variant')}
+          </button>
+        </div>
+
+        {/* ── Bottom save ── */}
+        <div className="pf-bottom-bar">
+          <button type="button" className="btn btn-outline" onClick={onBack}>
+            {ar('إلغاء والرجوع', 'Cancel')}
+          </button>
+          <button type="submit" className="btn btn-green" disabled={saving || uploading}>
+            {saving
+              ? <><i className="fas fa-spinner fa-spin"></i> {ar('جاري الحفظ...', 'Saving...')}</>
+              : <><i className="fas fa-save"></i> {ar('حفظ المنتج', 'Save Product')}</>}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

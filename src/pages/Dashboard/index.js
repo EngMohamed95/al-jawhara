@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import ProductForm from './ProductForm';
 import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../translations';
 import Seo from '../../components/Seo';
@@ -334,7 +334,6 @@ const Dashboard = () => {
     saveSiteContent,
   } = useApp();
 
-  const navigate = useNavigate();
   const { lang } = useLanguage();
   const dt = (key) => DASH_T[key]?.[lang] ?? DASH_T[key]?.ar ?? key;
 
@@ -365,6 +364,12 @@ const Dashboard = () => {
   const [view, setView]               = useState('overview');
   const [productsTab, setProductsTab] = useState('list'); // 'list' | 'collections' | 'inventory'
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [productFormMode, setProductFormMode] = useState(null); // null | 'add' | 'edit'
+  const [productFormId,   setProductFormId]   = useState(null);
+
+  const openAddProductForm  = () => { setProductFormMode('add');  setProductFormId(null); setView('products'); setProductsTab('list'); };
+  const openEditProductForm = (id) => { setProductFormMode('edit'); setProductFormId(id);  setView('products'); setProductsTab('list'); };
+  const closeProductForm    = () => { setProductFormMode(null); setProductFormId(null); };
 
   /* ── Category modal ── */
   const [catModal,  setCatModal]  = useState(null); // 'add' | 'edit'
@@ -1117,13 +1122,22 @@ const Dashboard = () => {
           {view === 'products' && (
             <div>
 
+              {/* ── Product Form (add/edit) ── */}
+              {productsTab === 'list' && productFormMode && (
+                <ProductForm
+                  mode={productFormMode}
+                  productId={productFormId}
+                  onBack={closeProductForm}
+                />
+              )}
+
               {/* ── Products list ── */}
-              {productsTab === 'list' && (
+              {productsTab === 'list' && !productFormMode && (
               <div>
               <div className="dash-header-row">
                 <div className="dashboard-title">{dt('nav.allProducts')}</div>
                 {perms.products && (
-                  <button className="btn btn-green btn-sm" onClick={() => navigate('/dashboard/product/new')}>
+                  <button className="btn btn-green btn-sm" onClick={openAddProductForm}>
                     <i className="fas fa-plus" aria-hidden="true"></i> {dt('products.add')}
                   </button>
                 )}
@@ -1147,7 +1161,7 @@ const Dashboard = () => {
                         <td className={Number(p.stock) < 100 ? 'td-warn' : ''}>{Number(p.stock).toLocaleString()}</td>
                         <td><span className={`status-badge status-${p.status}`}>{productStatusLabels[p.status]?.[lang] || productStatusLabels[p.status]?.ar}</span></td>
                         <td>
-                          <button className="action-btn action-btn-edit" onClick={() => navigate(`/dashboard/product/${p.id}/edit`)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
+                          <button className="action-btn action-btn-edit" onClick={() => openEditProductForm(p.id)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
                           <button className="action-btn action-btn-delete" onClick={() => handleDeleteProduct(p.id)}><i className="fas fa-trash"></i> {dt('common.delete')}</button>
                         </td>
                       </tr>
