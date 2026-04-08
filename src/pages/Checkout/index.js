@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -24,10 +24,26 @@ const WALLETS = [
 ];
 
 const Checkout = () => {
-  const { cart, cartTotal, submitOrder } = useApp();
+  const { cart, cartTotal, submitOrder, auth, updateUser, users } = useApp();
   const { t, lang } = useLanguage();
   const navigate  = useNavigate();
-  const [form,    setForm]    = useState(emptyForm);
+
+  /* Pre-fill from logged-in customer account */
+  const initialForm = useMemo(() => ({
+    ...emptyForm,
+    client:     auth?.name           || '',
+    phone:      auth?.phone          || '',
+    email:      auth?.email          || '',
+    governorate: auth?.lastGovernorate || '',
+    block:      auth?.lastBlock      || '',
+    street:     auth?.lastStreet     || '',
+    avenue:     auth?.lastAvenue     || '',
+    building:   auth?.lastBuilding   || '',
+    floor:      auth?.lastFloor      || '',
+    apartment:  auth?.lastApartment  || '',
+  }), [auth]);
+
+  const [form,    setForm]    = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
 
@@ -90,6 +106,29 @@ const Checkout = () => {
         qty:          cart.reduce((s, i) => s + i.qty, 0),
         grandTotal:   grandTotal.toFixed(3),
       });
+      /* save address back to customer profile for next time */
+      if (auth?.role === 'customer') {
+        try {
+          const fullUser = users.find(u => u.id === auth.id);
+          if (fullUser) {
+            const updated = await updateUser(auth.id, {
+              ...fullUser,
+              name:  form.client || fullUser.name,
+              phone: form.phone  || fullUser.phone,
+              email: form.email  || fullUser.email,
+              lastGovernorate: form.governorate,
+              lastBlock:       form.block,
+              lastStreet:      form.street,
+              lastAvenue:      form.avenue,
+              lastBuilding:    form.building,
+              lastFloor:       form.floor,
+              lastApartment:   form.apartment,
+            });
+            const { password: _, ...safe } = updated;
+            localStorage.setItem('jawhara_auth', JSON.stringify(safe));
+          }
+        } catch {}
+      }
       navigate('/order-success', { state: { order } });
     } catch {
       setError(t('products.error'));
