@@ -10,7 +10,11 @@
       "desc": "مناديل ناعمة ثلاثية الطبقات للاستخدام اليومي — رقيقة على البشرة",
       "descEn": "Soft triple-layer tissues for daily use — gentle on the skin",
       "badge": "الأكثر مبيعاً",
-      "specs": ["3 طبقات","200 ورقة","21×21 سم"],
+      "specs": [
+        "3 طبقات",
+        "200 ورقة",
+        "21×21 سم"
+      ],
       "stock": 5000,
       "status": "active"
     },
@@ -24,7 +28,11 @@
       "desc": "مناديل فاخرة برائحة لطيفة — مثالية للضيافة والهدايا المميزة",
       "descEn": "Luxury tissues with a light fragrance — perfect for hospitality and special gifts",
       "badge": "جديد",
-      "specs": ["4 طبقات","150 ورقة","22×22 سم"],
+      "specs": [
+        "4 طبقات",
+        "150 ورقة",
+        "22×22 سم"
+      ],
       "stock": 2000,
       "status": "active"
     },
@@ -38,7 +46,11 @@
       "desc": "رولات قوية مناسبة للمطبخ والتنظيف العام — عالية الامتصاص",
       "descEn": "Strong rolls suitable for kitchen and general cleaning — highly absorbent",
       "badge": null,
-      "specs": ["2 طبقة","300 ورقة","22×25 سم"],
+      "specs": [
+        "2 طبقة",
+        "300 ورقة",
+        "22×25 سم"
+      ],
       "stock": 8000,
       "status": "active"
     },
@@ -52,7 +64,11 @@
       "desc": "رولات الحمام الأكثر مبيعاً — جودة ممتازة بسعر اقتصادي",
       "descEn": "Best-selling bathroom rolls — excellent quality at an affordable price",
       "badge": null,
-      "specs": ["2 طبقة","400 ورقة","10×10 سم"],
+      "specs": [
+        "2 طبقة",
+        "400 ورقة",
+        "10×10 سم"
+      ],
       "stock": 12000,
       "status": "active"
     },
@@ -66,14 +82,42 @@
       "desc": "مناديل ناعمة عالية الجودة — متوفرة بعدة أحجام وباقات تناسب كل الاحتياجات",
       "descEn": "Premium soft tissues — available in multiple sizes and packages to suit all needs",
       "badge": "الأكثر مبيعاً",
-      "specs": ["3 طبقات", "ناعمة على البشرة", "مقاومة للتمزق"],
+      "specs": [
+        "3 طبقات",
+        "ناعمة على البشرة",
+        "مقاومة للتمزق"
+      ],
       "stock": 10000,
       "status": "active",
       "variants": [
-        { "nameAr": "علبة واحدة", "nameEn": "Single Box", "price": "1.500", "stock": 5000, "sku": "FAC-JW-1" },
-        { "nameAr": "5 علب", "nameEn": "5 Boxes", "price": "6.500", "stock": 2000, "sku": "FAC-JW-5" },
-        { "nameAr": "12 علبة", "nameEn": "12 Boxes", "price": "14.400", "stock": 800, "sku": "FAC-JW-12" },
-        { "nameAr": "كرتون (24 علبة)", "nameEn": "Carton (24 Boxes)", "price": "26.000", "stock": 300, "sku": "FAC-JW-24" }
+        {
+          "nameAr": "علبة واحدة",
+          "nameEn": "Single Box",
+          "price": "1.500",
+          "stock": 5000,
+          "sku": "FAC-JW-1"
+        },
+        {
+          "nameAr": "5 علب",
+          "nameEn": "5 Boxes",
+          "price": "6.500",
+          "stock": 2000,
+          "sku": "FAC-JW-5"
+        },
+        {
+          "nameAr": "12 علبة",
+          "nameEn": "12 Boxes",
+          "price": "14.400",
+          "stock": 800,
+          "sku": "FAC-JW-12"
+        },
+        {
+          "nameAr": "كرتون (24 علبة)",
+          "nameEn": "Carton (24 Boxes)",
+          "price": "26.000",
+          "stock": 300,
+          "sku": "FAC-JW-24"
+        }
       ]
     },
     {
@@ -86,13 +130,35 @@
       "desc": "رولات مطبخ عالية الامتصاص — مناسبة للاستخدام المنزلي والتجاري",
       "descEn": "Highly absorbent kitchen rolls — suitable for home and commercial use",
       "badge": null,
-      "specs": ["2 طبقة", "عالية الامتصاص", "مقاومة للماء"],
+      "specs": [
+        "2 طبقة",
+        "عالية الامتصاص",
+        "مقاومة للماء"
+      ],
       "stock": 15000,
       "status": "active",
       "variants": [
-        { "nameAr": "رول واحد", "nameEn": "Single Roll", "price": "0.750", "stock": 8000, "sku": "ROL-KIT-1" },
-        { "nameAr": "6 رولات", "nameEn": "6 Rolls", "price": "3.900", "stock": 4000, "sku": "ROL-KIT-6" },
-        { "nameAr": "كرتون (24 رول)", "nameEn": "Carton (24 Rolls)", "price": "14.000", "stock": 500, "sku": "ROL-KIT-24" }
+        {
+          "nameAr": "رول واحد",
+          "nameEn": "Single Roll",
+          "price": "0.750",
+          "stock": 8000,
+          "sku": "ROL-KIT-1"
+        },
+        {
+          "nameAr": "6 رولات",
+          "nameEn": "6 Rolls",
+          "price": "3.900",
+          "stock": 4000,
+          "sku": "ROL-KIT-6"
+        },
+        {
+          "nameAr": "كرتون (24 رول)",
+          "nameEn": "Carton (24 Rolls)",
+          "price": "14.000",
+          "stock": 500,
+          "sku": "ROL-KIT-24"
+        }
       ]
     },
     {
@@ -105,14 +171,42 @@
       "desc": "مناديل مائدة فاخرة للمطاعم والمناسبات الخاصة — أناقة وجودة عالية",
       "descEn": "Premium dinner napkins for restaurants and special occasions — elegance and high quality",
       "badge": "عرض خاص",
-      "specs": ["2 طبقة", "33×33 سم", "مناسبة للمطاعم"],
+      "specs": [
+        "2 طبقة",
+        "33×33 سم",
+        "مناسبة للمطاعم"
+      ],
       "stock": 6000,
       "status": "active",
       "variants": [
-        { "nameAr": "100 ورقة", "nameEn": "100 Sheets", "price": "1.200", "stock": 3000, "sku": "NAP-JW-100" },
-        { "nameAr": "250 ورقة", "nameEn": "250 Sheets", "price": "2.500", "stock": 2000, "sku": "NAP-JW-250" },
-        { "nameAr": "500 ورقة", "nameEn": "500 Sheets", "price": "4.500", "stock": 800, "sku": "NAP-JW-500" },
-        { "nameAr": "كرتون (10 علب × 500)", "nameEn": "Carton (10 packs × 500)", "price": "40.000", "stock": 100, "sku": "NAP-JW-CTN" }
+        {
+          "nameAr": "100 ورقة",
+          "nameEn": "100 Sheets",
+          "price": "1.200",
+          "stock": 3000,
+          "sku": "NAP-JW-100"
+        },
+        {
+          "nameAr": "250 ورقة",
+          "nameEn": "250 Sheets",
+          "price": "2.500",
+          "stock": 2000,
+          "sku": "NAP-JW-250"
+        },
+        {
+          "nameAr": "500 ورقة",
+          "nameEn": "500 Sheets",
+          "price": "4.500",
+          "stock": 800,
+          "sku": "NAP-JW-500"
+        },
+        {
+          "nameAr": "كرتون (10 علب × 500)",
+          "nameEn": "Carton (10 packs × 500)",
+          "price": "40.000",
+          "stock": 100,
+          "sku": "NAP-JW-CTN"
+        }
       ]
     },
     {
@@ -125,7 +219,11 @@
       "desc": "علب صغيرة مريحة للحمل في الحقيبة — مثالية للسفر والتنقل",
       "descEn": "Compact packs easy to carry in your bag — ideal for travel and on-the-go",
       "badge": null,
-      "specs": ["3 طبقات","10 مناديل","21×21 سم"],
+      "specs": [
+        "3 طبقات",
+        "10 مناديل",
+        "21×21 سم"
+      ],
       "stock": 3000,
       "status": "active"
     },
@@ -153,7 +251,11 @@
       "desc": "مناديل مائدة للمطاعم والمناسبات — أناقة في كل تفصيلة",
       "descEn": "Dinner napkins for restaurants and events — elegance in every detail",
       "badge": null,
-      "specs": ["2 طبقة","200 ورقة","33×33 سم"],
+      "specs": [
+        "2 طبقة",
+        "200 ورقة",
+        "33×33 سم"
+      ],
       "stock": 4000,
       "status": "active"
     },
@@ -249,6 +351,17 @@
       "phone": "(965) 96625306",
       "email": "admin@al-jawhara.com",
       "createdAt": "2024-01-01"
+    },
+    {
+      "id": 1775672855051,
+      "name": "عميل تجريبي",
+      "username": "test_customer",
+      "password": "1234",
+      "phone": "99999999",
+      "email": "test@test.com",
+      "role": "customer",
+      "governorate": "",
+      "createdAt": "2026-04-08T18:27:35.051Z"
     }
   ],
   "siteContent": [
@@ -261,10 +374,10 @@
       "ceoTitle": "المدير العام — شركة الجوهرة للمناديل الورقية",
       "ceoQuote": "في شركة الجوهرة، نؤمن بأن الجودة ليست مجرد معيار بل هي ثقافة راسخة في كل خطوة من خطوات الإنتاج. هدفنا دائماً تقديم أفضل منتج يلامس احتياجات عملائنا ويتجاوز توقعاتهم.",
       "aboutStory": "بدأت شركة الجوهرة للمناديل الورقية مسيرتها في الثامن عشر من فبراير 1998 بهدف واحد واضح: توفير منتجات ورقية عالية الجودة تلبي احتياجات السوق الكويتي والخليجي بأسعار تنافسية. انطلقنا من مصنعنا في المنطقة الصناعية بالشعيبة المجهز بأحدث خطوط الإنتاج، وبطاقة إنتاجية تصل إلى 20,000 طن سنوياً على مساحة 4,500 متر مربع.",
-      "aboutHeaderImg":    "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1600&auto=format&fit=crop&q=80",
+      "aboutHeaderImg": "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1600&auto=format&fit=crop&q=80",
       "productsHeaderImg": "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&auto=format&fit=crop&q=80",
-      "clientsHeaderImg":  "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1600&auto=format&fit=crop&q=80",
-      "contactHeaderImg":  "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&auto=format&fit=crop&q=80",
+      "clientsHeaderImg": "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1600&auto=format&fit=crop&q=80",
+      "contactHeaderImg": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&auto=format&fit=crop&q=80",
       "companyPhone": "(965) 23263824",
       "companyWhatsapp": "(965) 96625306",
       "companyEmail": "info@al-jawhara.com",
@@ -276,20 +389,76 @@
       "statsYear": "1998",
       "statsClients": "+25",
       "paymentSettings": {
-        "cash":       { "enabled": true },
-        "transfer":   { "enabled": true, "bankName": "بنك الكويت الوطني", "iban": "KW81NBKU0000000000001000372151" },
-        "knet":       { "enabled": true,  "apiKey": "", "testMode": true },
-        "myfatoorah": { "enabled": false, "apiKey": "", "testMode": true },
-        "tap":        { "enabled": false, "apiKey": "", "testMode": true },
-        "benefitpay": { "enabled": false }
+        "cash": {
+          "enabled": true
+        },
+        "transfer": {
+          "enabled": true,
+          "bankName": "بنك الكويت الوطني",
+          "iban": "KW81NBKU0000000000001000372151"
+        },
+        "knet": {
+          "enabled": true,
+          "apiKey": "",
+          "testMode": true
+        },
+        "myfatoorah": {
+          "enabled": false,
+          "apiKey": "",
+          "testMode": true
+        },
+        "tap": {
+          "enabled": false,
+          "apiKey": "",
+          "testMode": true
+        },
+        "benefitpay": {
+          "enabled": false
+        }
       },
       "shippingZones": [
-        { "id": "capital",   "ar": "محافظة العاصمة",      "en": "Capital Governorate",    "fee": 0.750, "enabled": true },
-        { "id": "hawalli",   "ar": "محافظة حولي",          "en": "Hawalli Governorate",    "fee": 0.750, "enabled": true },
-        { "id": "farwaniya", "ar": "محافظة الفروانية",     "en": "Farwaniya Governorate",  "fee": 0.750, "enabled": true },
-        { "id": "mubarak",   "ar": "محافظة مبارك الكبير", "en": "Mubarak Al-Kabeer Gov.", "fee": 0.750, "enabled": true },
-        { "id": "ahmadi",    "ar": "محافظة الأحمدي",       "en": "Ahmadi Governorate",     "fee": 1.000, "enabled": true },
-        { "id": "jahra",     "ar": "محافظة الجهراء",       "en": "Jahra Governorate",      "fee": 1.000, "enabled": true }
+        {
+          "id": "capital",
+          "ar": "محافظة العاصمة",
+          "en": "Capital Governorate",
+          "fee": 0.75,
+          "enabled": true
+        },
+        {
+          "id": "hawalli",
+          "ar": "محافظة حولي",
+          "en": "Hawalli Governorate",
+          "fee": 0.75,
+          "enabled": true
+        },
+        {
+          "id": "farwaniya",
+          "ar": "محافظة الفروانية",
+          "en": "Farwaniya Governorate",
+          "fee": 0.75,
+          "enabled": true
+        },
+        {
+          "id": "mubarak",
+          "ar": "محافظة مبارك الكبير",
+          "en": "Mubarak Al-Kabeer Gov.",
+          "fee": 0.75,
+          "enabled": true
+        },
+        {
+          "id": "ahmadi",
+          "ar": "محافظة الأحمدي",
+          "en": "Ahmadi Governorate",
+          "fee": 1,
+          "enabled": true
+        },
+        {
+          "id": "jahra",
+          "ar": "محافظة الجهراء",
+          "en": "Jahra Governorate",
+          "fee": 1,
+          "enabled": true
+        }
       ]
     }
   ],
@@ -299,7 +468,7 @@
       "code": "WELCOME10",
       "type": "percent",
       "value": 10,
-      "minOrder": 5.000,
+      "minOrder": 5,
       "maxUses": 100,
       "usedCount": 0,
       "expiry": "2026-12-31",
@@ -308,11 +477,77 @@
     }
   ],
   "categories": [
-    { "id": 1, "slug": "facial",  "nameAr": "مناديل وجه",    "nameEn": "Facial Tissues",  "emoji": "🤧", "icon": "fa-face-smile", "sortOrder": 1, "status": "active", "desc": "", "parentId": null },
-    { "id": 2, "slug": "rolls",   "nameAr": "رولات",          "nameEn": "Rolls",           "emoji": "🧻", "icon": "fa-toilet-paper","sortOrder": 2, "status": "active", "desc": "", "parentId": null },
-    { "id": 3, "slug": "pocket",  "nameAr": "محارم جيب",      "nameEn": "Pocket Tissues",  "emoji": "📋", "icon": "fa-bag-shopping","sortOrder": 3, "status": "active", "desc": "", "parentId": null },
-    { "id": 4, "slug": "towels",  "nameAr": "مناشف",          "nameEn": "Paper Towels",    "emoji": "🏠", "icon": "fa-droplet",    "sortOrder": 4, "status": "active", "desc": "", "parentId": null },
-    { "id": 5, "slug": "napkins", "nameAr": "مناديل مائدة",  "nameEn": "Dinner Napkins",  "emoji": "🍽️","icon": "fa-utensils",   "sortOrder": 5, "status": "active", "desc": "", "parentId": null },
-    { "id": 6, "slug": "family",  "nameAr": "عروض عائلة",     "nameEn": "Family Bundles",  "emoji": "📦", "icon": "fa-house",      "sortOrder": 6, "status": "active", "desc": "", "parentId": null }
+    {
+      "id": 1,
+      "slug": "facial",
+      "nameAr": "مناديل وجه",
+      "nameEn": "Facial Tissues",
+      "emoji": "🤧",
+      "icon": "fa-face-smile",
+      "sortOrder": 1,
+      "status": "active",
+      "desc": "",
+      "parentId": null
+    },
+    {
+      "id": 2,
+      "slug": "rolls",
+      "nameAr": "رولات",
+      "nameEn": "Rolls",
+      "emoji": "🧻",
+      "icon": "fa-toilet-paper",
+      "sortOrder": 2,
+      "status": "active",
+      "desc": "",
+      "parentId": null
+    },
+    {
+      "id": 3,
+      "slug": "pocket",
+      "nameAr": "محارم جيب",
+      "nameEn": "Pocket Tissues",
+      "emoji": "📋",
+      "icon": "fa-bag-shopping",
+      "sortOrder": 3,
+      "status": "active",
+      "desc": "",
+      "parentId": null
+    },
+    {
+      "id": 4,
+      "slug": "towels",
+      "nameAr": "مناشف",
+      "nameEn": "Paper Towels",
+      "emoji": "🏠",
+      "icon": "fa-droplet",
+      "sortOrder": 4,
+      "status": "active",
+      "desc": "",
+      "parentId": null
+    },
+    {
+      "id": 5,
+      "slug": "napkins",
+      "nameAr": "مناديل مائدة",
+      "nameEn": "Dinner Napkins",
+      "emoji": "🍽️",
+      "icon": "fa-utensils",
+      "sortOrder": 5,
+      "status": "active",
+      "desc": "",
+      "parentId": null
+    },
+    {
+      "id": 6,
+      "slug": "family",
+      "nameAr": "عروض عائلة",
+      "nameEn": "Family Bundles",
+      "emoji": "📦",
+      "icon": "fa-house",
+      "sortOrder": 6,
+      "status": "active",
+      "desc": "",
+      "parentId": null
+    }
   ]
 }
