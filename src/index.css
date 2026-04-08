@@ -638,7 +638,7 @@ tr:hover td { background: var(--bg); }
   .dash-sidebar-overlay { display: block; }
   .dashboard-main { padding: 16px; width: 100%; }
   .dash-mobile-menu-btn { display: inline-flex; align-items: center; gap: 8px; }
-  .dashboard-stats { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-stats { grid-template-columns: 1fr; }
   .data-table { overflow-x: auto !important; }
   .data-table table { min-width: 560px; }
 }
@@ -647,7 +647,7 @@ tr:hover td { background: var(--bg); }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .hero-title { font-size: 1.8rem; }
   .hero-actions { flex-direction: column; }
-  .dashboard-stats { grid-template-columns: 1fr 1fr; }
+  .dashboard-stats { grid-template-columns: 1fr; }
   .dashboard-main { padding: 12px; }
   .data-table { overflow-x: auto !important; }
   .data-table table { min-width: 560px; }
