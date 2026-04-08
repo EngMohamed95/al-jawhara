@@ -1,3 +1,14 @@
+/* ── Address fields grid ── */
+.checkout-addr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+@media (max-width: 600px) {
+  .checkout-addr-grid { grid-template-columns: 1fr 1fr; }
+}
+
 /* ── Steps ── */
 .checkout-steps {
   display: flex; align-items: center; justify-content: center;

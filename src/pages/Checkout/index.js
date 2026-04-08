@@ -8,7 +8,8 @@ import './index.css';
 
 const emptyForm = {
   client: '', company: '', phone: '', email: '',
-  governorate: '', block: '', address: '', notes: '',
+  governorate: '', block: '', street: '', avenue: '',
+  building: '', floor: '', apartment: '', notes: '',
   payment: 'cash',
 };
 
@@ -61,8 +62,8 @@ const Checkout = () => {
     if (form.phone.replace(/\D/g, '').length < 11) { setError(lang === 'ar' ? 'رقم الهاتف يجب أن يكون 11 رقماً على الأقل' : 'Phone number must be at least 11 digits'); return; }
     if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { setError(lang === 'ar' ? 'البريد الإلكتروني غير صحيح' : 'Invalid email address'); return; }
     if (!form.governorate)       { setError(lang === 'ar' ? 'الرجاء اختيار المحافظة' : 'Please select a governorate'); return; }
-    if (!form.block.trim())      { setError(lang === 'ar' ? 'الرجاء إدخال المنطقة / القطعة' : 'Please enter your block/area'); return; }
-    if (!form.address.trim())    { setError(lang === 'ar' ? 'الرجاء إدخال العنوان التفصيلي' : 'Please enter your detailed address'); return; }
+    if (!form.block.trim())      { setError(lang === 'ar' ? 'الرجاء إدخال القطعة' : 'Please enter your block'); return; }
+    if (!form.street.trim())     { setError(lang === 'ar' ? 'الرجاء إدخال الشارع' : 'Please enter your street'); return; }
     setError('');
     setLoading(true);
     try {
@@ -73,7 +74,13 @@ const Checkout = () => {
         email:        form.email,
         governorate:  selectedZone ? (lang === 'ar' ? selectedZone.ar : selectedZone.en) : '',
         block:        form.block,
-        address:      form.address,
+        address:      [
+          form.street   ? `ش ${form.street}`   : '',
+          form.avenue   ? `ج ${form.avenue}`   : '',
+          form.building ? `م/ع ${form.building}` : '',
+          form.floor    ? `د ${form.floor}`    : '',
+          form.apartment? `ش ${form.apartment}` : '',
+        ].filter(Boolean).join('، '),
         notes:        form.notes,
         payment:      form.payment,
         deliveryFee:  deliveryFee.toFixed(3),
@@ -183,14 +190,32 @@ const Checkout = () => {
                     </select>
                   </div>
                   <div className="form-group">
-                    <label className="form-label">{t('checkout.block')} <span style={{color:'#dc2626'}}>*</span></label>
-                    <input className="form-input" name="block" value={form.block} onChange={handleChange} placeholder={lang === 'ar' ? 'مثال: قطعة 5، شارع 12' : 'e.g. Block 5, Street 12'} />
+                    <label className="form-label">{lang === 'ar' ? 'القطعة' : 'Block'} <span style={{color:'#dc2626'}}>*</span></label>
+                    <input className="form-input" name="block" value={form.block} onChange={handleChange} placeholder={lang === 'ar' ? 'مثال: 5' : 'e.g. 5'} />
                   </div>
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">{t('checkout.address')} <span style={{color:'#dc2626'}}>*</span></label>
-                  <input className="form-input" name="address" value={form.address} onChange={handleChange} />
+                <div className="checkout-addr-grid">
+                  <div className="form-group">
+                    <label className="form-label">{lang === 'ar' ? 'الشارع' : 'Street'} <span style={{color:'#dc2626'}}>*</span></label>
+                    <input className="form-input" name="street" value={form.street} onChange={handleChange} placeholder={lang === 'ar' ? 'مثال: 12' : 'e.g. 12'} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{lang === 'ar' ? 'الجادة' : 'Avenue'}</label>
+                    <input className="form-input" name="avenue" value={form.avenue} onChange={handleChange} placeholder={lang === 'ar' ? 'مثال: 3' : 'e.g. 3'} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{lang === 'ar' ? 'قسيمة / عمارة' : 'Plot / Building'}</label>
+                    <input className="form-input" name="building" value={form.building} onChange={handleChange} placeholder={lang === 'ar' ? 'مثال: 7أ' : 'e.g. 7A'} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{lang === 'ar' ? 'الدور' : 'Floor'}</label>
+                    <input className="form-input" name="floor" value={form.floor} onChange={handleChange} placeholder={lang === 'ar' ? 'مثال: 2' : 'e.g. 2'} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">{lang === 'ar' ? 'رقم الشقة' : 'Apt. No.'}</label>
+                    <input className="form-input" name="apartment" value={form.apartment} onChange={handleChange} placeholder={lang === 'ar' ? 'مثال: 4' : 'e.g. 4'} />
+                  </div>
                 </div>
 
                 <div className="form-group">
