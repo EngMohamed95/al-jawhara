@@ -610,6 +610,11 @@ tr:hover td { background: var(--bg); }
   .nav-links { display: none; }
   .hamburger { display: block; }
   .hero-title { font-size: 2.2rem; }
+  .hero-video-content .container,
+  .hero-content { text-align: center; }
+  .hero-badge { margin-left: auto; margin-right: auto; }
+  .hero-subtitle { margin-left: auto; margin-right: auto; }
+  .hero-actions { justify-content: center; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .products-grid { grid-template-columns: repeat(2, 1fr); }
   .clients-grid { grid-template-columns: repeat(2, 1fr); }
