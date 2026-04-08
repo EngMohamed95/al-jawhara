@@ -818,18 +818,46 @@ const Dashboard = () => {
   /* ── Search ── */
   const [dashSearch,    setDashSearch]    = useState('');
   const [clientFilter,  setClientFilter]  = useState(null); // string | null
-  useEffect(() => { setDashSearch(''); setClientFilter(null); }, [view]);
+  const [prodCatFilter, setProdCatFilter] = useState('all');
+  const [prodStatusFilter, setProdStatusFilter] = useState('all');
+  const [prodSort,      setProdSort]      = useState({ col: 'id', dir: 'desc' });
+  const [selectedProds, setSelectedProds] = useState(new Set());
+  useEffect(() => { setDashSearch(''); setClientFilter(null); setProdCatFilter('all'); setProdStatusFilter('all'); setSelectedProds(new Set()); }, [view]);
 
   const ns = (s = '') => String(s).toLowerCase()
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
 
   const filteredDashProducts = useMemo(() => {
     const q = ns(dashSearch);
-    if (!q) return products;
-    return products.filter(p =>
-      [p.name, p.nameEn, p.sku, categoryLabels[p.category]?.ar, categoryLabels[p.category]?.en, productStatusLabels[p.status]?.ar, productStatusLabels[p.status]?.en, p.desc].some(f => ns(f).includes(q))
-    );
-  }, [products, dashSearch]);
+    let list = products.filter(p => {
+      if (prodCatFilter !== 'all' && p.category !== prodCatFilter) return false;
+      if (prodStatusFilter !== 'all' && p.status !== prodStatusFilter) return false;
+      if (q && ![p.name, p.nameEn, p.sku, p.badge, categoryLabels[p.category]?.ar, p.desc].some(f => ns(f).includes(q))) return false;
+      return true;
+    });
+    list = [...list].sort((a, b) => {
+      let av = a[prodSort.col], bv = b[prodSort.col];
+      if (typeof av === 'string') av = av.toLowerCase();
+      if (typeof bv === 'string') bv = bv.toLowerCase();
+      if (av < bv) return prodSort.dir === 'asc' ? -1 : 1;
+      if (av > bv) return prodSort.dir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }, [products, dashSearch, prodCatFilter, prodStatusFilter, prodSort]);
+
+  const toggleProdSelect = (id) => setSelectedProds(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const toggleAllProds   = () => setSelectedProds(s => s.size === filteredDashProducts.length ? new Set() : new Set(filteredDashProducts.map(p => p.id)));
+  const bulkDeleteProds  = async () => {
+    if (!selectedProds.size) return;
+    if (!window.confirm(`هل تريد حذف ${selectedProds.size} منتج؟`)) return;
+    for (const id of selectedProds) { try { await deleteProduct(id); } catch {} }
+    setSelectedProds(new Set());
+  };
+  const sortProd = (col) => setProdSort(s => ({ col, dir: s.col === col && s.dir === 'asc' ? 'desc' : 'asc' }));
+  const SortIcon = ({ col }) => prodSort.col !== col ? null : (
+    <i className={`fas fa-sort-${prodSort.dir === 'asc' ? 'up' : 'down'}`} style={{ marginRight: '4px', fontSize: '10px' }}></i>
+  );
 
   const filteredOrders = useMemo(() => {
     if (clientFilter) return orders.filter(o => o.client === clientFilter);
@@ -1134,41 +1162,142 @@ const Dashboard = () => {
               {/* ── Products list ── */}
               {productsTab === 'list' && !productFormMode && (
               <div>
-              <div className="dash-header-row">
-                <div className="dashboard-title">{dt('nav.allProducts')}</div>
-                {perms.products && (
-                  <button className="btn btn-green btn-sm" onClick={openAddProductForm}>
-                    <i className="fas fa-plus" aria-hidden="true"></i> {dt('products.add')}
-                  </button>
-                )}
-              </div>
-              <div className="dash-search-bar">
-                <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
-                <input type="search" className="dash-search-input" placeholder={lang === 'en' ? 'Search by name, category or status...' : 'ابحث بالاسم أو الفئة أو الحالة...'} value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
-                {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
-                {dashSearch && <span className="dash-search-count">{filteredDashProducts.length} {lang === 'en' ? 'results' : 'نتيجة'}</span>}
-              </div>
-              <div className="data-table">
-                <table>
-                  <thead><tr><th>#</th><th>{dt('products.name')}</th><th>{dt('products.category')}</th><th>{dt('products.price')}</th><th>{dt('products.stock')}</th><th>{dt('products.status')}</th><th>{dt('products.actions')}</th></tr></thead>
-                  <tbody>
-                    {filteredDashProducts.map((p, i) => (
-                      <tr key={p.id}>
-                        <td className="td-light">{i + 1}</td>
-                        <td><span className="td-icon">{p.icon}</span><span className="td-bold">{p.name}</span></td>
-                        <td><span className="badge-cat">{categoryLabels[p.category]?.[lang] || categoryLabels[p.category]?.ar || p.category}</span></td>
-                        <td className="td-primary">{Number(p.price).toFixed(3)} د.ك</td>
-                        <td className={Number(p.stock) < 100 ? 'td-warn' : ''}>{Number(p.stock).toLocaleString()}</td>
-                        <td><span className={`status-badge status-${p.status}`}>{productStatusLabels[p.status]?.[lang] || productStatusLabels[p.status]?.ar}</span></td>
-                        <td>
-                          <button className="action-btn action-btn-edit" onClick={() => openEditProductForm(p.id)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
-                          <button className="action-btn action-btn-delete" onClick={() => handleDeleteProduct(p.id)}><i className="fas fa-trash"></i> {dt('common.delete')}</button>
-                        </td>
-                      </tr>
+                {/* Header */}
+                <div className="dash-header-row">
+                  <div>
+                    <div className="dashboard-title">{dt('nav.allProducts')}</div>
+                    <div style={{ fontSize: '13px', color: 'var(--text-light)', marginTop: '2px' }}>
+                      {filteredDashProducts.length} {lang === 'en' ? 'products' : 'منتج'} · {products.filter(p=>p.status==='active').length} {lang === 'en' ? 'active' : 'نشط'}
+                    </div>
+                  </div>
+                  {perms.products && (
+                    <button className="btn btn-green btn-sm" onClick={openAddProductForm}>
+                      <i className="fas fa-plus" aria-hidden="true"></i> {dt('products.add')}
+                    </button>
+                  )}
+                </div>
+
+                {/* Filters bar */}
+                <div className="prod-filters-bar">
+                  <div className="dash-search-bar" style={{ flex: 1, minWidth: '180px' }}>
+                    <i className="fas fa-magnifying-glass dash-search-icon"></i>
+                    <input type="search" className="dash-search-input"
+                      placeholder={lang === 'en' ? 'Search name, SKU, description...' : 'ابحث بالاسم أو SKU أو الوصف...'}
+                      value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                    {dashSearch && <button className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
+                  </div>
+                  <select className="prod-filter-select" value={prodCatFilter} onChange={e => setProdCatFilter(e.target.value)}>
+                    <option value="all">{lang === 'en' ? 'All Categories' : 'كل الفئات'}</option>
+                    {flattenTree(buildCatTree(categories)).map(c => (
+                      <option key={c.slug} value={c.slug}>{'　'.repeat(c.depth)}{c.depth > 0 ? '└ ' : ''}{c.nameAr}</option>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                  </select>
+                  <select className="prod-filter-select" value={prodStatusFilter} onChange={e => setProdStatusFilter(e.target.value)}>
+                    <option value="all">{lang === 'en' ? 'All Status' : 'كل الحالات'}</option>
+                    {Object.entries(productStatusLabels).map(([k,v]) => <option key={k} value={k}>{v.ar}</option>)}
+                  </select>
+                  {selectedProds.size > 0 && (
+                    <button className="btn btn-sm" style={{ background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5' }} onClick={bulkDeleteProds}>
+                      <i className="fas fa-trash"></i> {lang === 'en' ? 'Delete' : 'حذف'} ({selectedProds.size})
+                    </button>
+                  )}
+                </div>
+
+                {/* Table */}
+                <div className="data-table">
+                  <table className="prod-grid-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: '36px' }}>
+                          <input type="checkbox"
+                            checked={selectedProds.size === filteredDashProducts.length && filteredDashProducts.length > 0}
+                            onChange={toggleAllProds} />
+                        </th>
+                        <th style={{ width: '60px' }}>ID <SortIcon col="id" /></th>
+                        <th style={{ width: '60px' }}>{lang === 'en' ? 'Img' : 'صورة'}</th>
+                        <th style={{ minWidth: '160px', cursor: 'pointer' }} onClick={() => sortProd('name')}>
+                          {dt('products.name')} <SortIcon col="name" />
+                        </th>
+                        <th style={{ cursor: 'pointer' }} onClick={() => sortProd('category')}>
+                          {dt('products.category')} <SortIcon col="category" />
+                        </th>
+                        <th style={{ cursor: 'pointer' }} onClick={() => sortProd('sku')}>SKU <SortIcon col="sku" /></th>
+                        <th style={{ cursor: 'pointer' }} onClick={() => sortProd('price')}>
+                          {dt('products.price')} <SortIcon col="price" />
+                        </th>
+                        <th style={{ cursor: 'pointer' }} onClick={() => sortProd('stock')}>
+                          {dt('products.stock')} <SortIcon col="stock" />
+                        </th>
+                        <th>{lang === 'en' ? 'Variants' : 'فاريشنات'}</th>
+                        <th style={{ cursor: 'pointer' }} onClick={() => sortProd('status')}>
+                          {dt('products.status')} <SortIcon col="status" />
+                        </th>
+                        <th>{dt('products.actions')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredDashProducts.length === 0 && (
+                        <tr><td colSpan="11" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-light)' }}>
+                          {dt('products.noResults')}
+                        </td></tr>
+                      )}
+                      {filteredDashProducts.map(p => (
+                        <tr key={p.id} className={selectedProds.has(p.id) ? 'prod-row-selected' : ''}>
+                          <td>
+                            <input type="checkbox" checked={selectedProds.has(p.id)} onChange={() => toggleProdSelect(p.id)} />
+                          </td>
+                          <td className="td-light" style={{ fontSize: '12px' }}>#{p.id}</td>
+                          <td>
+                            {p.image
+                              ? <img src={p.image} alt="" className="prod-thumb" />
+                              : <div className="prod-thumb-empty">{p.icon || '📦'}</div>}
+                          </td>
+                          <td>
+                            <div className="td-bold">{p.name}</div>
+                            {p.nameEn && <div style={{ fontSize: '11px', color: 'var(--text-light)' }}>{p.nameEn}</div>}
+                            {p.badge && <span className="prod-badge-tag">{p.badge}</span>}
+                          </td>
+                          <td>
+                            <span className="badge-cat">
+                              {(() => { const c = categories.find(c => c.slug === p.category); return c ? c.nameAr : (categoryLabels[p.category]?.ar || p.category); })()}
+                            </span>
+                          </td>
+                          <td className="td-mono">{p.sku || <span style={{ color: 'var(--text-light)' }}>—</span>}</td>
+                          <td className="td-primary" style={{ fontWeight: 800 }}>
+                            {p.variants?.length > 0
+                              ? <span style={{ fontSize: '11px', color: 'var(--text-light)' }}>{lang === 'en' ? 'See variants' : 'انظر الفاريشنات'}</span>
+                              : <>{Number(p.price).toFixed(3)} <span style={{ fontSize: '11px' }}>د.ك</span></>}
+                          </td>
+                          <td>
+                            {p.variants?.length > 0
+                              ? <span style={{ fontSize: '12px', color: 'var(--text-light)' }}>
+                                  {p.variants.reduce((s, v) => s + (Number(v.stock) || 0), 0).toLocaleString()}
+                                </span>
+                              : <span className={Number(p.stock) < 100 ? 'td-warn' : ''}>{Number(p.stock).toLocaleString()}</span>}
+                          </td>
+                          <td>
+                            {p.variants?.length > 0
+                              ? <span className="prod-variant-count">{p.variants.length} {lang === 'en' ? 'var.' : 'فاريشن'}</span>
+                              : <span style={{ color: 'var(--text-light)', fontSize: '12px' }}>—</span>}
+                          </td>
+                          <td>
+                            <span className={`status-badge status-${p.status}`}>
+                              {productStatusLabels[p.status]?.[lang] || productStatusLabels[p.status]?.ar}
+                            </span>
+                          </td>
+                          <td className="prod-actions-td">
+                            <button className="action-btn action-btn-edit" onClick={() => openEditProductForm(p.id)}>
+                              <i className="fas fa-pen"></i> {dt('common.edit')}
+                            </button>
+                            <button className="action-btn action-btn-delete" onClick={() => handleDeleteProduct(p.id)}>
+                              <i className="fas fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
               )}
 

@@ -713,6 +713,45 @@
   .modal { margin: 10px; width: calc(100% - 20px); }
 }
 
+/* ── Products Grid Table ── */
+.prod-filters-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px;
+}
+.prod-filter-select {
+  background: var(--surface); border: 2px solid var(--border); border-radius: 10px;
+  padding: 8px 14px; font-family: 'Tajawal', sans-serif; font-size: 13px;
+  color: var(--text); cursor: pointer; transition: border-color 0.2s;
+}
+.prod-filter-select:focus { outline: none; border-color: var(--primary); }
+
+.prod-grid-table th { cursor: default; user-select: none; }
+.prod-grid-table th:hover { color: var(--text); }
+
+.prod-thumb {
+  width: 48px; height: 48px; border-radius: 8px;
+  object-fit: cover; border: 1px solid var(--border); display: block;
+}
+.prod-thumb-empty {
+  width: 48px; height: 48px; border-radius: 8px;
+  background: var(--bg); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+}
+.prod-badge-tag {
+  display: inline-block; margin-top: 3px;
+  background: var(--secondary); color: white;
+  font-size: 10px; font-weight: 700;
+  padding: 1px 7px; border-radius: 99px;
+}
+.td-mono { font-family: monospace; font-size: 12px; color: var(--text-light); }
+.prod-variant-count {
+  background: var(--primary-xlight); color: var(--primary);
+  font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px;
+}
+.prod-row-selected { background: var(--primary-xlight) !important; }
+.prod-row-selected td { background: transparent !important; }
+.prod-actions-td { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
+
 /* ── Variants / Packages ── */
 .variants-list { display: flex; flex-direction: column; gap: 10px; }
 .variant-row {
