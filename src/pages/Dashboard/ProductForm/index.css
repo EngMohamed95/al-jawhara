@@ -2,7 +2,8 @@
    ProductForm — embedded inside Dashboard
    ═══════════════════════════════════════ */
 
-.pf-wrap { display: flex; flex-direction: column; gap: 10px; }
+.pf-wrap { display: flex; flex-direction: column; gap: 16px; }
+.pf-wrap form { display: flex; flex-direction: column; gap: 16px; }
 
 /* ── Accordion controls ── */
 .pf-acc-controls {
