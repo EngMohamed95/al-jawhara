@@ -25,7 +25,6 @@ const productStatusLabels = {
   inactive:{ ar: 'متوقف',         en: 'Inactive' },
 };
 
-const COMMON_ICONS = ['📦','🤧','🧻','🚽','🍽️','✨','💎','🛒','🎁','🏠','🏪','🌿','💧','🧼'];
 
 const AlertSuccess = ({ msg }) => (
   <div className="pf-alert pf-alert-success"><i className="fas fa-circle-check"></i> {msg}</div>
@@ -289,20 +288,6 @@ export default function ProductForm({ mode, productId, onBack }) {
               </div>
             </div>
 
-            {/* Icon */}
-            <div>
-              <div className="pf-field-label">{ar('إيموجي المنتج', 'Icon')}</div>
-              <div className="pf-icon-current">{form.icon || '📦'}</div>
-              <div className="pf-icon-grid">
-                {COMMON_ICONS.map(ic => (
-                  <button key={ic} type="button"
-                    className={`pf-icon-btn${form.icon === ic ? ' active' : ''}`}
-                    onClick={() => set('icon', ic)}>{ic}</button>
-                ))}
-                <input className="pf-icon-input" value={form.icon}
-                  onChange={e => set('icon', e.target.value)} placeholder="📦" maxLength={4} />
-              </div>
-            </div>
           </div>
         </div>
 

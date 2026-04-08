@@ -2,7 +2,7 @@
    ProductForm — embedded inside Dashboard
    ═══════════════════════════════════════ */
 
-.pf-wrap { display: flex; flex-direction: column; gap: 20px; }
+.pf-wrap { display: flex; flex-direction: column; gap: 32px; }
 
 /* ── Page header ── */
 .pf-page-header {
@@ -109,8 +109,8 @@
 /* ── Images ── */
 .pf-images-layout {
   display: grid;
-  grid-template-columns: 170px 1fr 150px;
-  gap: 20px;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
   align-items: start;
 }
 .pf-img-box {
@@ -155,22 +155,6 @@
 .pf-gallery-add:hover { border-color: var(--primary); color: var(--primary); }
 .pf-gallery-add i { font-size: 16px; }
 
-/* ── Icon picker ── */
-.pf-icon-current { font-size: 2.6rem; text-align: center; margin-bottom: 10px; line-height: 1; }
-.pf-icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-.pf-icon-btn {
-  font-size: 1.2rem; padding: 5px; border: 2px solid var(--border);
-  border-radius: 7px; background: var(--bg); cursor: pointer; transition: all 0.15s;
-}
-.pf-icon-btn:hover, .pf-icon-btn.active {
-  border-color: var(--primary); background: var(--primary-xlight);
-}
-.pf-icon-input {
-  grid-column: span 4; background: var(--bg); border: 2px solid var(--border);
-  border-radius: 7px; padding: 5px 8px; font-size: 1.1rem;
-  font-family: 'Tajawal', sans-serif; text-align: center; width: 100%; box-sizing: border-box;
-}
-.pf-icon-input:focus { outline: none; border-color: var(--primary); }
 
 /* ── Lang badges ── */
 .pf-lang-badge {
@@ -251,10 +235,6 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 900px) {
-  .pf-images-layout { grid-template-columns: 150px 1fr; }
-  .pf-icon-wrap { display: none; }
-}
 @media (max-width: 700px) {
   .pf-images-layout { grid-template-columns: 1fr; }
   .pf-two-col       { grid-template-columns: 1fr; }
