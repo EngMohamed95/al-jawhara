@@ -121,12 +121,7 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="login-hint">
-            <i className="fas fa-circle-info" aria-hidden="true"></i>
-            <span>{t('login.hint')} <code>admin</code> / <code>admin123</code></span>
-          </div>
-
-          <Link to="/" className="login-back">
+<Link to="/" className="login-back">
             <i className="fas fa-arrow-right" aria-hidden="true"></i>
             {t('login.backSite')}
           </Link>
