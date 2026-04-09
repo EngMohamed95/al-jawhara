@@ -108,6 +108,7 @@ const Checkout = () => {
         product:      cart.map(i => i.name).join('، '),
         qty:          cart.reduce((s, i) => s + i.qty, 0),
         grandTotal:   grandTotal.toFixed(3),
+        lang:         lang,
       });
       /* save address back to customer profile for next time */
       if (auth?.role === 'customer') {

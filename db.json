@@ -375,6 +375,30 @@
       "phone": "(965) 96625306",
       "email": "admin@al-jawhara.com",
       "createdAt": "2024-01-01"
+    },
+    {
+      "name": "Mohamed Abd Elfattah",
+      "username": "mo_code99",
+      "password": "Dz94ono2",
+      "email": "mo.code99@gmail.com",
+      "phone": "",
+      "role": "customer",
+      "uid": "ehexrwnkSjWzTwmKUQi3Dz94ono2",
+      "provider": "google",
+      "createdAt": "2026-04-09T11:00:17.106Z",
+      "id": 2
+    },
+    {
+      "name": "Mohamed Abd El-fattah",
+      "username": "eng_mhamed99",
+      "password": "0jOnjby2",
+      "email": "eng.mhamed99@gmail.com",
+      "phone": "",
+      "role": "customer",
+      "uid": "PFLLfhCXSsPKLsuFltva0jOnjby2",
+      "provider": "google",
+      "createdAt": "2026-04-09T11:01:12.375Z",
+      "id": 3
     }
   ],
   "siteContent": [

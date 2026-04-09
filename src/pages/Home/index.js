@@ -10,12 +10,12 @@ const DEFAULT_HERO_VIDEO  = 'https://al-jawhara.co/wp-content/uploads/2022/10/Ja
 const DEFAULT_HERO_POSTER = 'https://al-jawhara.co/wp-content/uploads/revslider/video-media/JawharaNewIntro_59_layer.jpeg';
 
 const featuredClients = [
-  { name: 'Carrefour',     color: '#003087' },
-  { name: 'Starbucks',     color: '#00704A' },
-  { name: 'Talabat',       color: '#FF5A00' },
-  { name: "Chili's",       color: '#C41230' },
-  { name: 'Sultan Center', color: '#1A237E' },
-  { name: 'LuLu',          color: '#E53935' },
+  { name: 'Carrefour',     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Carrefour_logo.svg/320px-Carrefour_logo.svg.png' },
+  { name: 'Starbucks',     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/320px-Starbucks_Corporation_Logo_2011.svg.png' },
+  { name: 'Talabat',       logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Talabat-logo.svg/320px-Talabat-logo.svg.png' },
+  { name: "Chili's",       logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/Chilis_Logo.svg/320px-Chilis_Logo.svg.png' },
+  { name: 'Sultan Center', logo: 'https://www.sultan-center.com/static/media/logo.a34ae29c.png' },
+  { name: 'LuLu',          logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Lulu_Hypermarket_Logo.svg/320px-Lulu_Hypermarket_Logo.svg.png' },
 ];
 
 const Home = () => {
@@ -211,9 +211,8 @@ const Home = () => {
           <Reveal direction="up" delay={100}>
             <div className="client-tags" role="list">
               {featuredClients.map((c, i) => (
-                <div key={i} className="client-tag" role="listitem">
-                  <span className="client-tag-dot" style={{ background: c.color }} aria-hidden="true"></span>
-                  <span style={{ color: c.color }}>{c.name}</span>
+                <div key={i} className="client-tag" role="listitem" aria-label={c.name}>
+                  <img src={c.logo} alt={c.name} className="client-tag-logo" />
                 </div>
               ))}
             </div>

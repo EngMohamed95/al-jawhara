@@ -122,13 +122,13 @@
 }
 .client-tags { display: flex; flex-wrap: nowrap; gap: 16px; justify-content: center; margin-bottom: 40px; overflow-x: auto; padding-bottom: 8px; }
 .client-tag {
-  background: white; border-radius: 12px; padding: 18px 30px;
-  box-shadow: var(--shadow); display: flex; align-items: center; gap: 10px;
-  font-weight: 700; font-size: 1rem; border: 2px solid var(--border);
-  transition: all 0.3s; cursor: default;
+  background: white; border-radius: 12px; padding: 18px 28px;
+  box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--border); transition: all 0.3s; cursor: default;
+  min-width: 140px; min-height: 80px;
 }
 .client-tag:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-.client-tag-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+.client-tag-logo { max-height: 44px; max-width: 120px; width: auto; object-fit: contain; display: block; }
 .section-center { text-align: center; }
 .home-loading {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
