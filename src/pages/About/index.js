@@ -180,9 +180,7 @@ const About = () => {
             <div className="container">
               <div className="ceo-card">
                 <div className="ceo-avatar" aria-hidden="true">
-                  {ceoImage
-                    ? <img src={ceoImage} alt={ceoName} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-                    : <i className="fas fa-user-tie"></i>}
+                  <img src={ceoImage || '/ceo.jpg'} alt={ceoName} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', borderRadius: '50%' }} />
                 </div>
                 <div>
                   <div aria-hidden="true" style={{ fontSize: '2.5rem', opacity: 0.25, lineHeight: 1, marginBottom: '-8px' }}>
