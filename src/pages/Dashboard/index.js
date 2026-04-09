@@ -22,9 +22,9 @@ const roleLabels         = { admin: { ar: 'مدير', en: 'Admin' }, editor: { a
 const userStatusLabels   = { active: { ar: 'نشط', en: 'Active' }, suspended: { ar: 'موقوف', en: 'Suspended' }, pending: { ar: 'قيد المراجعة', en: 'Pending' }, locked: { ar: 'مقفل', en: 'Locked' } };
 
 const ROLE_PERMISSIONS = {
-  admin:  { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: true,  content: true,  reports: true,  shipping: true,  payments: true,  coupons: true,  settings: true  },
-  editor: { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: false, content: true,  reports: true,  shipping: false, payments: false, coupons: true,  settings: false },
-  viewer: { products: false, categories: false, inventory: true,  orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false, settings: false },
+  admin:  { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: true,  content: true,  reports: true,  shipping: true,  payments: true,  coupons: true  },
+  editor: { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: false, content: true,  reports: true,  shipping: false, payments: false, coupons: true  },
+  viewer: { products: false, categories: false, inventory: true,  orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false },
 };
 
 const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '', countryOfOrigin: 'KW', hsCode: '', variants: [] };
@@ -359,29 +359,12 @@ const Dashboard = () => {
     { id: 'payments',  label: dt('nav.payments'),  icon: 'fa-credit-card' },
     { id: 'coupons',   label: dt('nav.coupons'),   icon: 'fa-tag' },
     { id: 'reports',   label: dt('nav.reports'),   icon: 'fa-chart-line' },
-    { id: 'settings',  label: lang === 'en' ? 'Settings' : 'الإعدادات', icon: 'fa-gear', perm: 'settings' },
   ];
 
   const [view, setView]               = useState('overview');
   const [productsTab, setProductsTab] = useState('list');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  /* ── WhatsApp Settings ── */
-  const [waNumbers, setWaNumbers]   = useState(null); // array of { phone, apiKey, label }
-  const [waSaved,   setWaSaved]     = useState(false);
-  const openSettingsTab = () => {
-    if (!waNumbers) setWaNumbers(JSON.parse(JSON.stringify(siteContent?.whatsappNumbers || [])));
-    setView('settings');
-  };
-  const addWaNumber    = () => setWaNumbers(p => [...(p||[]), { phone: '', apiKey: '', label: '' }]);
-  const removeWaNumber = (i) => setWaNumbers(p => p.filter((_, idx) => idx !== i));
-  const editWaNumber   = (i, field, val) => setWaNumbers(p => p.map((n, idx) => idx === i ? { ...n, [field]: val } : n));
-  const saveWaSettings = async () => {
-    try {
-      await saveSiteContent({ ...siteContent, whatsappNumbers: waNumbers });
-      setWaSaved(true); setTimeout(() => setWaSaved(false), 2500);
-    } catch { alert('حدث خطأ أثناء الحفظ'); }
-  };
   const [productFormMode, setProductFormMode] = useState(null); // null | 'add' | 'edit'
   const [productFormId,   setProductFormId]   = useState(null);
 
@@ -1066,7 +1049,6 @@ const Dashboard = () => {
                     if (item.id === 'content')   openContentTab();
                     else if (item.id === 'shipping') openShippingTab();
                     else if (item.id === 'payments') openPaymentsTab();
-                    else if (item.id === 'settings') openSettingsTab();
                     else { setView(item.id); if (isProductsParent) setProductsTab('list'); }
                   }}
                   aria-current={view === item.id ? 'page' : undefined}
@@ -2759,63 +2741,6 @@ const Dashboard = () => {
         )}
 
           {/* ══ SETTINGS ══ */}
-          {view === 'settings' && waNumbers !== null && (
-            <div>
-              <div className="dashboard-title">إشعارات واتساب</div>
-
-              <div className="dash-card" style={{ maxWidth: 720 }}>
-
-                {/* شرح CallMeBot */}
-                <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 10, padding: '16px 20px', marginBottom: 24, fontSize: 13, lineHeight: 1.9 }}>
-                  <strong style={{ fontSize: 14, color: '#15803d' }}>⚙️ طريقة الحصول على API Key (مجاني)</strong><br/>
-                  <span style={{ color: '#166534' }}>
-                    1. سيف الرقم ده في واتساب: <strong dir="ltr">+34 644 60 49 16</strong><br/>
-                    2. ابعتله الرسالة دي بالضبط: <strong>I allow callmebot to send me messages</strong><br/>
-                    3. هيرد عليك برقم الـ <strong>API Key</strong> — حطه هنا
-                  </span>
-                </div>
-
-                {waNumbers.map((n, i) => (
-                  <div key={i} style={{ background: '#f9fafb', border: '1px solid var(--border)', borderRadius: 10, padding: 18, marginBottom: 14 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                      <span style={{ fontWeight: 700, fontSize: 15, color: '#25d366' }}>
-                        <i className="fab fa-whatsapp" style={{ marginLeft: 6 }}></i>
-                        رقم {i + 1} {n.label ? `— ${n.label}` : ''}
-                      </span>
-                      <button onClick={() => removeWaNumber(i)} style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: 13 }}>
-                        <i className="fas fa-trash"></i> حذف
-                      </button>
-                    </div>
-
-                    <div className="modal-grid2">
-                      <div className="form-group">
-                        <label className="form-label">اسم/تعريف (اختياري)</label>
-                        <input className="form-input" value={n.label || ''} onChange={e => editWaNumber(i, 'label', e.target.value)} placeholder="مثال: المدير" />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">رقم الواتساب اللي هيستلم الإشعار</label>
-                        <input className="form-input" dir="ltr" value={n.phone || ''} onChange={e => editWaNumber(i, 'phone', e.target.value)} placeholder="+96512345678" />
-                      </div>
-                    </div>
-                    <div className="form-group" style={{ marginTop: 10 }}>
-                      <label className="form-label">API Key (CallMeBot)</label>
-                      <input className="form-input" dir="ltr" value={n.apiKey || ''} onChange={e => editWaNumber(i, 'apiKey', e.target.value)} placeholder="1234567" />
-                    </div>
-                  </div>
-                ))}
-
-                <button onClick={addWaNumber} className="btn btn-outline" style={{ marginBottom: 16, width: '100%' }}>
-                  <i className="fas fa-plus"></i> إضافة رقم
-                </button>
-
-                <button onClick={saveWaSettings} className="btn btn-green" style={{ width: '100%' }}>
-                  {waSaved
-                    ? <><i className="fas fa-check"></i> تم الحفظ!</>
-                    : <><i className="fas fa-save"></i> حفظ الإعدادات</>}
-                </button>
-              </div>
-            </div>
-          )}
 
       </div>
     </>

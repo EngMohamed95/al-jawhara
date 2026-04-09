@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
-import { sendOrderConfirmationEmail, sendWhatsAppNotification } from '../services/emailService';
+import { sendOrderConfirmationEmail } from '../services/emailService';
 
 const AppContext = createContext(null);
 
@@ -221,11 +221,6 @@ export const AppProvider = ({ children }) => {
     /* ── Send confirmation email to customer ── */
     try { await sendOrderConfirmationEmail(saved); } catch (e) { console.warn('Email not sent:', e); }
 
-    /* ── Send WhatsApp notification to admins ── */
-    try {
-      const numbers = siteContent?.whatsappNumbers || [];
-      await sendWhatsAppNotification(saved, numbers);
-    } catch (e) { console.warn('WhatsApp not sent:', e); }
 
     /* ── Auto-create customer account if new phone ── */
     try {
