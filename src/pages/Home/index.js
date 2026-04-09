@@ -241,8 +241,13 @@ const Home = () => {
             <div className="container">
               <div className="quote-icon" aria-hidden="true"><i className="fas fa-quote-right"></i></div>
               <blockquote className="quote-text">"{ceoQuote}"</blockquote>
-              <p className="quote-author">{ceoName}</p>
-              <p className="quote-author-title">{ceoTitle}</p>
+              <div className="quote-ceo-wrap">
+                <img src="/ceo.jpg" alt={ceoName} className="quote-ceo-img" />
+                <div>
+                  <p className="quote-author">{ceoName}</p>
+                  <p className="quote-author-title">{ceoTitle}</p>
+                </div>
+              </div>
             </div>
           </section>
         </Reveal>
