@@ -459,7 +459,8 @@
           "fee": 1,
           "enabled": true
         }
-      ]
+      ],
+      "whatsappNumbers": []
     }
   ],
   "coupons": [
