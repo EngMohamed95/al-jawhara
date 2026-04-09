@@ -2761,59 +2761,65 @@ const Dashboard = () => {
           {/* ══ SETTINGS ══ */}
           {view === 'settings' && waNumbers !== null && (
             <div>
-              <div className="dashboard-title">{lang === 'en' ? 'WhatsApp Notifications' : 'إشعارات واتساب'}</div>
+              <div className="dashboard-title">إشعارات واتساب</div>
 
-              <div className="dash-card" style={{ maxWidth: 700 }}>
-                <div style={{ marginBottom: 20 }}>
-                  <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.7, marginBottom: 16 }}>
-                    {lang === 'en'
-                      ? 'Add the phone numbers that will receive WhatsApp notifications for every new order. Each number needs its own API key from CallMeBot.'
-                      : 'أضف أرقام الواتساب اللي هتوصلها إشعارات عند كل طلب جديد. كل رقم محتاج API Key من CallMeBot.'}
-                  </p>
-                  <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, padding: '12px 16px', fontSize: 13, color: '#92400e', lineHeight: 1.7 }}>
-                    <strong>⚙️ {lang === 'en' ? 'How to get your API Key:' : 'كيف تجيب API Key:'}</strong><br/>
-                    1. {lang === 'en' ? 'Save this number in your WhatsApp contacts:' : 'سيف الرقم ده في واتساب:'} <strong dir="ltr">+34 644 60 49 16</strong><br/>
-                    2. {lang === 'en' ? 'Send this message:' : 'ابعتله:'} <strong>I allow callmebot to send me messages</strong><br/>
-                    3. {lang === 'en' ? 'You will receive your API Key automatically.' : 'هيرد عليك بالـ API Key تلقائياً.'}
-                  </div>
+              <div className="dash-card" style={{ maxWidth: 720 }}>
+
+                {/* شرح Green API */}
+                <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 10, padding: '16px 20px', marginBottom: 24, fontSize: 13, lineHeight: 1.9 }}>
+                  <strong style={{ fontSize: 14, color: '#15803d' }}>⚙️ طريقة الإعداد (Green API — مجاني)</strong><br/>
+                  <span style={{ color: '#166534' }}>
+                    1. روح <strong>green-api.com</strong> وسجل حساب مجاني<br/>
+                    2. اضغط <strong>Create Instance</strong> واختار <strong>Developer</strong> (مجاني)<br/>
+                    3. سكان الـ <strong>QR Code</strong> بواتسابك<br/>
+                    4. هتلاقي <strong>idInstance</strong> و <strong>apiTokenInstance</strong> — انسخهم وحطهم هنا<br/>
+                    5. رقم الواتساب بتاعك هو اللي هيبعت ويستلم الإشعارات
+                  </span>
                 </div>
 
                 {waNumbers.map((n, i) => (
-                  <div key={i} style={{ background: '#f9fafb', border: '1px solid var(--border)', borderRadius: 10, padding: 16, marginBottom: 12 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                      <span style={{ fontWeight: 600, fontSize: 14 }}>
-                        <i className="fab fa-whatsapp" style={{ color: '#25d366', marginLeft: 6 }}></i>
-                        {lang === 'en' ? `Number ${i + 1}` : `رقم ${i + 1}`}
+                  <div key={i} style={{ background: '#f9fafb', border: '1px solid var(--border)', borderRadius: 10, padding: 18, marginBottom: 14 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                      <span style={{ fontWeight: 700, fontSize: 15, color: '#25d366' }}>
+                        <i className="fab fa-whatsapp" style={{ marginLeft: 6 }}></i>
+                        رقم {i + 1} {n.label ? `— ${n.label}` : ''}
                       </span>
                       <button onClick={() => removeWaNumber(i)} style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: 13 }}>
-                        <i className="fas fa-trash"></i> {lang === 'en' ? 'Remove' : 'حذف'}
+                        <i className="fas fa-trash"></i> حذف
                       </button>
                     </div>
+
                     <div className="modal-grid2">
                       <div className="form-group">
-                        <label className="form-label">{lang === 'en' ? 'Label (optional)' : 'اسم/تعريف (اختياري)'}</label>
-                        <input className="form-input" value={n.label} onChange={e => editWaNumber(i, 'label', e.target.value)} placeholder={lang === 'en' ? 'e.g. Manager' : 'مثال: المدير'} />
+                        <label className="form-label">اسم/تعريف (اختياري)</label>
+                        <input className="form-input" value={n.label || ''} onChange={e => editWaNumber(i, 'label', e.target.value)} placeholder="مثال: المدير" />
                       </div>
                       <div className="form-group">
-                        <label className="form-label">{lang === 'en' ? 'Phone Number (with country code)' : 'رقم الواتساب (مع كود الدولة)'}</label>
-                        <input className="form-input" dir="ltr" value={n.phone} onChange={e => editWaNumber(i, 'phone', e.target.value)} placeholder="+96512345678" />
+                        <label className="form-label">رقم الواتساب اللي هيستلم الإشعار</label>
+                        <input className="form-input" dir="ltr" value={n.phone || ''} onChange={e => editWaNumber(i, 'phone', e.target.value)} placeholder="+96512345678" />
                       </div>
                     </div>
-                    <div className="form-group" style={{ marginTop: 8 }}>
-                      <label className="form-label">API Key (CallMeBot)</label>
-                      <input className="form-input" dir="ltr" value={n.apiKey} onChange={e => editWaNumber(i, 'apiKey', e.target.value)} placeholder="1234567" />
+                    <div className="modal-grid2" style={{ marginTop: 10 }}>
+                      <div className="form-group">
+                        <label className="form-label">idInstance (Green API)</label>
+                        <input className="form-input" dir="ltr" value={n.instanceId || ''} onChange={e => editWaNumber(i, 'instanceId', e.target.value)} placeholder="1101234567" />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">apiTokenInstance (Green API)</label>
+                        <input className="form-input" dir="ltr" value={n.apiToken || ''} onChange={e => editWaNumber(i, 'apiToken', e.target.value)} placeholder="abcdef1234567890..." />
+                      </div>
                     </div>
                   </div>
                 ))}
 
-                <button onClick={addWaNumber} className="btn btn-outline" style={{ marginBottom: 20, width: '100%' }}>
-                  <i className="fas fa-plus"></i> {lang === 'en' ? 'Add Number' : 'إضافة رقم'}
+                <button onClick={addWaNumber} className="btn btn-outline" style={{ marginBottom: 16, width: '100%' }}>
+                  <i className="fas fa-plus"></i> إضافة رقم
                 </button>
 
                 <button onClick={saveWaSettings} className="btn btn-green" style={{ width: '100%' }}>
                   {waSaved
-                    ? <><i className="fas fa-check"></i> {lang === 'en' ? 'Saved!' : 'تم الحفظ!'}</>
-                    : <><i className="fas fa-save"></i> {lang === 'en' ? 'Save Settings' : 'حفظ الإعدادات'}</>}
+                    ? <><i className="fas fa-check"></i> تم الحفظ!</>
+                    : <><i className="fas fa-save"></i> حفظ الإعدادات</>}
                 </button>
               </div>
             </div>
