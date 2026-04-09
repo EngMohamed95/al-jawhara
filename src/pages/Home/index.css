@@ -131,12 +131,12 @@
   display: flex;
   gap: 24px;
   width: max-content;
-  animation: slider-scroll 28s linear infinite;
+  animation: slider-scroll 32s linear infinite;
 }
 .clients-slider-track:hover { animation-play-state: paused; }
 @keyframes slider-scroll {
   0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  100% { transform: translateX(-33.333%); }
 }
 .clients-slider-item {
   background: white;

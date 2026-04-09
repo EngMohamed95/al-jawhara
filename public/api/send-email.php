@@ -210,8 +210,10 @@ $html = <<<HTML
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
 
   <!-- Header -->
-  <tr><td style="background:linear-gradient(135deg,#1e40af,#1d4ed8);padding:36px 40px;text-align:center;">
-    <img src="https://al-jawhara.co/wp-content/uploads/2021/02/MobileJawharaLogo.png" alt="Al-Jawhara" style="height:70px;max-width:200px;object-fit:contain;filter:brightness(0) invert(1);" />
+  <tr><td style="background:linear-gradient(135deg,#1e40af,#1d4ed8);padding:40px;text-align:center;">
+    <div style="display:inline-block;background:#ffffff;border-radius:16px;padding:14px 32px;box-shadow:0 4px 16px rgba(0,0,0,0.2);">
+      <img src="https://al-jawhara.co/wp-content/uploads/2021/02/MobileJawharaLogo.png" alt="Al-Jawhara" style="height:60px;max-width:180px;display:block;object-fit:contain;" />
+    </div>
   </td></tr>
 
   <!-- Welcome -->

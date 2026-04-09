@@ -215,7 +215,7 @@ const Home = () => {
           </Reveal>
           <div className="clients-slider-wrap" aria-label="عملاؤنا">
             <div className="clients-slider-track">
-              {[...featuredClients, ...featuredClients].map((c, i) => (
+              {[...featuredClients, ...featuredClients, ...featuredClients].map((c, i) => (
                 <div key={i} className="clients-slider-item">
                   <img src={c.logo} alt={c.name} className="clients-slider-logo" />
                 </div>
