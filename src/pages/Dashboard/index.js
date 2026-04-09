@@ -22,9 +22,9 @@ const roleLabels         = { admin: { ar: 'مدير', en: 'Admin' }, editor: { a
 const userStatusLabels   = { active: { ar: 'نشط', en: 'Active' }, suspended: { ar: 'موقوف', en: 'Suspended' }, pending: { ar: 'قيد المراجعة', en: 'Pending' }, locked: { ar: 'مقفل', en: 'Locked' } };
 
 const ROLE_PERMISSIONS = {
-  admin:  { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: true,  content: true,  reports: true,  shipping: true,  payments: true,  coupons: true  },
-  editor: { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: false, content: true,  reports: true,  shipping: false, payments: false, coupons: true  },
-  viewer: { products: false, categories: false, inventory: true,  orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false },
+  admin:  { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: true,  content: true,  reports: true,  shipping: true,  payments: true,  coupons: true,  settings: true  },
+  editor: { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: false, content: true,  reports: true,  shipping: false, payments: false, coupons: true,  settings: false },
+  viewer: { products: false, categories: false, inventory: true,  orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false, settings: false },
 };
 
 const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '', countryOfOrigin: 'KW', hsCode: '', variants: [] };
@@ -359,7 +359,7 @@ const Dashboard = () => {
     { id: 'payments',  label: dt('nav.payments'),  icon: 'fa-credit-card' },
     { id: 'coupons',   label: dt('nav.coupons'),   icon: 'fa-tag' },
     { id: 'reports',   label: dt('nav.reports'),   icon: 'fa-chart-line' },
-    { id: 'settings',  label: lang === 'en' ? 'Settings' : 'الإعدادات', icon: 'fa-gear' },
+    { id: 'settings',  label: lang === 'en' ? 'Settings' : 'الإعدادات', icon: 'fa-gear', perm: 'settings' },
   ];
 
   const [view, setView]               = useState('overview');
