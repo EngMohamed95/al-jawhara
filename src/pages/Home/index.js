@@ -213,11 +213,12 @@ const Home = () => {
               <p className="section-subtitle">{t('home.clientsSub')}</p>
             </div>
           </Reveal>
-          <div className="clients-slider-wrap" aria-label="عملاؤنا">
+          <div className="clients-slider-wrap">
             <div className="clients-slider-track">
-              {[...featuredClients, ...featuredClients, ...featuredClients].map((c, i) => (
+              {/* نسختين كافيين للـ loop اللانهائي */}
+              {[...featuredClients, ...featuredClients].map((c, i) => (
                 <div key={i} className="clients-slider-item">
-                  <img src={c.logo} alt={c.name} className="clients-slider-logo" />
+                  <img src={c.logo} alt={c.name} className="clients-slider-logo" loading="lazy" />
                 </div>
               ))}
             </div>
