@@ -243,7 +243,7 @@ const Home = () => {
               <blockquote className="quote-text">"{ceoQuote}"</blockquote>
               <div className="quote-ceo-wrap">
                 <img src="/ceo.jpg" alt={ceoName} className="quote-ceo-img" />
-                <div>
+                <div className="quote-ceo-info">
                   <p className="quote-author">{ceoName}</p>
                   <p className="quote-author-title">{ceoTitle}</p>
                 </div>

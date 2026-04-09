@@ -579,10 +579,11 @@ tr:hover td { background: var(--bg); }
 .quote-section { background: linear-gradient(135deg, var(--primary), var(--primary-light)); padding: 80px 0; color: white; text-align: center; }
 .quote-icon { font-size: 3.5rem; opacity: 0.25; margin-bottom: -10px; }
 .quote-text { font-size: 1.4rem; font-weight: 500; line-height: 1.8; max-width: 700px; margin: 0 auto 25px; font-style: italic; }
-.quote-ceo-wrap { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 8px; }
-.quote-ceo-img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.6); flex-shrink: 0; }
+.quote-ceo-wrap { display: inline-flex; align-items: center; gap: 16px; margin-top: 20px; direction: ltr; }
+.quote-ceo-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; object-position: top; border: 3px solid rgba(255,255,255,0.8); flex-shrink: 0; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+.quote-ceo-info { text-align: right; direction: rtl; }
 .quote-author { font-weight: 700; font-size: 1.05rem; margin: 0; }
-.quote-author-title { font-size: 0.88rem; opacity: 0.68; margin: 4px 0 0; }
+.quote-author-title { font-size: 0.88rem; opacity: 0.75; margin: 4px 0 0; }
 
 /* ── Alert ── */
 .alert { padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; margin-bottom: 15px; }
