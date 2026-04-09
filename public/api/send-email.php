@@ -148,9 +148,8 @@ $html = <<<HTML
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
 
   <!-- Header -->
-  <tr><td style="background:linear-gradient(135deg,#16a34a,#15803d);padding:36px 40px;text-align:center;">
-    <h1 style="margin:0;color:#fff;font-size:26px;font-weight:700;">الجوهرة</h1>
-    <p style="margin:8px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">منتجات الورق والمناديل</p>
+  <tr><td style="background:linear-gradient(135deg,#1e40af,#1d4ed8);padding:36px 40px;text-align:center;">
+    <img src="https://al-jawhara.co/wp-content/uploads/2021/02/MobileJawharaLogo.png" alt="الجوهرة" style="height:70px;max-width:200px;object-fit:contain;filter:brightness(0) invert(1);" />
   </td></tr>
 
   <!-- Welcome -->
