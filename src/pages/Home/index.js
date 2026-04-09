@@ -9,13 +9,18 @@ import './index.css';
 const DEFAULT_HERO_VIDEO  = 'https://al-jawhara.co/wp-content/uploads/2022/10/JawharaNewIntro.mp4';
 const DEFAULT_HERO_POSTER = 'https://al-jawhara.co/wp-content/uploads/revslider/video-media/JawharaNewIntro_59_layer.jpeg';
 
+const BASE = 'https://al-jawhara.co/wp-content/uploads';
 const featuredClients = [
-  { name: 'Carrefour',     logo: 'https://logo.clearbit.com/carrefour.com' },
-  { name: 'Starbucks',     logo: 'https://logo.clearbit.com/starbucks.com' },
-  { name: 'Talabat',       logo: 'https://logo.clearbit.com/talabat.com' },
-  { name: "Chili's",       logo: 'https://logo.clearbit.com/chilis.com' },
-  { name: 'Sultan Center', logo: 'https://logo.clearbit.com/sultan-center.com' },
-  { name: 'LuLu',          logo: 'https://logo.clearbit.com/luluhypermarket.com' },
+  { name: 'Carrefour',     logo: `${BASE}/2021/02/carrefour.png` },
+  { name: 'Sultan Center', logo: `${BASE}/2021/03/Sultan.png` },
+  { name: 'Oncost',        logo: `${BASE}/2021/02/Oncost.png` },
+  { name: 'Starbucks',     logo: `${BASE}/2022/12/starbucks.png` },
+  { name: "Chili's",       logo: `${BASE}/2020/09/Chilis.png` },
+  { name: 'Talabat',       logo: `${BASE}/2022/12/talabat.png` },
+  { name: 'Regency',       logo: `${BASE}/2021/02/Regency.png` },
+  { name: 'Raddison',      logo: `${BASE}/2021/02/Raddison.png` },
+  { name: 'Kababji',       logo: `${BASE}/2021/02/Kababji.png` },
+  { name: 'City Center',   logo: `${BASE}/2021/02/CityCenter.png` },
 ];
 
 const Home = () => {
@@ -208,15 +213,15 @@ const Home = () => {
               <p className="section-subtitle">{t('home.clientsSub')}</p>
             </div>
           </Reveal>
-          <Reveal direction="up" delay={100}>
-            <div className="client-tags" role="list">
-              {featuredClients.map((c, i) => (
-                <div key={i} className="client-tag" role="listitem" aria-label={c.name}>
-                  <img src={c.logo} alt={c.name} className="client-tag-logo" />
+          <div className="clients-slider-wrap" aria-label="عملاؤنا">
+            <div className="clients-slider-track">
+              {[...featuredClients, ...featuredClients].map((c, i) => (
+                <div key={i} className="clients-slider-item">
+                  <img src={c.logo} alt={c.name} className="clients-slider-logo" />
                 </div>
               ))}
             </div>
-          </Reveal>
+          </div>
           <Reveal direction="up" delay={200}>
             <div className="section-center">
               <Link to="/clients" className="btn btn-green">

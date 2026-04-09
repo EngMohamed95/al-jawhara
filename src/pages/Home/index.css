@@ -120,15 +120,40 @@
     radial-gradient(circle, rgba(6,80,137,0.18) 1.5px, transparent 1.5px);
   background-size: auto, auto, auto, 32px 32px;
 }
-.client-tags { display: flex; flex-wrap: nowrap; gap: 16px; justify-content: center; margin-bottom: 40px; overflow-x: auto; padding-bottom: 8px; }
-.client-tag {
-  background: white; border-radius: 12px; padding: 18px 28px;
-  box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center;
-  border: 2px solid var(--border); transition: all 0.3s; cursor: default;
-  min-width: 140px; min-height: 80px;
+/* ── Clients Slider ── */
+.clients-slider-wrap {
+  overflow: hidden;
+  margin-bottom: 40px;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
-.client-tag:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-.client-tag-logo { max-height: 44px; max-width: 120px; width: auto; object-fit: contain; display: block; }
+.clients-slider-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  animation: slider-scroll 28s linear infinite;
+}
+.clients-slider-track:hover { animation-play-state: paused; }
+@keyframes slider-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.clients-slider-item {
+  background: white;
+  border-radius: 16px;
+  padding: 20px 32px;
+  box-shadow: var(--shadow);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 160px;
+  height: 90px;
+  flex-shrink: 0;
+  transition: box-shadow 0.3s;
+}
+.clients-slider-item:hover { box-shadow: var(--shadow-lg); }
+.clients-slider-logo { max-height: 54px; max-width: 130px; width: auto; object-fit: contain; display: block; }
 .section-center { text-align: center; }
 .home-loading {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
