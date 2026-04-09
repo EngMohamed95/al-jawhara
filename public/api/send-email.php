@@ -60,6 +60,17 @@ foreach ($items as $item) {
     </tr>";
 }
 
+// ── قسم الملاحظات (يُحسب قبل الـ heredoc) ────────────────
+$notesBlock = $notes ? "
+          <tr>
+            <td style='padding:0 40px 24px;'>
+              <div style='background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:14px 18px;'>
+                <span style='color:#92400e; font-size:13px; font-weight:600;'>ملاحظات: </span>
+                <span style='color:#78350f; font-size:13px;'>{$notes}</span>
+              </div>
+            </td>
+          </tr>" : '';
+
 // ── قالب الإيميل HTML ─────────────────────────────────────
 $html = <<<HTML
 <!DOCTYPE html>
@@ -166,15 +177,7 @@ $html = <<<HTML
           </tr>
 
           <!-- Notes -->
-          {$notes ? "
-          <tr>
-            <td style='padding:0 40px 24px;'>
-              <div style='background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:14px 18px;'>
-                <span style='color:#92400e; font-size:13px; font-weight:600;'>ملاحظات: </span>
-                <span style='color:#78350f; font-size:13px;'>{$notes}</span>
-              </div>
-            </td>
-          </tr>" : ''}
+          {$notesBlock}
 
           <!-- Footer -->
           <tr>
