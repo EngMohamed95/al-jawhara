@@ -1,7 +1,7 @@
 <?php
 /**
  * whatsapp.php — إرسال إشعار واتساب عند كل طلب جديد
- * يستخدم Green API (مجاني)
+ * يستخدم CallMeBot API (مجاني)
  */
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
@@ -25,12 +25,12 @@ if (empty($order) || empty($numbers)) {
 
 // ── بناء الرسالة ─────────────────────────────────────────
 $paymentLabels = [
-    'cash'       => 'كاش 💵',
-    'transfer'   => 'تحويل بنكي 🏦',
-    'knet'       => 'KNET 💳',
-    'myfatoorah' => 'MyFatoorah 💳',
-    'tap'        => 'Tap 💳',
-    'benefitpay' => 'Benefit Pay 💳',
+    'cash'       => 'كاش',
+    'transfer'   => 'تحويل بنكي',
+    'knet'       => 'KNET',
+    'myfatoorah' => 'MyFatoorah',
+    'tap'        => 'Tap',
+    'benefitpay' => 'Benefit Pay',
 ];
 
 $ref     = $order['ref']         ?? '';
@@ -44,51 +44,45 @@ $items   = $order['items']       ?? [];
 
 $itemLines = '';
 foreach ($items as $item) {
-    $itemLines .= "  • " . ($item['name'] ?? '') . " × " . ($item['qty'] ?? 1) . "\n";
+    $itemLines .= '• ' . ($item['name'] ?? '') . ' x' . ($item['qty'] ?? 1) . "\n";
 }
 
-$msg  = "🛍️ *طلب جديد — الجوهرة*\n\n";
-$msg .= "📋 *رقم الطلب:* {$ref}\n";
-$msg .= "👤 *العميل:* {$client}\n";
-$msg .= "📞 *الهاتف:* {$phone}\n";
-$msg .= "📍 *المنطقة:* {$gov}" . ($block ? " — قطعة {$block}" : "") . "\n";
-$msg .= "💳 *الدفع:* {$payment}\n";
-$msg .= "💰 *الإجمالي:* {$total} د.ك\n";
+$msg  = "طلب جديد - الجوهرة\n\n";
+$msg .= "رقم الطلب: {$ref}\n";
+$msg .= "العميل: {$client}\n";
+$msg .= "الهاتف: {$phone}\n";
+$msg .= "المنطقة: {$gov}" . ($block ? " - قطعة {$block}" : "") . "\n";
+$msg .= "الدفع: {$payment}\n";
+$msg .= "الاجمالي: {$total} د.ك\n";
 if ($itemLines) {
-    $msg .= "\n🛒 *المنتجات:*\n{$itemLines}";
+    $msg .= "\nالمنتجات:\n{$itemLines}";
 }
-$msg .= "\n⏰ " . date('Y-m-d H:i');
+$msg .= "\n" . date('Y-m-d H:i');
 
-// ── إرسال عبر Green API لكل رقم ──────────────────────────
+// ── إرسال عبر CallMeBot لكل رقم ─────────────────────────
 $results = [];
-
 foreach ($numbers as $entry) {
-    $toPhone    = preg_replace('/[^0-9]/', '', $entry['phone'] ?? '');
-    $instanceId = trim($entry['instanceId'] ?? '');
-    $apiToken   = trim($entry['apiToken']   ?? '');
+    $toPhone = preg_replace('/[^0-9+]/', '', $entry['phone']  ?? '');
+    $apiKey  = trim($entry['apiKey'] ?? '');
 
-    if (!$toPhone || !$instanceId || !$apiToken) {
-        $results[] = ['phone' => $toPhone, 'status' => 'skipped - missing fields'];
+    if (!$toPhone || !$apiKey) {
+        $results[] = ['phone' => $toPhone, 'status' => 'skipped'];
         continue;
     }
 
-    // Green API format: phone@c.us
-    $chatId = $toPhone . '@c.us';
-
-    $url  = "https://api.green-api.com/waInstance{$instanceId}/sendMessage/{$apiToken}";
-    $data = json_encode(['chatId' => $chatId, 'message' => $msg]);
+    $url = 'https://api.callmebot.com/whatsapp.php?'
+         . 'phone='   . urlencode($toPhone)
+         . '&text='   . urlencode($msg)
+         . '&apikey=' . urlencode($apiKey);
 
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST,           true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS,     $data);
-    curl_setopt($ch, CURLOPT_HTTPHEADER,     ['Content-Type: application/json']);
-    curl_setopt($ch, CURLOPT_TIMEOUT,        15);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     $resp = curl_exec($ch);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    $results[] = ['phone' => $toPhone, 'status' => $code === 200 ? 'sent' : 'failed', 'code' => $code, 'response' => $resp];
+    $results[] = ['phone' => $toPhone, 'status' => $code === 200 ? 'sent' : 'failed', 'code' => $code];
 }
 
 echo json_encode(['success' => true, 'results' => $results]);

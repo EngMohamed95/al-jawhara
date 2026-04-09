@@ -2765,15 +2765,13 @@ const Dashboard = () => {
 
               <div className="dash-card" style={{ maxWidth: 720 }}>
 
-                {/* شرح Green API */}
+                {/* شرح CallMeBot */}
                 <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 10, padding: '16px 20px', marginBottom: 24, fontSize: 13, lineHeight: 1.9 }}>
-                  <strong style={{ fontSize: 14, color: '#15803d' }}>⚙️ طريقة الإعداد (Green API — مجاني)</strong><br/>
+                  <strong style={{ fontSize: 14, color: '#15803d' }}>⚙️ طريقة الحصول على API Key (مجاني)</strong><br/>
                   <span style={{ color: '#166534' }}>
-                    1. روح <strong>green-api.com</strong> وسجل حساب مجاني<br/>
-                    2. اضغط <strong>Create Instance</strong> واختار <strong>Developer</strong> (مجاني)<br/>
-                    3. سكان الـ <strong>QR Code</strong> بواتسابك<br/>
-                    4. هتلاقي <strong>idInstance</strong> و <strong>apiTokenInstance</strong> — انسخهم وحطهم هنا<br/>
-                    5. رقم الواتساب بتاعك هو اللي هيبعت ويستلم الإشعارات
+                    1. سيف الرقم ده في واتساب: <strong dir="ltr">+34 644 60 49 16</strong><br/>
+                    2. ابعتله الرسالة دي بالضبط: <strong>I allow callmebot to send me messages</strong><br/>
+                    3. هيرد عليك برقم الـ <strong>API Key</strong> — حطه هنا
                   </span>
                 </div>
 
@@ -2799,15 +2797,9 @@ const Dashboard = () => {
                         <input className="form-input" dir="ltr" value={n.phone || ''} onChange={e => editWaNumber(i, 'phone', e.target.value)} placeholder="+96512345678" />
                       </div>
                     </div>
-                    <div className="modal-grid2" style={{ marginTop: 10 }}>
-                      <div className="form-group">
-                        <label className="form-label">idInstance (Green API)</label>
-                        <input className="form-input" dir="ltr" value={n.instanceId || ''} onChange={e => editWaNumber(i, 'instanceId', e.target.value)} placeholder="1101234567" />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">apiTokenInstance (Green API)</label>
-                        <input className="form-input" dir="ltr" value={n.apiToken || ''} onChange={e => editWaNumber(i, 'apiToken', e.target.value)} placeholder="abcdef1234567890..." />
-                      </div>
+                    <div className="form-group" style={{ marginTop: 10 }}>
+                      <label className="form-label">API Key (CallMeBot)</label>
+                      <input className="form-input" dir="ltr" value={n.apiKey || ''} onChange={e => editWaNumber(i, 'apiKey', e.target.value)} placeholder="1234567" />
                     </div>
                   </div>
                 ))}
