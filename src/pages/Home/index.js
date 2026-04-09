@@ -10,12 +10,12 @@ const DEFAULT_HERO_VIDEO  = 'https://al-jawhara.co/wp-content/uploads/2022/10/Ja
 const DEFAULT_HERO_POSTER = 'https://al-jawhara.co/wp-content/uploads/revslider/video-media/JawharaNewIntro_59_layer.jpeg';
 
 const featuredClients = [
-  { name: 'Carrefour',     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Carrefour_logo.svg/320px-Carrefour_logo.svg.png' },
-  { name: 'Starbucks',     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/320px-Starbucks_Corporation_Logo_2011.svg.png' },
-  { name: 'Talabat',       logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Talabat-logo.svg/320px-Talabat-logo.svg.png' },
-  { name: "Chili's",       logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/Chilis_Logo.svg/320px-Chilis_Logo.svg.png' },
-  { name: 'Sultan Center', logo: 'https://www.sultan-center.com/static/media/logo.a34ae29c.png' },
-  { name: 'LuLu',          logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Lulu_Hypermarket_Logo.svg/320px-Lulu_Hypermarket_Logo.svg.png' },
+  { name: 'Carrefour',     logo: 'https://logo.clearbit.com/carrefour.com' },
+  { name: 'Starbucks',     logo: 'https://logo.clearbit.com/starbucks.com' },
+  { name: 'Talabat',       logo: 'https://logo.clearbit.com/talabat.com' },
+  { name: "Chili's",       logo: 'https://logo.clearbit.com/chilis.com' },
+  { name: 'Sultan Center', logo: 'https://logo.clearbit.com/sultan-center.com' },
+  { name: 'LuLu',          logo: 'https://logo.clearbit.com/luluhypermarket.com' },
 ];
 
 const Home = () => {
