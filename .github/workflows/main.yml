@@ -20,7 +20,8 @@ jobs:
           script: |
             git config --global --add safe.directory /www/wwwroot/al-jawhara.com
             cd /www/wwwroot/al-jawhara.com
-            git pull origin main
+            git fetch origin
+            git reset --hard origin/main
             npm install
             npm run build
             cp -rf build/* /www/wwwroot/al-jawhara.com/
