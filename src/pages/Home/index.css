@@ -23,6 +23,9 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
+.home-products-grid .reveal {
+  height: 100%;
+}
 
 /* ── Product Card ── */
 .home-product-card {
@@ -33,6 +36,7 @@
   opacity: 0;
   animation: fadeUp 0.5s ease forwards;
   position: relative;
+  height: 100%;
 }
 .home-product-card:hover {
   transform: translateY(-6px);
