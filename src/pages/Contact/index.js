@@ -33,7 +33,7 @@ const Contact = () => {
     ? (sc?.workHoursEn || 'Sunday – Thursday: 8 AM – 5 PM')
     : (sc?.workHours   || t('contact.workHoursFallback'));
   const mapEmbedUrl    = sc?.mapEmbedUrl     || '';
-  const contactHeaderImg = sc?.contactHeaderImg || '';
+  const contactHeaderImg = sc?.contactHeaderImg && !sc.contactHeaderImg.includes('unsplash.com') ? sc.contactHeaderImg : '';
   const socialLinks    = DEFAULT_SOCIAL.map(s => ({ ...s, href: sc?.[s.field] || '#' })).filter(s => s.href !== '#' || true);
 
   const waNum    = whatsapp.replace(/\D/g, '');

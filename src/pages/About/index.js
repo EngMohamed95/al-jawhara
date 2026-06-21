@@ -16,7 +16,7 @@ const About = () => {
   const ceoQuote    = sc?.ceoQuote   || '';
   const ceoImage    = sc?.ceoImage   || '';
   const aboutStoryImg   = sc?.aboutStoryImg   || '';
-  const aboutHeaderImg  = sc?.aboutHeaderImg  || '';
+  const aboutHeaderImg  = sc?.aboutHeaderImg && !sc.aboutHeaderImg.includes('unsplash.com') ? sc.aboutHeaderImg : '';
   const missionText = sc?.missionText || t('about.missionText');
   const visionText  = sc?.visionText  || t('about.visionText');
   const area     = sc?.factoryArea           || '4,500';

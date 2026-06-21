@@ -7,8 +7,8 @@ import Reveal from '../../components/Reveal';
 import { clients } from '../Clients/clientsList';
 import './index.css';
 
-const DEFAULT_HERO_VIDEO  = '/videos/AlJawharaUV.mp4';
-const DEFAULT_HERO_POSTER = '/Photo gallery/PhotoGallery00.jpg';
+const DEFAULT_HERO_VIDEO  = '/JawharaNewIntro.mp4';
+const DEFAULT_HERO_POSTER = 'https://al-jawhara.com/wp-content/uploads/revslider/video-media/JawharaNewIntro_59_layer.jpeg';
 
 const featuredClients = clients.filter(
   c => c.logo && c.logo.startsWith('/logos/') && !c.logo.includes('sultan.png')
@@ -172,9 +172,21 @@ const Home = () => {
       </section>
 
       {/* ── Why Us ── */}
-      {/* ── Why Us ── */}
-      <section className="section home-why-section" aria-label="لماذا الجوهرة">
-        <div className="container">
+      <section className="section home-why-section" style={{ position: 'relative', overflow: 'hidden' }} aria-label="لماذا الجوهرة">
+        <video
+          className="why-video-bg"
+          autoPlay muted loop playsInline preload="auto"
+        >
+          <source src="/videos/AlJawharaUV.mp4" type="video/mp4" />
+        </video>
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(4,61,107,0.85) 0%, rgba(6,80,137,0.75) 100%)',
+          zIndex: 1
+        }}></div>
+
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <Reveal direction="up">
             <div className="section-header">
               <h2 className="section-title">{t('home.whyTitle')}</h2>

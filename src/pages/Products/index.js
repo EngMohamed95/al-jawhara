@@ -17,6 +17,8 @@ const Products = () => {
   const [activeCat,   setActiveCat]   = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
+  const productsHeaderImg = sc?.productsHeaderImg && !sc.productsHeaderImg.includes('unsplash.com') ? sc.productsHeaderImg : '';
+
   const getDescendantSlugs = (slug) => {
     const cat = (categories || []).find(c => c.slug === slug);
     if (!cat) return [];
@@ -60,7 +62,7 @@ const Products = () => {
         keywords="منتجات الجوهرة، مناديل وجه، رولات مطبخ، محارم جيب، مناشف ورق"
       />
 
-      <header className="page-header" style={sc?.productsHeaderImg ? { backgroundImage: `url(${sc.productsHeaderImg})`, backgroundSize:'cover', backgroundPosition:'center' } : {}}>
+      <header className="page-header" style={productsHeaderImg ? { backgroundImage: `url(${productsHeaderImg})`, backgroundSize:'cover', backgroundPosition:'center' } : {}}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-box-open"></i></div>
