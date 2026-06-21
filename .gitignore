@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Production build
+build/
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Email credentials (sensitive)
+public/api/email-config.php
+
+# RAW Images
+*.ARW

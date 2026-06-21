@@ -1,0 +1,38 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            git config --global --add safe.directory /www/wwwroot/al-jawhara.com
+            cd /www/wwwroot/al-jawhara.com
+            git pull origin main
+            npm install
+            npm run build
+            cp -rf build/* /www/wwwroot/al-jawhara.com/
+            
+            # Configure Nginx rewrite rule for React SPA in aaPanel
+            REWRITE_CONF="/www/server/panel/vhost/rewrite/al-jawhara.com.conf"
+            if [ -d "/www/server/panel/vhost/rewrite" ]; then
+              echo "Setting up Nginx URL rewrite in aaPanel..."
+              echo 'location / {
+                try_files $uri $uri/ /index.html;
+              }' > "$REWRITE_CONF"
+            fi
+            
+            # Reload Nginx to apply changes
+            nginx -s reload || systemctl reload nginx || service nginx reload || true

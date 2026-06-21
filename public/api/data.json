@@ -1,0 +1,1046 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "icon": "🧻",
+      "image": "/products-image/1.png",
+      "name": "رول مطبخ 23 متر - موديل 1",
+      "nameEn": "Kitchen Roll 23m - Model 1",
+      "category": "rolls",
+      "price": 1.5,
+      "desc": "رولات مطبخ قوية ومتينة عالية الامتصاص لتنظيف أسرع وأسهل.",
+      "descEn": "Strong and durable kitchen rolls with high absorbency for easier cleaning.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "امتصاص فائق",
+        "طول ممتاز"
+      ],
+      "stock": 1050,
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "icon": "🧻",
+      "image": "/products-image/2.png",
+      "name": "رول مطبخ 23 متر - موديل 2",
+      "nameEn": "Kitchen Roll 23m - Model 2",
+      "category": "rolls",
+      "price": 1.5,
+      "desc": "رولات مطبخ قوية ومتينة عالية الامتصاص لتنظيف أسرع وأسهل.",
+      "descEn": "Strong and durable kitchen rolls with high absorbency for easier cleaning.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "امتصاص فائق",
+        "طول ممتاز"
+      ],
+      "stock": 1100,
+      "status": "active"
+    },
+    {
+      "id": 3,
+      "icon": "🧻",
+      "image": "/products-image/3.png",
+      "name": "رول مطبخ 23 متر - موديل 3",
+      "nameEn": "Kitchen Roll 23m - Model 3",
+      "category": "rolls",
+      "price": 1.5,
+      "desc": "رولات مطبخ قوية ومتينة عالية الامتصاص لتنظيف أسرع وأسهل.",
+      "descEn": "Strong and durable kitchen rolls with high absorbency for easier cleaning.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "امتصاص فائق",
+        "طول ممتاز"
+      ],
+      "stock": 1150,
+      "status": "active"
+    },
+    {
+      "id": 4,
+      "icon": "🧻",
+      "image": "/products-image/4.png",
+      "name": "رول مطبخ الجوهرة - موديل 4",
+      "nameEn": "Al-Jawhara Kitchen Roll - Model 4",
+      "category": "rolls",
+      "price": 1.5,
+      "desc": "رولات مطبخ قوية ومتينة عالية الامتصاص لتنظيف أسرع وأسهل.",
+      "descEn": "Strong and durable kitchen rolls with high absorbency for easier cleaning.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "امتصاص فائق",
+        "طول ممتاز"
+      ],
+      "stock": 1200,
+      "status": "inactive"
+    },
+    {
+      "id": 5,
+      "icon": "🧻",
+      "image": "/products-image/5.png",
+      "name": "رول مطبخ الجوهرة - موديل 5",
+      "nameEn": "Al-Jawhara Kitchen Roll - Model 5",
+      "category": "rolls",
+      "price": 1.5,
+      "desc": "رولات مطبخ قوية ومتينة عالية الامتصاص لتنظيف أسرع وأسهل.",
+      "descEn": "Strong and durable kitchen rolls with high absorbency for easier cleaning.",
+      "badge": "جديد",
+      "specs": [
+        "2 طبقة",
+        "امتصاص فائق",
+        "طول ممتاز"
+      ],
+      "stock": 1250,
+      "status": "inactive"
+    },
+    {
+      "id": 6,
+      "icon": "🧻",
+      "image": "/products-image/6.png",
+      "name": "رول مطبخ الجوهرة - موديل 6",
+      "nameEn": "Al-Jawhara Kitchen Roll - Model 6",
+      "category": "rolls",
+      "price": 1.5,
+      "desc": "رولات مطبخ قوية ومتينة عالية الامتصاص لتنظيف أسرع وأسهل.",
+      "descEn": "Strong and durable kitchen rolls with high absorbency for easier cleaning.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "امتصاص فائق",
+        "طول ممتاز"
+      ],
+      "stock": 1300,
+      "status": "inactive"
+    },
+    {
+      "id": 7,
+      "icon": "🧻",
+      "image": "/products-image/7.png",
+      "name": "رول مطبخ الجوهرة - موديل 7",
+      "nameEn": "Al-Jawhara Kitchen Roll - Model 7",
+      "category": "rolls",
+      "price": 1.5,
+      "desc": "رولات مطبخ قوية ومتينة عالية الامتصاص لتنظيف أسرع وأسهل.",
+      "descEn": "Strong and durable kitchen rolls with high absorbency for easier cleaning.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "امتصاص فائق",
+        "طول ممتاز"
+      ],
+      "stock": 1350,
+      "status": "inactive"
+    },
+    {
+      "id": 8,
+      "icon": "🧻",
+      "image": "/products-image/8.png",
+      "name": "رول تويلت (25 متر × 10 سم) 25 متر - موديل 8",
+      "nameEn": "Toilet Roll (25m x 10cm) 25m - Model 8",
+      "category": "rolls",
+      "price": 1.5,
+      "desc": "رولات مطبخ قوية ومتينة عالية الامتصاص لتنظيف أسرع وأسهل.",
+      "descEn": "Strong and durable kitchen rolls with high absorbency for easier cleaning.",
+      "badge": "الأكثر مبيعاً",
+      "specs": [
+        "2 طبقة",
+        "امتصاص فائق",
+        "طول ممتاز"
+      ],
+      "stock": 1400,
+      "status": "active"
+    },
+    {
+      "id": 9,
+      "icon": "🧻",
+      "image": "/products-image/9.png",
+      "name": "رول تويلت (25 متر × 10 سم) 25 متر - موديل 9",
+      "nameEn": "Toilet Roll (25m x 10cm) 25m - Model 9",
+      "category": "rolls",
+      "price": 1.5,
+      "desc": "رولات مطبخ قوية ومتينة عالية الامتصاص لتنظيف أسرع وأسهل.",
+      "descEn": "Strong and durable kitchen rolls with high absorbency for easier cleaning.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "امتصاص فائق",
+        "طول ممتاز"
+      ],
+      "stock": 1450,
+      "status": "active"
+    },
+    {
+      "id": 10,
+      "icon": "🚽",
+      "image": "/products-image/10.png",
+      "name": "رول تويلت الجوهرة - موديل 10",
+      "nameEn": "Al-Jawhara Toilet Roll - Model 10",
+      "category": "rolls",
+      "price": 1.5,
+      "desc": "مناديل تويلت ناعمة ومريحة للبشرة بجودة عالية.",
+      "descEn": "Soft and skin-friendly toilet tissues with exceptional quality.",
+      "badge": "جديد",
+      "specs": [
+        "2 طبقة",
+        "نعومة مضاعفة",
+        "اقتصادي"
+      ],
+      "stock": 1500,
+      "status": "inactive"
+    },
+    {
+      "id": 11,
+      "icon": "🚽",
+      "image": "/products-image/11.png",
+      "name": "رول تويلت الجوهرة - موديل 11",
+      "nameEn": "Al-Jawhara Toilet Roll - Model 11",
+      "category": "rolls",
+      "price": 1.5,
+      "desc": "مناديل تويلت ناعمة ومريحة للبشرة بجودة عالية.",
+      "descEn": "Soft and skin-friendly toilet tissues with exceptional quality.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "نعومة مضاعفة",
+        "اقتصادي"
+      ],
+      "stock": 1550,
+      "status": "inactive"
+    },
+    {
+      "id": 12,
+      "icon": "✨",
+      "image": "/products-image/12.PNG",
+      "name": "مناديل بوتيك 150 ورقة - موديل 12",
+      "nameEn": "Boutique 150 sheets - Model 12",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 1600,
+      "status": "active"
+    },
+    {
+      "id": 13,
+      "icon": "✨",
+      "image": "/products-image/13.PNG",
+      "name": "مناديل مكعب أبيض 100 ورقة - موديل 13",
+      "nameEn": "Cube White 100 sheets - Model 13",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 1650,
+      "status": "active"
+    },
+    {
+      "id": 14,
+      "icon": "✨",
+      "image": "/products-image/14.PNG",
+      "name": "مناديل مكعب أبيض 100 ورقة - موديل 14",
+      "nameEn": "Cube White 100 sheets - Model 14",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 1700,
+      "status": "active"
+    },
+    {
+      "id": 15,
+      "icon": "✨",
+      "image": "/products-image/15.PNG",
+      "name": "مناديل الجوهرة 150 ورقة - موديل 15",
+      "nameEn": "Jawhara 150 sheets - Model 15",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": "جديد",
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 1750,
+      "status": "active"
+    },
+    {
+      "id": 16,
+      "icon": "✨",
+      "image": "/products-image/16.PNG",
+      "name": "مناديل الجوهرة 150 ورقة - موديل 16",
+      "nameEn": "Jawhara 150 sheets - Model 16",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": "الأكثر مبيعاً",
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 1800,
+      "status": "active"
+    },
+    {
+      "id": 17,
+      "icon": "✨",
+      "image": "/products-image/17.PNG",
+      "name": "مناشف يد 100 ورقة - موديل 17",
+      "nameEn": "Hand Towels 100 sheets - Model 17",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 1850,
+      "status": "active"
+    },
+    {
+      "id": 18,
+      "icon": "✨",
+      "image": "/products-image/18.PNG",
+      "name": "مناشف يد 100 ورقة - موديل 18",
+      "nameEn": "Hand Towels 100 sheets - Model 18",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 1900,
+      "status": "active"
+    },
+    {
+      "id": 19,
+      "icon": "✨",
+      "image": "/products-image/19.PNG",
+      "name": "ماكسي رول الجوهرة 350 متر / 2 طبقة - موديل 19",
+      "nameEn": "Maxi Roll Jawhara 350 mtr / 2 ply - Model 19",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 1950,
+      "status": "active"
+    },
+    {
+      "id": 20,
+      "icon": "✨",
+      "image": "/products-image/20.PNG",
+      "name": "ماكسي رول الجوهرة 350 متر / 2 طبقة - موديل 20",
+      "nameEn": "Maxi Roll Jawhara 350 mtr / 2 ply - Model 20",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": "جديد",
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 2000,
+      "status": "active"
+    },
+    {
+      "id": 21,
+      "icon": "✨",
+      "image": "/products-image/21.PNG",
+      "name": "ماكسي رول هايرين 300 متر / 2 طبقة - موديل 21",
+      "nameEn": "Maxi Roll Hyrain 300 mtr / 2 ply - Model 21",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 2050,
+      "status": "active"
+    },
+    {
+      "id": 22,
+      "icon": "✨",
+      "image": "/products-image/22.PNG",
+      "name": "ماكسي رول هايرين 300 متر / 2 طبقة - موديل 22",
+      "nameEn": "Maxi Roll Hyrain 300 mtr / 2 ply - Model 22",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 2100,
+      "status": "active"
+    },
+    {
+      "id": 23,
+      "icon": "✨",
+      "image": "/products-image/23.PNG",
+      "name": "علبة مناديل الجوهرة - تصميم رقم 23",
+      "nameEn": "Al-Jawhara Tissue Box - Design #23",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 2150,
+      "status": "inactive"
+    },
+    {
+      "id": 24,
+      "icon": "✨",
+      "image": "/products-image/24.PNG",
+      "name": "رول تويلت (25 متر × 10 سم) 25 متر - موديل 24",
+      "nameEn": "Toilet Roll (25m x 10cm) 25m - Model 24",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": "الأكثر مبيعاً",
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 2200,
+      "status": "active"
+    },
+    {
+      "id": 25,
+      "icon": "✨",
+      "image": "/products-image/25.PNG",
+      "name": "رول مطبخ 23 متر - موديل 25",
+      "nameEn": "Kitchen Roll 23m - Model 25",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": "جديد",
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 2250,
+      "status": "active"
+    },
+    {
+      "id": 26,
+      "icon": "✨",
+      "image": "/products-image/26.PNG",
+      "name": "علبة مناديل الجوهرة - تصميم رقم 26",
+      "nameEn": "Al-Jawhara Tissue Box - Design #26",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 2300,
+      "status": "inactive"
+    },
+    {
+      "id": 27,
+      "icon": "✨",
+      "image": "/products-image/27.PNG",
+      "name": "مناديل مبللة - موديل 27",
+      "nameEn": "Wet Wipes - Model 27",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "2 طبقة",
+        "نعومة فائقة",
+        "صنع في الكويت"
+      ],
+      "stock": 2350,
+      "status": "active"
+    },
+    {
+      "id": 28,
+      "icon": "✨",
+      "image": "/products-image/99.PNG",
+      "name": "مناديل الجوهرة 200 ورقة - موديل 99",
+      "nameEn": "Jawhara 200 sheets - Model 99",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "3 طبقات",
+        "150 ورقة",
+        "ملمس قطني ناعم"
+      ],
+      "stock": 2400,
+      "status": "active"
+    },
+    {
+      "id": 29,
+      "icon": "✨",
+      "image": "/products-image/100.PNG",
+      "name": "علبة مناديل الجوهرة الذهبية - موديل 100",
+      "nameEn": "Al-Jawhara Gold Premium Tissue - Model 100",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "3 طبقات",
+        "150 ورقة",
+        "ملمس قطني ناعم"
+      ],
+      "stock": 2450,
+      "status": "inactive"
+    },
+    {
+      "id": 30,
+      "icon": "✨",
+      "image": "/products-image/101.png",
+      "name": "علبة مناديل الجوهرة الذهبية - موديل 101",
+      "nameEn": "Al-Jawhara Gold Premium Tissue - Model 101",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": "جديد",
+      "specs": [
+        "3 طبقات",
+        "150 ورقة",
+        "ملمس قطني ناعم"
+      ],
+      "stock": 2500,
+      "status": "inactive"
+    },
+    {
+      "id": 31,
+      "icon": "✨",
+      "image": "/products-image/103.PNG",
+      "name": "علبة مناديل الجوهرة الذهبية - موديل 103",
+      "nameEn": "Al-Jawhara Gold Premium Tissue - Model 103",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": null,
+      "specs": [
+        "3 طبقات",
+        "150 ورقة",
+        "ملمس قطني ناعم"
+      ],
+      "stock": 2550,
+      "status": "inactive"
+    },
+    {
+      "id": 32,
+      "icon": "✨",
+      "image": "/products-image/104.PNG",
+      "name": "مناديل الجوهرة 200 ورقة - موديل 104",
+      "nameEn": "Jawhara 200 sheets - Model 104",
+      "category": "facial",
+      "price": 1.5,
+      "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
+      "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
+      "badge": "الأكثر مبيعاً",
+      "specs": [
+        "3 طبقات",
+        "150 ورقة",
+        "ملمس قطني ناعم"
+      ],
+      "stock": 2600,
+      "status": "active"
+    },
+    {
+      "id": 33,
+      "icon": "📦",
+      "image": "/products-image/200.PNG",
+      "name": "مناديل الجوهرة 200 ورقة - موديل 200",
+      "nameEn": "Jawhara 200 sheets - Model 200",
+      "category": "family",
+      "price": 1.5,
+      "desc": "باقة عائلية اقتصادية تحتوي على مجموعة متنوعة من علب المناديل الفاخرة.",
+      "descEn": "An economy family bundle containing a variety of premium tissue boxes.",
+      "badge": null,
+      "specs": [
+        "باقة التوفير",
+        "ألوان متعددة",
+        "جودة ممتازة"
+      ],
+      "stock": 2650,
+      "status": "active"
+    },
+    {
+      "id": 34,
+      "icon": "📦",
+      "image": "/products-image/201.PNG",
+      "name": "مجموعة عائلية مناديل الجوهرة - باقة 201",
+      "nameEn": "Al-Jawhara Family Bundle - Pack 201",
+      "category": "family",
+      "price": 1.5,
+      "desc": "باقة عائلية اقتصادية تحتوي على مجموعة متنوعة من علب المناديل الفاخرة.",
+      "descEn": "An economy family bundle containing a variety of premium tissue boxes.",
+      "badge": null,
+      "specs": [
+        "باقة التوفير",
+        "ألوان متعددة",
+        "جودة ممتازة"
+      ],
+      "stock": 2700,
+      "status": "inactive"
+    },
+    {
+      "id": 35,
+      "icon": "📦",
+      "image": "/products-image/203.PNG",
+      "name": "مناديل الجوهرة 200 ورقة - موديل 203",
+      "nameEn": "Jawhara 200 sheets - Model 203",
+      "category": "family",
+      "price": 1.5,
+      "desc": "باقة عائلية اقتصادية تحتوي على مجموعة متنوعة من علب المناديل الفاخرة.",
+      "descEn": "An economy family bundle containing a variety of premium tissue boxes.",
+      "badge": "جديد",
+      "specs": [
+        "باقة التوفير",
+        "ألوان متعددة",
+        "جودة ممتازة"
+      ],
+      "stock": 2750,
+      "status": "active"
+    },
+    {
+      "id": 36,
+      "icon": "📦",
+      "image": "/products-image/204.PNG",
+      "name": "بلاستيك: نايس 600 ورقة - موديل 204",
+      "nameEn": "Plastic: Nice 600 sheets - Model 204",
+      "category": "family",
+      "price": 1.5,
+      "desc": "باقة عائلية اقتصادية تحتوي على مجموعة متنوعة من علب المناديل الفاخرة.",
+      "descEn": "An economy family bundle containing a variety of premium tissue boxes.",
+      "badge": null,
+      "specs": [
+        "باقة التوفير",
+        "ألوان متعددة",
+        "جودة ممتازة"
+      ],
+      "stock": 2800,
+      "status": "active"
+    },
+    {
+      "id": 37,
+      "icon": "📦",
+      "image": "/products-image/205.PNG",
+      "name": "بلاستيك: نايس 600 ورقة - موديل 205",
+      "nameEn": "Plastic: Nice 600 sheets - Model 205",
+      "category": "family",
+      "price": 1.5,
+      "desc": "باقة عائلية اقتصادية تحتوي على مجموعة متنوعة من علب المناديل الفاخرة.",
+      "descEn": "An economy family bundle containing a variety of premium tissue boxes.",
+      "badge": null,
+      "specs": [
+        "باقة التوفير",
+        "ألوان متعددة",
+        "جودة ممتازة"
+      ],
+      "stock": 2850,
+      "status": "active"
+    },
+    {
+      "id": 38,
+      "icon": "📦",
+      "image": "/products-image/206.PNG",
+      "name": "مجموعة عائلية مناديل الجوهرة - باقة 206",
+      "nameEn": "Al-Jawhara Family Bundle - Pack 206",
+      "category": "family",
+      "price": 1.5,
+      "desc": "باقة عائلية اقتصادية تحتوي على مجموعة متنوعة من علب المناديل الفاخرة.",
+      "descEn": "An economy family bundle containing a variety of premium tissue boxes.",
+      "badge": null,
+      "specs": [
+        "باقة التوفير",
+        "ألوان متعددة",
+        "جودة ممتازة"
+      ],
+      "stock": 2900,
+      "status": "inactive"
+    },
+    {
+      "id": 39,
+      "icon": "📦",
+      "image": "/products-image/207.png",
+      "name": "بلاستيك: الجوهرة 200 ورقة - موديل 207",
+      "nameEn": "Plastic: Jawhara 200 sheets - Model 207",
+      "category": "family",
+      "price": 1.5,
+      "desc": "باقة عائلية اقتصادية تحتوي على مجموعة متنوعة من علب المناديل الفاخرة.",
+      "descEn": "An economy family bundle containing a variety of premium tissue boxes.",
+      "badge": null,
+      "specs": [
+        "باقة التوفير",
+        "ألوان متعددة",
+        "جودة ممتازة"
+      ],
+      "stock": 2950,
+      "status": "active"
+    },
+    {
+      "id": 40,
+      "icon": "📦",
+      "image": "/products-image/208.PNG",
+      "name": "بلاستيك: الجوهرة 200 ورقة - موديل 208",
+      "nameEn": "Plastic: Jawhara 200 sheets - Model 208",
+      "category": "family",
+      "price": 1.5,
+      "desc": "باقة عائلية اقتصادية تحتوي على مجموعة متنوعة من علب المناديل الفاخرة.",
+      "descEn": "An economy family bundle containing a variety of premium tissue boxes.",
+      "badge": "جديد",
+      "specs": [
+        "باقة التوفير",
+        "ألوان متعددة",
+        "جودة ممتازة"
+      ],
+      "stock": 3000,
+      "status": "active"
+    },
+    {
+      "id": 41,
+      "icon": "📦",
+      "image": "/products-image/209.PNG",
+      "name": "مناديل بوتيك 150 ورقة - موديل 209",
+      "nameEn": "Boutique 150 sheets - Model 209",
+      "category": "family",
+      "price": 1.5,
+      "desc": "باقة عائلية اقتصادية تحتوي على مجموعة متنوعة من علب المناديل الفاخرة.",
+      "descEn": "An economy family bundle containing a variety of premium tissue boxes.",
+      "badge": null,
+      "specs": [
+        "باقة التوفير",
+        "ألوان متعددة",
+        "جودة ممتازة"
+      ],
+      "stock": 3050,
+      "status": "active"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "ref": "#1001",
+      "client": "كارفور",
+      "product": "مناديل الوجه الكلاسيكية",
+      "qty": 500,
+      "total": "750.000",
+      "date": "2024-01-15",
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "ref": "#1002",
+      "client": "ستاربكس",
+      "product": "مناديل المائدة الفاخرة",
+      "qty": 200,
+      "total": "240.000",
+      "date": "2024-01-18",
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "ref": "#1003",
+      "client": "سلطان سنتر",
+      "product": "رولات المطبخ المتينة",
+      "qty": 1000,
+      "total": "750.000",
+      "date": "2024-01-20",
+      "status": "active"
+    },
+    {
+      "id": 4,
+      "ref": "#1004",
+      "client": "طلبات",
+      "product": "محارم الجيب المحمولة",
+      "qty": 5000,
+      "total": "1750.000",
+      "date": "2024-01-22",
+      "status": "inactive"
+    },
+    {
+      "id": 5,
+      "ref": "#1005",
+      "client": "مستشفى رويال حياة",
+      "product": "مناشف الورق الاحترافية",
+      "qty": 300,
+      "total": "540.000",
+      "date": "2024-01-25",
+      "status": "pending"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "admin123",
+      "name": "بلال محمد غدار",
+      "role": "admin",
+      "status": "active",
+      "phone": "(965) 96625306",
+      "email": "admin@al-jawhara.com",
+      "createdAt": "2024-01-01"
+    },
+    {
+      "id": 1775672855051,
+      "name": "عميل تجريبي",
+      "username": "test_customer",
+      "password": "1234",
+      "phone": "99999999",
+      "email": "test@test.com",
+      "role": "customer",
+      "governorate": "",
+      "createdAt": "2026-04-08T18:27:35.051Z"
+    }
+  ],
+  "siteContent": [
+    {
+      "id": 1,
+      "heroBadge": "الرائد في صناعة المناديل الورقية بالكويت",
+      "heroTitle": "شركة الجوهرة للمناديل الورقية",
+      "heroSubtitle": "جودة استثنائية في كل ورقة — نصنع منتجات ورقية عالية المستوى تخدم الأسر والمؤسسات في الكويت والخليج منذ 1998",
+      "ceoName": "بلال محمد غدار",
+      "ceoTitle": "المدير العام — شركة الجوهرة للمناديل الورقية",
+      "ceoQuote": "في شركة الجوهرة، نؤمن بأن الجودة ليست مجرد معيار بل هي ثقافة راسخة في كل خطوة من خطوات الإنتاج. هدفنا دائماً تقديم أفضل منتج يلامس احتياجات عملائنا ويتجاوز توقعاتهم.",
+      "aboutStory": "بدأت شركة الجوهرة للمناديل الورقية مسيرتها في الثامن عشر من فبراير 1998 بهدف واحد واضح: توفير منتجات ورقية عالية الجودة تلبي احتياجات السوق الكويتي والخليجي بأسعار تنافسية. انطلقنا من مصنعنا في المنطقة الصناعية بالشعيبة المجهز بأحدث خطوط الإنتاج، وبطاقة إنتاجية تصل إلى 20,000 طن سنوياً على مساحة 4,500 متر مربع.",
+      "aboutHeaderImg": "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1600&auto=format&fit=crop&q=80",
+      "productsHeaderImg": "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&auto=format&fit=crop&q=80",
+      "clientsHeaderImg": "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1600&auto=format&fit=crop&q=80",
+      "contactHeaderImg": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&auto=format&fit=crop&q=80",
+      "companyPhone": "(965) 23263824",
+      "companyWhatsapp": "(965) 96625306",
+      "companyEmail": "info@al-jawhara.com",
+      "companyAddress": "المنطقة الصناعية — الشعيبة، الكويت",
+      "workHours": "الأحد – الخميس: 8 ص – 5 م",
+      "founded": "18/2/1998",
+      "factoryArea": "4,500",
+      "productionCapacity": "20,000",
+      "statsYear": "1998",
+      "statsClients": "+25",
+      "paymentSettings": {
+        "cash": {
+          "enabled": true
+        },
+        "transfer": {
+          "enabled": true,
+          "bankName": "بنك الكويت الوطني",
+          "iban": "KW81NBKU0000000000001000372151"
+        },
+        "knet": {
+          "enabled": true,
+          "apiKey": "",
+          "testMode": true
+        },
+        "myfatoorah": {
+          "enabled": false,
+          "apiKey": "",
+          "testMode": true
+        },
+        "tap": {
+          "enabled": false,
+          "apiKey": "",
+          "testMode": true
+        },
+        "benefitpay": {
+          "enabled": false
+        }
+      },
+      "shippingZones": [
+        {
+          "id": "capital",
+          "ar": "محافظة العاصمة",
+          "en": "Capital Governorate",
+          "fee": 0.75,
+          "enabled": true
+        },
+        {
+          "id": "hawalli",
+          "ar": "محافظة حولي",
+          "en": "Hawalli Governorate",
+          "fee": 0.75,
+          "enabled": true
+        },
+        {
+          "id": "farwaniya",
+          "ar": "محافظة الفروانية",
+          "en": "Farwaniya Governorate",
+          "fee": 0.75,
+          "enabled": true
+        },
+        {
+          "id": "mubarak",
+          "ar": "محافظة مبارك الكبير",
+          "en": "Mubarak Al-Kabeer Gov.",
+          "fee": 0.75,
+          "enabled": true
+        },
+        {
+          "id": "ahmadi",
+          "ar": "محافظة الأحمدي",
+          "en": "Ahmadi Governorate",
+          "fee": 1,
+          "enabled": true
+        },
+        {
+          "id": "jahra",
+          "ar": "محافظة الجهراء",
+          "en": "Jahra Governorate",
+          "fee": 1,
+          "enabled": true
+        }
+      ],
+      "whatsappNumbers": []
+    }
+  ],
+  "coupons": [
+    {
+      "id": 1,
+      "code": "WELCOME10",
+      "type": "percent",
+      "value": 10,
+      "minOrder": 5,
+      "maxUses": 100,
+      "usedCount": 0,
+      "expiry": "2026-12-31",
+      "status": "active",
+      "desc": "خصم 10% للعملاء الجدد"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "slug": "facial",
+      "nameAr": "مناديل وجه",
+      "nameEn": "Facial Tissues",
+      "emoji": "🤧",
+      "icon": "fa-face-smile",
+      "sortOrder": 1,
+      "status": "active",
+      "desc": "",
+      "parentId": null
+    },
+    {
+      "id": 2,
+      "slug": "rolls",
+      "nameAr": "رولات",
+      "nameEn": "Rolls",
+      "emoji": "🧻",
+      "icon": "fa-toilet-paper",
+      "sortOrder": 2,
+      "status": "active",
+      "desc": "",
+      "parentId": null
+    },
+    {
+      "id": 3,
+      "slug": "pocket",
+      "nameAr": "محارم جيب",
+      "nameEn": "Pocket Tissues",
+      "emoji": "📋",
+      "icon": "fa-bag-shopping",
+      "sortOrder": 3,
+      "status": "active",
+      "desc": "",
+      "parentId": null
+    },
+    {
+      "id": 4,
+      "slug": "towels",
+      "nameAr": "مناشف",
+      "nameEn": "Paper Towels",
+      "emoji": "🏠",
+      "icon": "fa-droplet",
+      "sortOrder": 4,
+      "status": "active",
+      "desc": "",
+      "parentId": null
+    },
+    {
+      "id": 5,
+      "slug": "napkins",
+      "nameAr": "مناديل مائدة",
+      "nameEn": "Dinner Napkins",
+      "emoji": "🍽️",
+      "icon": "fa-utensils",
+      "sortOrder": 5,
+      "status": "active",
+      "desc": "",
+      "parentId": null
+    },
+    {
+      "id": 6,
+      "slug": "family",
+      "nameAr": "عروض عائلة",
+      "nameEn": "Family Bundles",
+      "emoji": "📦",
+      "icon": "fa-house",
+      "sortOrder": 6,
+      "status": "active",
+      "desc": "",
+      "parentId": null
+    }
+  ]
+}

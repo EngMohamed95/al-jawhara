@@ -1,0 +1,270 @@
+/* ── Gallery Page Layout ── */
+
+.gallery-header {
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: overlay;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  padding: 10px 0;
+}
+
+.gallery-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  background: white;
+  aspect-ratio: 4 / 3;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.3s ease;
+}
+
+.gallery-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(6, 80, 137, 0.15);
+}
+
+.gallery-card:focus-visible {
+  box-shadow: 0 0 0 3px var(--primary);
+}
+
+.gallery-img-wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.gallery-card:hover .gallery-img {
+  transform: scale(1.08);
+}
+
+.gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(6, 80, 137, 0.85), rgba(6, 80, 137, 0.2));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gallery-card:hover .gallery-overlay {
+  opacity: 1;
+}
+
+.gallery-zoom-icon {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.1rem;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.gallery-card:hover .gallery-zoom-icon {
+  transform: scale(1.1);
+}
+
+.gallery-card-title {
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  transform: translateY(10px);
+  transition: transform 0.3s ease;
+}
+
+.gallery-card:hover .gallery-card-title {
+  transform: translateY(0);
+}
+
+/* ── Lightbox Modal ── */
+
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  transition: background 0.2s, transform 0.2s;
+  z-index: 1010;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.lightbox-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  transition: background 0.2s, transform 0.2s, color 0.2s;
+  z-index: 1010;
+  backdrop-filter: blur(4px);
+}
+
+.lightbox-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.prev-btn {
+  right: 32px; /* Right side for previous button in RTL */
+}
+
+.next-btn {
+  left: 32px; /* Left side for next button in RTL */
+}
+
+/* LTR layout override for navigation button positions */
+[dir="ltr"] .prev-btn {
+  left: 32px;
+  right: auto;
+}
+
+[dir="ltr"] .next-btn {
+  right: 32px;
+  left: auto;
+}
+
+.lightbox-content {
+  max-width: 85%;
+  max-height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.lightbox-img {
+  max-width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lightbox-caption {
+  color: white;
+  margin-top: 16px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  font-family: 'Tajawal', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+/* ── Responsive Gallery ── */
+
+@media (max-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .lightbox-close {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+
+  .lightbox-nav-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+  }
+
+  .prev-btn {
+    right: 12px;
+  }
+
+  .next-btn {
+    left: 12px;
+  }
+
+  [dir="ltr"] .prev-btn {
+    left: 12px;
+  }
+
+  [dir="ltr"] .next-btn {
+    right: 12px;
+  }
+
+  .lightbox-content {
+    max-width: 90%;
+  }
+
+  .lightbox-caption {
+    font-size: 0.95rem;
+  }
+}

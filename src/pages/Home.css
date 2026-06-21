@@ -1,0 +1,139 @@
+/* ── Hero bg element ── */
+.hero-bg-icon {
+  font-size: 220px;
+  opacity: 0.06;
+  position: absolute;
+  left: -30px;
+  bottom: -20px;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Featured Products ── */
+.home-featured-section { background: #fff; }
+
+.home-featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+.home-featured-card {
+  text-align: center;
+  padding: 40px 25px;
+}
+.home-featured-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  display: block;
+}
+.home-featured-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.home-featured-desc {
+  font-size: 0.86rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+/* ── Why Us Section ── */
+.home-why-section { background: var(--bg); }
+
+.home-why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+}
+.home-why-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 30px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.home-why-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+}
+.home-why-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--primary-xlight);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 1.7rem;
+  color: var(--primary);
+}
+.home-why-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.home-why-desc {
+  font-size: 0.86rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+/* ── Clients Section ── */
+.home-clients-section { background: white; }
+
+.client-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+.client-tag {
+  background: white;
+  border-radius: 12px;
+  padding: 18px 30px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1rem;
+  border: 2px solid var(--border);
+  transition: all 0.3s;
+  cursor: default;
+}
+.client-tag-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* ── Centered CTA ── */
+.section-center { text-align: center; }
+
+/* ── Loading / Error States ── */
+.home-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  color: var(--text-light);
+  gap: 16px;
+}
+.home-loading i {
+  font-size: 2.5rem;
+  color: var(--primary);
+}
+
+@media (max-width: 480px) {
+  .client-tag { padding: 12px 18px; font-size: 0.9rem; }
+}
