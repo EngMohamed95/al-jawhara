@@ -27,7 +27,7 @@ const LOCAL_TEMPLATE = path.join(__dirname, '..', 'public', 'api', 'data.json');
 
 async function deploy() {
   const client = new ftp.Client();
-  client.ftp.verbose = false;
+  client.ftp.verbose = true;
 
   try {
     await client.access(FTP);

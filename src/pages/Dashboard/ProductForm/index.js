@@ -119,7 +119,7 @@ export default function ProductForm({ mode, productId, onBack }) {
   /* Load existing product when editing */
   useEffect(() => {
     if (!isEdit || !productId) { setForm(emptyProduct); return; }
-    const p = products.find(x => x.id === productId);
+    const p = products.find(x => String(x.id) === String(productId));
     if (!p) return;
     setForm({
       name:            p.name            || '',
@@ -271,7 +271,7 @@ export default function ProductForm({ mode, productId, onBack }) {
 
     try {
       if (isEdit) {
-        const orig = products.find(x => x.id === productId);
+        const orig = products.find(x => String(x.id) === String(productId));
         await updateProduct(productId, { ...orig, ...data });
       } else {
         await addProduct(data);

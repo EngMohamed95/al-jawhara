@@ -193,30 +193,30 @@ export const AppProvider = ({ children }) => {
 
   /* ── Products ── */
   const addProduct    = async (d)     => { const n = await api.createProduct(d);      setProducts(p => [...p, n]); return n; };
-  const updateProduct = async (id, d) => { const u = await api.updateProduct(id, d);  setProducts(p => p.map(x => x.id === id ? u : x)); return u; };
-  const deleteProduct = async (id)    => { await api.deleteProduct(id);                setProducts(p => p.filter(x => x.id !== id)); };
+  const updateProduct = async (id, d) => { const u = await api.updateProduct(id, d);  setProducts(p => p.map(x => String(x.id) === String(id) ? u : x)); return u; };
+  const deleteProduct = async (id)    => { await api.deleteProduct(id);                setProducts(p => p.filter(x => String(x.id) !== String(id))); };
 
   /* ── Users ── */
   const addUser    = async (d)     => { const n = await api.createUser(d);      setUsers(u => [...u, n]); return n; };
-  const updateUser = async (id, d) => { const u = await api.updateUser(id, d);  setUsers(p => p.map(x => x.id === id ? u : x)); return u; };
-  const deleteUser = async (id)    => { await api.deleteUser(id);                setUsers(p => p.filter(x => x.id !== id)); };
+  const updateUser = async (id, d) => { const u = await api.updateUser(id, d);  setUsers(p => p.map(x => String(x.id) === String(id) ? u : x)); return u; };
+  const deleteUser = async (id)    => { await api.deleteUser(id);                setUsers(p => p.filter(x => String(x.id) !== String(id))); };
 
   /* ── Coupons ── */
   const addCoupon    = async (d)     => { const n = await api.createCoupon(d);      setCoupons(p => [...p, n]); return n; };
-  const updateCoupon = async (id, d) => { const u = await api.updateCoupon(id, d);  setCoupons(p => p.map(x => x.id === id ? u : x)); return u; };
-  const deleteCoupon = async (id)    => { await api.deleteCoupon(id);                setCoupons(p => p.filter(x => x.id !== id)); };
+  const updateCoupon = async (id, d) => { const u = await api.updateCoupon(id, d);  setCoupons(p => p.map(x => String(x.id) === String(id) ? u : x)); return u; };
+  const deleteCoupon = async (id)    => { await api.deleteCoupon(id);                setCoupons(p => p.filter(x => String(x.id) !== String(id))); };
 
   /* ── Categories ── */
   const addCategory    = async (d)     => { const n = await api.createCategory(d);      setCategories(p => [...p, n]); return n; };
-  const updateCategory = async (id, d) => { const u = await api.updateCategory(id, d);  setCategories(p => p.map(x => x.id === id ? u : x)); return u; };
-  const deleteCategory = async (id)    => { await api.deleteCategory(id);                setCategories(p => p.filter(x => x.id !== id)); };
+  const updateCategory = async (id, d) => { const u = await api.updateCategory(id, d);  setCategories(p => p.map(x => String(x.id) === String(id) ? u : x)); return u; };
+  const deleteCategory = async (id)    => { await api.deleteCategory(id);                setCategories(p => p.filter(x => String(x.id) !== String(id))); };
 
   /* ── Orders ── */
   const updateOrderStatus = async (id, status) => {
     const ord = orders.find(o => o.id === id);
     if (!ord) return;
     const updated = await api.updateOrder(id, { ...ord, status });
-    setOrders(p => p.map(x => x.id === id ? updated : x));
+    setOrders(p => p.map(x => String(x.id) === String(id) ? updated : x));
     return updated;
   };
 

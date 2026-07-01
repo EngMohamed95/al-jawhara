@@ -5,7 +5,7 @@
       "icon": "🧻",
       "image": "/products-image/1.png",
       "name": "رول مطبخ 23 متر - موديل 1",
-      "nameEn": "Kitchen Roll 23m - Model 1",
+      "nameEn": "Kitchen Roll 23m - Model 1 modified",
       "category": "rolls",
       "price": 1.5,
       "desc": "رولات مطبخ قوية ومتينة عالية الامتصاص لتنظيف أسرع وأسهل.",
@@ -17,7 +17,17 @@
         "طول ممتاز"
       ],
       "stock": 1050,
-      "status": "active"
+      "status": "active",
+      "sku": "",
+      "gallery": [],
+      "isPhysical": true,
+      "weight": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "countryOfOrigin": "KW",
+      "hsCode": "",
+      "variants": []
     },
     {
       "id": 2,
@@ -137,8 +147,8 @@
       "id": 8,
       "icon": "🧻",
       "image": "/products-image/8.png",
-      "name": "رول تويلت (25 متر × 10 سم) 25 متر - موديل 8",
-      "nameEn": "Toilet Roll (25m x 10cm) 25m - Model 8",
+      "name": "Toilet Roll Model 8 Edited",
+      "nameEn": "Toilet Roll Model 8 Edited",
       "category": "rolls",
       "price": 1.5,
       "desc": "رولات مطبخ قوية ومتينة عالية الامتصاص لتنظيف أسرع وأسهل.",
@@ -150,7 +160,17 @@
         "طول ممتاز"
       ],
       "stock": 1400,
-      "status": "active"
+      "status": "active",
+      "sku": "",
+      "gallery": [],
+      "isPhysical": true,
+      "weight": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "countryOfOrigin": "KW",
+      "hsCode": "",
+      "variants": []
     },
     {
       "id": 9,
@@ -441,8 +461,8 @@
       "id": 24,
       "icon": "✨",
       "image": "/products-image/24.PNG",
-      "name": "رول تويلت (25 متر × 10 سم) 25 متر - موديل 24",
-      "nameEn": "Toilet Roll (25m x 10cm) 25m - Model 24",
+      "name": "رول تويلت  25 متر - موديل 24",
+      "nameEn": "Toilet Roll 25m - Model 24",
       "category": "facial",
       "price": 1.5,
       "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
@@ -454,7 +474,17 @@
         "صنع في الكويت"
       ],
       "stock": 2200,
-      "status": "active"
+      "status": "active",
+      "sku": "",
+      "gallery": [],
+      "isPhysical": true,
+      "weight": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "countryOfOrigin": "KW",
+      "hsCode": "",
+      "variants": []
     },
     {
       "id": 25,

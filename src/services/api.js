@@ -4,16 +4,17 @@ const h = { 'Content-Type': 'application/json' };
 const req = async (path, opts = {}) => {
   let method = opts.method || 'GET';
   const fetchOpts = { ...opts };
-  let finalPath = path;
+
 
   // Tunnel PUT and DELETE over POST in production to bypass Nginx/Server 405 blocks
+  let isTunneled = false;
   if (IS_PROD && (method === 'PUT' || method === 'DELETE')) {
     fetchOpts.method = 'POST';
-    finalPath = `${path}${path.includes('?') ? '&' : '?'}_method=${method}`;
+    isTunneled = true;
   }
 
   const url = IS_PROD
-    ? `/api/index.php?path=${encodeURIComponent(finalPath)}`
+    ? `/api/index.php?path=${encodeURIComponent(path)}${isTunneled ? `&_method=${method}` : ''}`
     : `http://localhost:3001/${path}`;
 
   const res = await fetch(url, { headers: h, ...fetchOpts });
@@ -71,6 +72,41 @@ const api = {
 
   // Orders status update
   updateOrderStatus: (id, status) => req(`orders/${id}`, { method: 'PUT', body: JSON.stringify({ status }) }),
+
+  // Media Library
+  getMedia: async () => {
+    if (IS_PROD) {
+      const res = await fetch('/api/media.php');
+      if (!res.ok) throw new Error('Failed to load media');
+      return await res.json();
+    } else {
+      const res = await fetch('http://localhost:3001/media');
+      if (!res.ok) return { files: [] };
+      const items = await res.json();
+      return { files: items };
+    }
+  },
+  deleteMediaFile: async (name, type) => {
+    if (IS_PROD) {
+      const res = await fetch(`/api/media.php?file=${encodeURIComponent(name)}&type=${encodeURIComponent(type)}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error('Failed to delete file');
+      return await res.json();
+    } else {
+      try {
+        const res1 = await fetch('http://localhost:3001/media');
+        if (res1.ok) {
+          const items = await res1.json();
+          const found = items.find(x => x.name === name);
+          if (found) {
+            await fetch(`http://localhost:3001/media/${found.id}`, { method: 'DELETE' });
+          }
+        }
+      } catch (e) {}
+      return { success: true };
+    }
+  },
 };
 
 export default api;

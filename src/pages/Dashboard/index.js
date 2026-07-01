@@ -1,4 +1,5 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import api from '../../services/api';
 import { useApp } from '../../context/AppContext';
 import ProductForm from './ProductForm';
 import { useLanguage } from '../../context/LanguageContext';
@@ -22,9 +23,9 @@ const roleLabels         = { admin: { ar: 'مدير', en: 'Admin' }, editor: { a
 const userStatusLabels   = { active: { ar: 'نشط', en: 'Active' }, suspended: { ar: 'موقوف', en: 'Suspended' }, pending: { ar: 'قيد المراجعة', en: 'Pending' }, locked: { ar: 'مقفل', en: 'Locked' } };
 
 const ROLE_PERMISSIONS = {
-  admin:  { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: true,  content: true,  reports: true,  shipping: true,  payments: true,  coupons: true  },
-  editor: { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: false, content: true,  reports: true,  shipping: false, payments: false, coupons: true  },
-  viewer: { products: false, categories: false, inventory: true,  orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false },
+  admin:  { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: true,  content: true,  reports: true,  shipping: true,  payments: true,  coupons: true,  media: true  },
+  editor: { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: false, content: true,  reports: true,  shipping: false, payments: false, coupons: true,  media: true  },
+  viewer: { products: false, categories: false, inventory: true,  orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false, media: false },
 };
 
 const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '', countryOfOrigin: 'KW', hsCode: '', variants: [] };
@@ -176,6 +177,19 @@ const DASH_T = {
   'sidebar.quickLinks':{ ar: 'روابط سريعة',   en: 'Quick Links' },
   'sidebar.visitSite':{ ar: 'زيارة الموقع',   en: 'Visit Site' },
   'sidebar.logout':   { ar: 'تسجيل الخروج',   en: 'Logout' },
+  // Media Tab
+  'nav.media':        { ar: 'الميديا',          en: 'Media' },
+  'media.title':      { ar: 'مكتبة الوسائط',    en: 'Media Library' },
+  'media.upload':     { ar: 'رفع صور جديدة',    en: 'Upload New Images' },
+  'media.copy':       { ar: 'نسخ الرابط',       en: 'Copy Link' },
+  'media.delete':     { ar: 'حذف',             en: 'Delete' },
+  'media.copied':     { ar: 'تم النسخ!',       en: 'Copied!' },
+  'media.all':        { ar: 'الكل',            en: 'All' },
+  'media.products':   { ar: 'صور المنتجات',    en: 'Products' },
+  'media.uploads':    { ar: 'الملفات المرفوعة', en: 'Uploads' },
+  'media.noImages':   { ar: 'لا توجد صور في مكتبة الوسائط', en: 'No images in the media library' },
+  'media.dragDrop':   { ar: 'اسحب الصور هنا أو اضغط للاختيار والرفع', en: 'Drag & drop images here, or click to browse' },
+  'media.deleteConfirm': { ar: 'هل أنت متأكد من حذف هذا الملف نهائياً؟', en: 'Are you sure you want to permanently delete this file?' },
 };
 
 /* ── Password Strength ── */
@@ -359,11 +373,119 @@ const Dashboard = () => {
     { id: 'payments',  label: dt('nav.payments'),  icon: 'fa-credit-card' },
     { id: 'coupons',   label: dt('nav.coupons'),   icon: 'fa-tag' },
     { id: 'reports',   label: dt('nav.reports'),   icon: 'fa-chart-line' },
+    { id: 'media',     label: dt('nav.media'),     icon: 'fa-images' },
   ];
 
   const [view, setView]               = useState('overview');
   const [productsTab, setProductsTab] = useState('list');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  /* ── Media Tab State & Handlers ── */
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [mediaFilter, setMediaFilter] = useState('all'); // 'all' | 'product' | 'upload'
+  const [copiedUrl, setCopiedUrl] = useState(null);
+  const [selectedMedia, setSelectedMedia] = useState(null);
+  const [localDevUploads, setLocalDevUploads] = useState([]);
+  const fileInputRef = useRef(null);
+
+  const loadMedia = useCallback(async () => {
+    setMediaLoading(true);
+    try {
+      const IS_PROD = process.env.NODE_ENV === 'production';
+      if (IS_PROD) {
+        const res = await api.getMedia();
+        setMediaFiles(res.files || []);
+      } else {
+        // Mock local dev media
+        const prodImages = products.flatMap(p => {
+          const imgs = [];
+          if (p.image) imgs.push({ name: p.image.split('/').pop(), url: p.image, type: 'product', size: 1024 * 50, mtime: Date.now() });
+          if (p.gallery) p.gallery.forEach((g, i) => imgs.push({ name: g.split('/').pop() || `gallery-${i}`, url: g, type: 'product', size: 1024 * 40, mtime: Date.now() }));
+          return imgs;
+        });
+        const seen = new Set();
+        const uniqueProdImgs = prodImages.filter(x => {
+          if (seen.has(x.url)) return false;
+          seen.add(x.url);
+          return true;
+        });
+        setMediaFiles([...localDevUploads, ...uniqueProdImgs]);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setMediaLoading(false);
+    }
+  }, [products, localDevUploads]);
+
+  useEffect(() => {
+    if (view === 'media') {
+      loadMedia();
+    }
+  }, [view, loadMedia]);
+
+  const handleMediaUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    setMediaLoading(true);
+    try {
+      const IS_PROD = process.env.NODE_ENV === 'production';
+      if (IS_PROD) {
+        const fd = new FormData();
+        if (files.length === 1) {
+          fd.append('file', files[0]);
+        } else {
+          files.forEach(f => fd.append('files[]', f));
+        }
+        const uploadRes = await fetch('/api/upload.php', { method: 'POST', body: fd });
+        if (!uploadRes.ok) throw new Error('Upload failed');
+        await loadMedia();
+      } else {
+        const newUploads = files.map(f => ({
+          id: Math.random().toString(),
+          name: f.name,
+          url: URL.createObjectURL(f),
+          type: 'upload',
+          size: f.size,
+          mtime: Date.now()
+        }));
+        setLocalDevUploads(prev => [...newUploads, ...prev]);
+      }
+    } catch (err) {
+      alert('Error uploading media: ' + err.message);
+    } finally {
+      setMediaLoading(false);
+    }
+  };
+
+  const handleMediaDelete = async (file) => {
+    if (!window.confirm(dt('media.deleteConfirm'))) return;
+    setMediaLoading(true);
+    try {
+      const IS_PROD = process.env.NODE_ENV === 'production';
+      if (IS_PROD) {
+        await api.deleteMediaFile(file.name, file.type);
+        await loadMedia();
+      } else {
+        if (file.id) {
+          setLocalDevUploads(prev => prev.filter(x => x.id !== file.id));
+        } else {
+          setMediaFiles(prev => prev.filter(x => x.url !== file.url));
+        }
+      }
+    } catch (err) {
+      alert('Error deleting media: ' + err.message);
+    } finally {
+      setMediaLoading(false);
+    }
+  };
+
+  const handleCopyPath = (url, name) => {
+    navigator.clipboard.writeText(url);
+    setCopiedUrl(name);
+    setTimeout(() => setCopiedUrl(null), 1500);
+  };
 
   const [productFormMode, setProductFormMode] = useState(null); // null | 'add' | 'edit'
   const [productFormId,   setProductFormId]   = useState(null);
@@ -2458,6 +2580,124 @@ const Dashboard = () => {
                 </div>
               </div>
 
+            </div>
+          )}
+
+          {/* ══ MEDIA LIBRARY ══ */}
+          {view === 'media' && (
+            <div className="media-library-page">
+              <div className="dash-header-row">
+                <div className="dashboard-title">{dt('media.title')}</div>
+                <div>
+                  <button className="btn btn-green btn-sm" onClick={() => fileInputRef.current?.click()} disabled={mediaLoading}>
+                    <i className="fas fa-upload"></i> {dt('media.upload')}
+                  </button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    style={{ display: 'none' }}
+                    ref={fileInputRef}
+                    onChange={handleMediaUpload}
+                  />
+                </div>
+              </div>
+
+              {/* Filter Tabs */}
+              <div className="media-filter-row">
+                {[
+                  { id: 'all', label: dt('media.all'), count: mediaFiles.length },
+                  { id: 'product', label: dt('media.products'), count: mediaFiles.filter(f => f.type === 'product').length },
+                  { id: 'upload', label: dt('media.uploads'), count: mediaFiles.filter(f => f.type === 'upload').length },
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    className={`media-filter-btn${mediaFilter === tab.id ? ' active' : ''}`}
+                    onClick={() => setMediaFilter(tab.id)}
+                  >
+                    {tab.label} <span className="media-filter-count">{tab.count}</span>
+                  </button>
+                ))}
+              </div>
+
+              {mediaLoading && (
+                <div className="media-loading-overlay">
+                  <i className="fas fa-spinner fa-spin"></i> {dt('common.loading')}
+                </div>
+              )}
+
+              {/* Media Gallery Grid */}
+              <div className="media-grid">
+                {mediaFiles.filter(f => mediaFilter === 'all' || f.type === mediaFilter).length === 0 ? (
+                  <div className="media-empty">
+                    <i className="fas fa-images"></i>
+                    <p>{dt('media.noImages')}</p>
+                  </div>
+                ) : (
+                  mediaFiles
+                    .filter(f => mediaFilter === 'all' || f.type === mediaFilter)
+                    .map((file, idx) => (
+                      <div key={idx} className="media-card">
+                        <div className="media-thumb-wrap" onClick={() => setSelectedMedia(file)}>
+                          <img src={file.url} alt={file.name} className="media-thumb" loading="lazy" />
+                          <div className="media-hover-overlay">
+                            <i className="fas fa-magnifying-glass-plus"></i>
+                          </div>
+                        </div>
+                        <div className="media-info-wrap">
+                          <div className="media-file-name" title={file.name}>{file.name}</div>
+                          <div className="media-file-meta">
+                            {file.type === 'product' ? dt('media.products') : dt('media.uploads')}
+                            {file.size && ` · ${(file.size / 1024).toFixed(0)} KB`}
+                          </div>
+                          <div className="media-actions-row">
+                            <button
+                              className={`media-action-btn copy-btn${copiedUrl === file.name ? ' copied' : ''}`}
+                              onClick={() => handleCopyPath(file.url, file.name)}
+                              title={dt('media.copy')}
+                            >
+                              <i className={`fas ${copiedUrl === file.name ? 'fa-check' : 'fa-copy'}`}></i>
+                              <span>{copiedUrl === file.name ? dt('media.copied') : dt('media.copy')}</span>
+                            </button>
+                            <button
+                              className="media-action-btn delete-btn"
+                              onClick={() => handleMediaDelete(file)}
+                              title={dt('media.delete')}
+                            >
+                              <i className="fas fa-trash"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                )}
+              </div>
+
+              {/* View Image Modal */}
+              {selectedMedia && (
+                <div className="modal-overlay" onClick={() => setSelectedMedia(null)}>
+                  <div className="modal modal-md media-view-modal" onClick={e => e.stopPropagation()}>
+                    <div className="modal-header">
+                      <h3 style={{ fontSize: '14px', wordBreak: 'break-all' }}>{selectedMedia.name}</h3>
+                      <button className="modal-close" onClick={() => setSelectedMedia(null)}><i className="fas fa-xmark"></i></button>
+                    </div>
+                    <div className="media-view-body">
+                      <img src={selectedMedia.url} alt={selectedMedia.name} className="media-full-img" />
+                      <div className="media-view-details">
+                        <div className="form-group">
+                          <label className="form-label">{lang === 'en' ? 'Relative Path (for copy)' : 'المسار النسبي (للنسخ)'}</label>
+                          <div className="input-group">
+                            <input className="form-input" readOnly value={selectedMedia.url} dir="ltr" style={{ background: '#f8fafc' }} />
+                            <button className="btn btn-green" onClick={() => handleCopyPath(selectedMedia.url, 'selected-modal')}>
+                              <i className="fas fa-copy"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
