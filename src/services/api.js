@@ -13,13 +13,24 @@ const req = async (path, opts = {}) => {
   }
 
   const url = IS_PROD
-    ? `/api/?path=${encodeURIComponent(finalPath)}`
+    ? `/api/index.php?path=${encodeURIComponent(finalPath)}`
     : `http://localhost:3001/${path}`;
 
   const res = await fetch(url, { headers: h, ...fetchOpts });
-  if (!res.ok) throw new Error(`API ${res.status}`);
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(`API ${res.status}: ${text.slice(0, 300)}`);
+  }
   if (opts.method === 'DELETE') return null;
-  return res.json();
+  const contentType = (res.headers.get('content-type') || '').toLowerCase();
+  if (!contentType.includes('application/json')) {
+    throw new Error(`Invalid JSON response from API: ${text.slice(0, 300)}`);
+  }
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    throw new Error(`Failed to parse API JSON: ${text.slice(0, 300)}`);
+  }
 };
 
 const api = {

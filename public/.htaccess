@@ -1,3 +1,15 @@
-location / {
-    try_files $uri $uri/ /index.html;
-}
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Allow direct access to API endpoints and static files
+  RewriteCond %{REQUEST_URI} ^/api/ [NC]
+  RewriteRule .* - [L]
+
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Route all other requests to the React app
+  RewriteRule ^ index.html [L]
+</IfModule>
