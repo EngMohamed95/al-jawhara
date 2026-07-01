@@ -545,12 +545,14 @@ const Dashboard = () => {
   const [invStock,   setInvStock]   = useState(null); // { [productId]: stock }
   const [invSaving,  setInvSaving]  = useState(false);
   const [invSaved,   setInvSaved]   = useState(false);
+  const [invPage,    setInvPage]    = useState(1);
 
   const openInventory = () => {
     const map = {};
     products.forEach(p => { map[p.id] = p.stock; });
     setInvStock(map);
     setInvSaved(false);
+    setInvPage(1);
     setProductsTab('inventory');
     setView('products');
   };
@@ -990,13 +992,15 @@ const Dashboard = () => {
   const [selectedProds, setSelectedProds] = useState(new Set());
   const [prodPage,      setProdPage]      = useState(1);
   const [prodPerPage,   setProdPerPage]   = useState(10);
-  useEffect(() => { setDashSearch(''); setClientFilter(null); setProdCatFilter('all'); setProdStatusFilter('all'); setSelectedProds(new Set()); setProdPage(1); setMediaPage(1); }, [view]);
+  useEffect(() => { setDashSearch(''); setClientFilter(null); setProdCatFilter('all'); setProdStatusFilter('all'); setSelectedProds(new Set()); setProdPage(1); setMediaPage(1); setInvPage(1); setCatPage(1); }, [view]);
   useEffect(() => { setProdPage(1); }, [dashSearch, prodCatFilter, prodStatusFilter, prodSort]);
 
   /* ── Category filters ── */
   const [catSearch,       setCatSearch]       = useState('');
   const [catStatusFilter, setCatStatusFilter] = useState('all'); // 'all' | 'active' | 'inactive'
   const [catLevelFilter,  setCatLevelFilter]  = useState('all'); // 'all' | 'root' | 'sub'
+  const [catPage,         setCatPage]         = useState(1);
+  useEffect(() => { setCatPage(1); }, [catSearch, catStatusFilter, catLevelFilter]);
 
   const ns = (s = '') => String(s).toLowerCase()
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
@@ -1678,56 +1682,103 @@ const Dashboard = () => {
                 </div>
 
                 <div className="data-table">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>{lang === 'en' ? 'Section' : 'القسم'}</th>
-                        <th>{lang === 'en' ? 'English Name' : 'الاسم الإنجليزي'}</th>
-                        <th>Slug</th>
-                        <th>{lang === 'en' ? 'Parent' : 'القسم الأب'}</th>
-                        <th>{lang === 'en' ? 'Products' : 'المنتجات'}</th>
-                        <th>{lang === 'en' ? 'Status' : 'الحالة'}</th>
-                        <th>{lang === 'en' ? 'Actions' : 'إجراءات'}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredCats.length === 0 && (
-                        <tr><td colSpan="7" style={{textAlign:'center', color:'var(--text-light)', padding:'40px'}}>
-                          {catSearch || catStatusFilter !== 'all' || catLevelFilter !== 'all'
-                            ? (lang === 'en' ? 'No sections match the filters.' : 'لا توجد أقسام تطابق الفلتر.')
-                            : (lang === 'en' ? 'No sections yet.' : 'لا توجد أقسام.')}
-                        </td></tr>
-                      )}
-                      {filteredCats.map(c => {
-                        const prodCount   = products.filter(p => p.category === c.slug).length;
-                        const hasChildren = categories.some(ch => ch.parentId === c.id);
-                        const parent      = categories.find(p => p.id === c.parentId);
-                        return (
-                          <tr key={c.id}>
-                            <td>
-                              <div style={{display:'flex', alignItems:'center', gap:'8px', paddingInlineStart: catLevelFilter !== 'all' ? '0' : `${c.depth * 24}px`}}>
-                                {c.depth > 0 && catLevelFilter === 'all' && <span style={{color:'var(--text-light)', fontSize:'12px'}}>└</span>}
-                                <span className="cat-emoji-badge"><i className={`fas ${c.icon || 'fa-folder'}`}></i></span>
-                                <div>
-                                  <div className="td-bold">{c.nameAr}</div>
-                                  {hasChildren && <div style={{fontSize:'11px', color:'var(--primary)', marginTop:'2px'}}><i className="fas fa-sitemap"></i> {lang === 'en' ? 'Has sub-sections' : 'لها أقسام فرعية'}</div>}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="td-light" dir="ltr">{c.nameEn || '—'}</td>
-                            <td><span className="badge-cat" dir="ltr">{c.slug}</span></td>
-                            <td className="td-light">{parent ? <span style={{display:'flex', alignItems:'center', gap:'6px'}}><span><i className={`fas ${parent.icon || 'fa-folder'}`} style={{fontSize:'12px', opacity:0.6}}></i></span><span>{parent.nameAr}</span></span> : <span style={{color:'var(--text-light)', fontSize:'12px'}}>{lang === 'en' ? 'Top Level' : 'رئيسي'}</span>}</td>
-                            <td className="td-bold">{prodCount} {lang === 'en' ? 'product' : 'منتج'}</td>
-                            <td><span className={`status-badge status-${c.status}`}>{c.status === 'active' ? (lang === 'en' ? 'Active' : 'نشط') : (lang === 'en' ? 'Hidden' : 'مخفي')}</span></td>
-                            <td>
-                              <button className="action-btn action-btn-edit" onClick={() => openCatEdit(c)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
-                              <button className="action-btn action-btn-delete" onClick={() => handleDeleteCat(c)}><i className="fas fa-trash"></i></button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                  {(() => {
+                    const catPerPage = 10;
+                    const catTotalPages = Math.max(1, Math.ceil(filteredCats.length / catPerPage));
+                    const catPageSafe = Math.min(catPage, catTotalPages);
+                    const pagedCats = filteredCats.slice((catPageSafe - 1) * catPerPage, catPageSafe * catPerPage);
+
+                    return (
+                      <>
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>{lang === 'en' ? 'Section' : 'القسم'}</th>
+                              <th>{lang === 'en' ? 'English Name' : 'الاسم الإنجليزي'}</th>
+                              <th>Slug</th>
+                              <th>{lang === 'en' ? 'Parent' : 'القسم الأب'}</th>
+                              <th>{lang === 'en' ? 'Products' : 'المنتجات'}</th>
+                              <th>{lang === 'en' ? 'Status' : 'الحالة'}</th>
+                              <th>{lang === 'en' ? 'Actions' : 'إجراءات'}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {pagedCats.length === 0 && (
+                              <tr><td colSpan="7" style={{textAlign:'center', color:'var(--text-light)', padding:'40px'}}>
+                                {catSearch || catStatusFilter !== 'all' || catLevelFilter !== 'all'
+                                  ? (lang === 'en' ? 'No sections match the filters.' : 'لا توجد أقسام تطابق الفلتر.')
+                                  : (lang === 'en' ? 'No sections yet.' : 'لا توجد أقسام.')}
+                              </td></tr>
+                            )}
+                            {pagedCats.map(c => {
+                              const prodCount   = products.filter(p => p.category === c.slug).length;
+                              const hasChildren = categories.some(ch => ch.parentId === c.id);
+                              const parent      = categories.find(p => p.id === c.parentId);
+                              return (
+                                <tr key={c.id}>
+                                  <td>
+                                    <div style={{display:'flex', alignItems:'center', gap:'8px', paddingInlineStart: catLevelFilter !== 'all' ? '0' : `${c.depth * 24}px`}}>
+                                      {c.depth > 0 && catLevelFilter === 'all' && <span style={{color:'var(--text-light)', fontSize:'12px'}}>└</span>}
+                                      <span className="cat-emoji-badge"><i className={`fas ${c.icon || 'fa-folder'}`}></i></span>
+                                      <div>
+                                        <div className="td-bold">{c.nameAr}</div>
+                                        {hasChildren && <div style={{fontSize:'11px', color:'var(--primary)', marginTop:'2px'}}><i className="fas fa-sitemap"></i> {lang === 'en' ? 'Has sub-sections' : 'لها أقسام فرعية'}</div>}
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="td-light" dir="ltr">{c.nameEn || '—'}</td>
+                                  <td><span className="badge-cat" dir="ltr">{c.slug}</span></td>
+                                  <td className="td-light">{parent ? <span style={{display:'flex', alignItems:'center', gap:'6px'}}><span><i className={`fas ${parent.icon || 'fa-folder'}`} style={{fontSize:'12px', opacity:0.6}}></i></span><span>{parent.nameAr}</span></span> : <span style={{color:'var(--text-light)', fontSize:'12px'}}>{lang === 'en' ? 'Top Level' : 'رئيسي'}</span>}</td>
+                                  <td className="td-bold">{prodCount} {lang === 'en' ? 'product' : 'منتج'}</td>
+                                  <td><span className={`status-badge status-${c.status}`}>{c.status === 'active' ? (lang === 'en' ? 'Active' : 'نشط') : (lang === 'en' ? 'Hidden' : 'مخفي')}</span></td>
+                                  <td>
+                                    <button className="action-btn action-btn-edit" onClick={() => openCatEdit(c)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
+                                    <button className="action-btn action-btn-delete" onClick={() => handleDeleteCat(c)}><i className="fas fa-trash"></i></button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+
+                        {/* Pagination bar */}
+                        {catTotalPages > 1 && (
+                          <div className="prod-pagination">
+                            <div className="prod-pag-info">
+                              {lang === 'en'
+                                ? `Showing ${(catPageSafe-1)*catPerPage+1}–${Math.min(catPageSafe*catPerPage, filteredCats.length)} of ${filteredCats.length}`
+                                : `عرض ${(catPageSafe-1)*catPerPage+1}–${Math.min(catPageSafe*catPerPage, filteredCats.length)} من ${filteredCats.length}`}
+                            </div>
+                            <div className="prod-pag-btns">
+                              <button className="prod-pag-btn" onClick={() => setCatPage(1)} disabled={catPageSafe === 1} title={lang==='en'?'First':'الأول'}>
+                                <i className="fas fa-angles-right"></i>
+                              </button>
+                              <button className="prod-pag-btn" onClick={() => setCatPage(p => Math.max(1, p-1))} disabled={catPageSafe === 1} title={lang==='en'?'Prev':'السابق'}>
+                                <i className="fas fa-chevron-right"></i>
+                              </button>
+                              {Array.from({ length: catTotalPages }, (_, i) => i + 1)
+                                .filter(n => n === 1 || n === catTotalPages || Math.abs(n - catPageSafe) <= 2)
+                                .reduce((acc, n, idx, arr) => {
+                                  if (idx > 0 && n - arr[idx-1] > 1) acc.push('…');
+                                  acc.push(n);
+                                  return acc;
+                                }, [])
+                                .map((n, i) => n === '…'
+                                  ? <span key={`ellipsis-${i}`} className="prod-pag-ellipsis">…</span>
+                                  : <button key={n} className={`prod-pag-btn${n === catPageSafe ? ' prod-pag-active' : ''}`} onClick={() => setCatPage(n)}>{n}</button>
+                                )}
+                              <button className="prod-pag-btn" onClick={() => setCatPage(p => Math.min(catTotalPages, p+1))} disabled={catPageSafe === catTotalPages} title={lang==='en'?'Next':'التالي'}>
+                                <i className="fas fa-chevron-left"></i>
+                              </button>
+                              <button className="prod-pag-btn" onClick={() => setCatPage(catTotalPages)} disabled={catPageSafe === catTotalPages} title={lang==='en'?'Last':'الأخير'}>
+                                <i className="fas fa-angles-left"></i>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
               )}
@@ -1746,53 +1797,104 @@ const Dashboard = () => {
                 {invSaved && <AlertSuccess msg={lang === 'en' ? 'Inventory saved successfully!' : 'تم حفظ المخزون بنجاح!'} />}
                 <p className="dash-section-desc">{lang === 'en' ? 'Edit stock quantities for all products at once.' : 'تعديل كميات المخزون لكل المنتجات دفعة واحدة.'}</p>
                 <div className="data-table">
-                  <table>
-                    <thead>
-                      <tr><th>{dt('inventory.product')}</th><th>{dt('products.category')}</th><th>{lang === 'en' ? 'Current Qty' : 'الكمية الحالية'}</th><th>{lang === 'en' ? 'Quick Adjust' : 'تعديل سريع'}</th><th>{lang === 'en' ? 'New Qty' : 'الكمية الجديدة'}</th><th>{dt('common.status')}</th></tr>
-                    </thead>
-                    <tbody>
-                      {products.map(p => {
-                        const stock = invStock[p.id] ?? p.stock;
-                        const isLow  = stock < 100;
-                        const isZero = stock <= 0;
-                        return (
-                          <tr key={p.id}>
-                            <td>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <span style={{ fontSize: '1.4rem' }}>{p.icon}</span>
-                                <span className="td-bold">{p.name}</span>
-                              </div>
-                            </td>
-                            <td><span className="badge-cat">{categoryLabels[p.category]?.[lang] || categoryLabels[p.category]?.ar || p.category}</span></td>
-                            <td className={isZero ? 'td-warn' : isLow ? 'td-warn' : 'td-bold'}>{p.stock.toLocaleString()}</td>
-                            <td>
-                              <div className="inv-adjust-row">
-                                <button className="inv-btn inv-minus" onClick={() => setInvStock(s => ({ ...s, [p.id]: Math.max(0, (s[p.id]??p.stock) - 100) }))}>−100</button>
-                                <button className="inv-btn inv-minus" onClick={() => setInvStock(s => ({ ...s, [p.id]: Math.max(0, (s[p.id]??p.stock) - 10) }))}>−10</button>
-                                <button className="inv-btn inv-plus"  onClick={() => setInvStock(s => ({ ...s, [p.id]: (s[p.id]??p.stock) + 10 }))}>+10</button>
-                                <button className="inv-btn inv-plus"  onClick={() => setInvStock(s => ({ ...s, [p.id]: (s[p.id]??p.stock) + 100 }))}>+100</button>
-                              </div>
-                            </td>
-                            <td>
-                              <input
-                                type="number"
-                                className="inv-stock-input"
-                                value={stock}
-                                min="0"
-                                onChange={e => setInvStock(s => ({ ...s, [p.id]: parseInt(e.target.value) || 0 }))}
-                                dir="ltr"
-                              />
-                            </td>
-                            <td>
-                              {isZero  ? <span className="inv-badge inv-out">{lang === 'en' ? 'Out' : 'نفذ'}</span>
-                              : isLow  ? <span className="inv-badge inv-low">{lang === 'en' ? 'Low' : 'منخفض'}</span>
-                              : <span className="inv-badge inv-ok">{lang === 'en' ? 'OK' : 'متوفر'}</span>}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                  {(() => {
+                    const invPerPage = 10;
+                    const invTotalPages = Math.max(1, Math.ceil(products.length / invPerPage));
+                    const invPageSafe = Math.min(invPage, invTotalPages);
+                    const pagedProducts = products.slice((invPageSafe - 1) * invPerPage, invPageSafe * invPerPage);
+
+                    return (
+                      <>
+                        <table>
+                          <thead>
+                            <tr><th>{dt('inventory.product')}</th><th>{dt('products.category')}</th><th>{lang === 'en' ? 'Current Qty' : 'الكمية الحالية'}</th><th>{lang === 'en' ? 'Quick Adjust' : 'تعديل سريع'}</th><th>{lang === 'en' ? 'New Qty' : 'الكمية الجديدة'}</th><th>{dt('common.status')}</th></tr>
+                          </thead>
+                          <tbody>
+                            {pagedProducts.map(p => {
+                              const stock = invStock[p.id] ?? p.stock;
+                              const isLow  = stock < 100;
+                              const isZero = stock <= 0;
+                              return (
+                                <tr key={p.id}>
+                                  <td>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                      {p.image ? (
+                                        <img src={p.image} alt="" className="prod-thumb" style={{ width: '28px', height: '28px' }} />
+                                      ) : (
+                                        <span className="prod-thumb-empty" style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i className="fas fa-box" style={{ fontSize: '12px', opacity: 0.3 }}></i></span>
+                                      )}
+                                      <span className="td-bold">{p.name}</span>
+                                    </div>
+                                  </td>
+                                  <td><span className="badge-cat">{categoryLabels[p.category]?.[lang] || categoryLabels[p.category]?.ar || p.category}</span></td>
+                                  <td className={isZero ? 'td-warn' : isLow ? 'td-warn' : 'td-bold'}>{p.stock.toLocaleString()}</td>
+                                  <td>
+                                    <div className="inv-adjust-row">
+                                      <button className="inv-btn inv-minus" onClick={() => setInvStock(s => ({ ...s, [p.id]: Math.max(0, (s[p.id]??p.stock) - 100) }))}>−100</button>
+                                      <button className="inv-btn inv-minus" onClick={() => setInvStock(s => ({ ...s, [p.id]: Math.max(0, (s[p.id]??p.stock) - 10) }))}>−10</button>
+                                      <button className="inv-btn inv-plus"  onClick={() => setInvStock(s => ({ ...s, [p.id]: (s[p.id]??p.stock) + 10 }))}>+10</button>
+                                      <button className="inv-btn inv-plus"  onClick={() => setInvStock(s => ({ ...s, [p.id]: (s[p.id]??p.stock) + 100 }))}>+100</button>
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      className="inv-stock-input"
+                                      value={stock}
+                                      min="0"
+                                      onChange={e => setInvStock(s => ({ ...s, [p.id]: parseInt(e.target.value) || 0 }))}
+                                      dir="ltr"
+                                    />
+                                  </td>
+                                  <td>
+                                    {isZero  ? <span className="inv-badge inv-out">{lang === 'en' ? 'Out' : 'نفذ'}</span>
+                                    : isLow  ? <span className="inv-badge inv-low">{lang === 'en' ? 'Low' : 'منخفض'}</span>
+                                    : <span className="inv-badge inv-ok">{lang === 'en' ? 'OK' : 'متوفر'}</span>}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+
+                        {/* Pagination bar */}
+                        {invTotalPages > 1 && (
+                          <div className="prod-pagination">
+                            <div className="prod-pag-info">
+                              {lang === 'en'
+                                ? `Showing ${(invPageSafe-1)*invPerPage+1}–${Math.min(invPageSafe*invPerPage, products.length)} of ${products.length}`
+                                : `عرض ${(invPageSafe-1)*invPerPage+1}–${Math.min(invPageSafe*invPerPage, products.length)} من ${products.length}`}
+                            </div>
+                            <div className="prod-pag-btns">
+                              <button className="prod-pag-btn" onClick={() => setInvPage(1)} disabled={invPageSafe === 1} title={lang==='en'?'First':'الأول'}>
+                                <i className="fas fa-angles-right"></i>
+                              </button>
+                              <button className="prod-pag-btn" onClick={() => setInvPage(p => Math.max(1, p-1))} disabled={invPageSafe === 1} title={lang==='en'?'Prev':'السابق'}>
+                                <i className="fas fa-chevron-right"></i>
+                              </button>
+                              {Array.from({ length: invTotalPages }, (_, i) => i + 1)
+                                .filter(n => n === 1 || n === invTotalPages || Math.abs(n - invPageSafe) <= 2)
+                                .reduce((acc, n, idx, arr) => {
+                                  if (idx > 0 && n - arr[idx-1] > 1) acc.push('…');
+                                  acc.push(n);
+                                  return acc;
+                                }, [])
+                                .map((n, i) => n === '…'
+                                  ? <span key={`ellipsis-${i}`} className="prod-pag-ellipsis">…</span>
+                                  : <button key={n} className={`prod-pag-btn${n === invPageSafe ? ' prod-pag-active' : ''}`} onClick={() => setInvPage(n)}>{n}</button>
+                                )}
+                              <button className="prod-pag-btn" onClick={() => setInvPage(p => Math.min(invTotalPages, p+1))} disabled={invPageSafe === invTotalPages} title={lang==='en'?'Next':'التالي'}>
+                                <i className="fas fa-chevron-left"></i>
+                              </button>
+                              <button className="prod-pag-btn" onClick={() => setInvPage(invTotalPages)} disabled={invPageSafe === invTotalPages} title={lang==='en'?'Last':'الأخير'}>
+                                <i className="fas fa-angles-left"></i>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
               )}
@@ -2635,7 +2737,7 @@ const Dashboard = () => {
 
               {/* Media Gallery Grid */}
               {(() => {
-                const mediaPerPage = 10;
+                const mediaPerPage = 21;
                 const filteredMedia = mediaFiles.filter(f => mediaFilter === 'all' || f.type === mediaFilter);
                 const mediaTotalPages = Math.max(1, Math.ceil(filteredMedia.length / mediaPerPage));
                 const mediaPageSafe = Math.min(mediaPage, mediaTotalPages);
