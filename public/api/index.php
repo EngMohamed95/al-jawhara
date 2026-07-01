@@ -189,11 +189,15 @@ if ($method === 'GET' && $id === null) {
     $where = [];
     $params = [];
     
+    $columns = [];
+    try {
+        $columns = $pdo->query("DESCRIBE `$table`")->fetchAll(PDO::FETCH_COLUMN);
+    } catch (\PDOException $e) {
+    }
+    
     foreach ($query as $k => $v) {
         // Only filter on columns that actually exist in the table to prevent SQL errors
-        $chk = $pdo->prepare("SHOW COLUMNS FROM `$table` LIKE ?");
-        $chk->execute([$k]);
-        if ($chk->fetch()) {
+        if (in_array($k, $columns)) {
             $where[] = "`$k` = :$k";
             $params[$k] = $v;
         }
@@ -239,11 +243,15 @@ if ($method === 'POST') {
     $placeholders = [];
     $params = [];
     
+    $columns = [];
+    try {
+        $columns = $pdo->query("DESCRIBE `$table`")->fetchAll(PDO::FETCH_COLUMN);
+    } catch (\PDOException $e) {
+    }
+    
     foreach ($body as $k => $v) {
         // Check if column exists
-        $chk = $pdo->prepare("SHOW COLUMNS FROM `$table` LIKE ?");
-        $chk->execute([$k]);
-        if ($chk->fetch()) {
+        if (in_array($k, $columns)) {
             $keys[] = "`$k`";
             $placeholders[] = ":$k";
             $params[$k] = preProcessField($resource, $k, $v);
@@ -276,12 +284,16 @@ if ($method === 'PUT' && $id !== null) {
     $fields = [];
     $params = ['_id' => $id];
     
+    $columns = [];
+    try {
+        $columns = $pdo->query("DESCRIBE `$table`")->fetchAll(PDO::FETCH_COLUMN);
+    } catch (\PDOException $e) {
+    }
+    
     foreach ($body as $k => $v) {
         if ($k === 'id') continue;
         // Check if column exists
-        $chk = $pdo->prepare("SHOW COLUMNS FROM `$table` LIKE ?");
-        $chk->execute([$k]);
-        if ($chk->fetch()) {
+        if (in_array($k, $columns)) {
             $fields[] = "`$k` = :$k";
             $params[$k] = preProcessField($resource, $k, $v);
         }
