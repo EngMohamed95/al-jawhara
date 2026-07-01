@@ -94,3 +94,30 @@
 .products-loading i { font-size: 2.5rem; color: var(--primary); }
 .products-error { text-align: center; padding: 60px 20px; color: var(--text-light); }
 .products-error i { font-size: 3rem; color: #ef4444; margin-bottom: 15px; display: block; }
+
+/* ── Products Pagination ── */
+.products-pagination {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+  padding: 14px 20px;
+  background: var(--surface); border-radius: var(--radius);
+  box-shadow: var(--shadow); margin-top: 24px;
+}
+.products-pag-info {
+  font-size: 13px; color: var(--text-light); font-weight: 600;
+}
+.products-pag-btns {
+  display: flex; align-items: center; gap: 4px;
+}
+.products-pag-btn {
+  min-width: 34px; height: 34px; padding: 0 6px;
+  border: 2px solid var(--border); border-radius: 8px;
+  background: var(--surface); color: var(--text);
+  font-family: 'Tajawal', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.products-pag-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); background: var(--primary-xlight); }
+.products-pag-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.products-pag-btn.products-pag-active { background: var(--primary); border-color: var(--primary); color: white; }
+.products-pag-ellipsis { font-size: 13px; color: var(--text-light); padding: 0 4px; line-height: 34px; }

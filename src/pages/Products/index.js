@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -17,6 +17,12 @@ const Products = () => {
   const { t, lang } = useLanguage();
   const [activeCat,   setActiveCat]   = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset page to 1 when category or search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCat, searchQuery]);
 
   const productsHeaderImg = sc?.productsHeaderImg && !sc.productsHeaderImg.includes('unsplash.com') ? sc.productsHeaderImg : '';
 
@@ -51,6 +57,11 @@ const Products = () => {
     ].some(
       f => f && normalizeQ(f).includes(sq)
     ));
+
+  const itemsPerPage = 10;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+  const currentPageSafe = Math.min(currentPage, totalPages);
+  const pagedProducts = filtered.slice((currentPageSafe - 1) * itemsPerPage, currentPageSafe * itemsPerPage);
 
 
   return (
@@ -132,7 +143,6 @@ const Products = () => {
                         onClick={() => setActiveCat(parent.slug)}
                         aria-pressed={activeCat === parent.slug}
                       >
-                        <span style={{ marginInlineEnd: '5px' }}>{parent.emoji}</span>
                         {lang === 'en' && parent.nameEn ? parent.nameEn : parent.nameAr}
                       </button>
                       {children.map(child => (
@@ -152,12 +162,12 @@ const Products = () => {
               </div>
 
               <div className="products-grid" role="list">
-                {filtered.length === 0 ? (
+                {pagedProducts.length === 0 ? (
                   <div className="no-products">
                     <i className="fas fa-box-open" aria-hidden="true"></i>
                     <p>{t('products.empty')}</p>
                   </div>
-                ) : filtered.map((p, i) => {
+                ) : pagedProducts.map((p, i) => {
                   const productImages = [];
                   if (p.image) productImages.push(p.image);
                   if (p.gallery && Array.isArray(p.gallery)) {
@@ -185,6 +195,42 @@ const Products = () => {
                   );
                 })}
               </div>
+
+              {/* ── Pagination bar ── */}
+              {totalPages > 1 && (
+                <div className="products-pagination">
+                  <div className="products-pag-info">
+                    {lang === 'en'
+                      ? `Showing ${(currentPageSafe-1)*itemsPerPage+1}–${Math.min(currentPageSafe*itemsPerPage, filtered.length)} of ${filtered.length}`
+                      : `عرض ${(currentPageSafe-1)*itemsPerPage+1}–${Math.min(currentPageSafe*itemsPerPage, filtered.length)} من ${filtered.length}`}
+                  </div>
+                  <div className="products-pag-btns">
+                    <button className="products-pag-btn" onClick={() => setCurrentPage(1)} disabled={currentPageSafe === 1} title={lang==='en'?'First':'الأول'}>
+                      <i className="fas fa-angles-right"></i>
+                    </button>
+                    <button className="products-pag-btn" onClick={() => setCurrentPage(p => Math.max(1, p-1))} disabled={currentPageSafe === 1} title={lang==='en'?'Prev':'السابق'}>
+                      <i className="fas fa-chevron-right"></i>
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(n => n === 1 || n === totalPages || Math.abs(n - currentPageSafe) <= 2)
+                      .reduce((acc, n, idx, arr) => {
+                        if (idx > 0 && n - arr[idx-1] > 1) acc.push('…');
+                        acc.push(n);
+                        return acc;
+                      }, [])
+                      .map((n, i) => n === '…'
+                        ? <span key={`ellipsis-${i}`} className="products-pag-ellipsis">…</span>
+                        : <button key={n} className={`products-pag-btn${n === currentPageSafe ? ' products-pag-active' : ''}`} onClick={() => setCurrentPage(n)}>{n}</button>
+                      )}
+                    <button className="products-pag-btn" onClick={() => setCurrentPage(p => Math.min(totalPages, p+1))} disabled={currentPageSafe === totalPages} title={lang==='en'?'Next':'التالي'}>
+                      <i className="fas fa-chevron-left"></i>
+                    </button>
+                    <button className="products-pag-btn" onClick={() => setCurrentPage(totalPages)} disabled={currentPageSafe === totalPages} title={lang==='en'?'Last':'الأخير'}>
+                      <i className="fas fa-angles-left"></i>
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>

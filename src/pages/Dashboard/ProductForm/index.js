@@ -16,7 +16,7 @@ const emptyProduct = {
   name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '',
   status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '',
   isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '',
-  countryOfOrigin: 'KW', hsCode: '', variants: [], icon: '📦',
+  countryOfOrigin: 'KW', hsCode: '', variants: [], icon: 'fa-box',
 };
 
 const productStatusLabels = {
@@ -142,7 +142,7 @@ export default function ProductForm({ mode, productId, onBack }) {
       countryOfOrigin: p.countryOfOrigin || 'KW',
       hsCode:          p.hsCode          || '',
       variants:        p.variants        || [],
-      icon:            p.icon            || '📦',
+      icon:            p.icon            || 'fa-box',
     });
   }, [isEdit, productId, products]);
 
@@ -392,7 +392,7 @@ export default function ProductForm({ mode, productId, onBack }) {
           open={openSections.has('content')} onToggle={toggleSection} {...secProps('content')}>
           <div className="pf-two-col">
             <div>
-              <div className="pf-lang-badge pf-lang-ar">🇸🇦 عربي</div>
+              <div className="pf-lang-badge pf-lang-ar"><i className="fas fa-globe"></i> عربي</div>
               <div className="pf-field">
                 <label className="pf-label">{ar('اسم المنتج *', 'Product Name *')}</label>
                 <input className="form-input" name="name" value={form.name} onChange={onInput}
@@ -405,7 +405,7 @@ export default function ProductForm({ mode, productId, onBack }) {
               </div>
             </div>
             <div>
-              <div className="pf-lang-badge pf-lang-en">🇬🇧 English</div>
+              <div className="pf-lang-badge pf-lang-en"><i className="fas fa-globe"></i> English</div>
               <div className="pf-field">
                 <label className="pf-label">Product Name (English)</label>
                 <input className="form-input" name="nameEn" value={form.nameEn} onChange={onInput}
@@ -510,15 +510,15 @@ export default function ProductForm({ mode, productId, onBack }) {
                   <label className="pf-label">{ar('بلد المنشأ', 'Country of Origin')}</label>
                   <select className="form-select" value={form.countryOfOrigin}
                     onChange={e => set('countryOfOrigin', e.target.value)}>
-                    <option value="KW">🇰🇼 {ar('الكويت', 'Kuwait')}</option>
-                    <option value="SA">🇸🇦 {ar('السعودية', 'Saudi Arabia')}</option>
-                    <option value="AE">🇦🇪 {ar('الإمارات', 'UAE')}</option>
-                    <option value="CN">🇨🇳 {ar('الصين', 'China')}</option>
-                    <option value="TR">🇹🇷 {ar('تركيا', 'Turkey')}</option>
-                    <option value="IN">🇮🇳 {ar('الهند', 'India')}</option>
-                    <option value="US">🇺🇸 {ar('أمريكا', 'USA')}</option>
-                    <option value="DE">🇩🇪 {ar('ألمانيا', 'Germany')}</option>
-                    <option value="EG">🇪🇬 {ar('مصر', 'Egypt')}</option>
+                    <option value="KW">{ar('الكويت', 'Kuwait')}</option>
+                    <option value="SA">{ar('السعودية', 'Saudi Arabia')}</option>
+                    <option value="AE">{ar('الإمارات', 'UAE')}</option>
+                    <option value="CN">{ar('الصين', 'China')}</option>
+                    <option value="TR">{ar('تركيا', 'Turkey')}</option>
+                    <option value="IN">{ar('الهند', 'India')}</option>
+                    <option value="US">{ar('أمريكا', 'USA')}</option>
+                    <option value="DE">{ar('ألمانيا', 'Germany')}</option>
+                    <option value="EG">{ar('مصر', 'Egypt')}</option>
                   </select>
                 </div>
                 <div className="pf-field">
@@ -596,13 +596,13 @@ export default function ProductForm({ mode, productId, onBack }) {
                   <div className="pf-variant-fields">
                     <div className="modal-grid2">
                       <div className="pf-field">
-                        <label className="pf-label pf-label-sm">🇸🇦 {ar('الاسم عربي', 'Arabic Name')}</label>
+                        <label className="pf-label pf-label-sm">{ar('الاسم عربي', 'Arabic Name')}</label>
                         <input className="form-input" value={v.nameAr}
                           onChange={e => setVariant(vi, 'nameAr', e.target.value)}
                           placeholder={ar('علبة واحدة', 'Single Box')} />
                       </div>
                       <div className="pf-field">
-                        <label className="pf-label pf-label-sm">🇬🇧 English Name</label>
+                        <label className="pf-label pf-label-sm">English Name</label>
                         <input className="form-input" dir="ltr" value={v.nameEn}
                           onChange={e => setVariant(vi, 'nameEn', e.target.value)}
                           placeholder="Single Box" />
@@ -610,19 +610,19 @@ export default function ProductForm({ mode, productId, onBack }) {
                     </div>
                     <div className="pf-grid-3">
                       <div className="pf-field">
-                        <label className="pf-label pf-label-sm">💰 {ar('السعر (د.ك)', 'Price (KD)')}</label>
+                        <label className="pf-label pf-label-sm">{ar('السعر (د.ك)', 'Price (KD)')}</label>
                         <input className="form-input" type="number" step="0.001" min="0" dir="ltr"
                           value={v.price} onChange={e => setVariant(vi, 'price', e.target.value)}
                           placeholder="1.500" />
                       </div>
                       <div className="pf-field">
-                        <label className="pf-label pf-label-sm">📦 {ar('المخزون', 'Stock')}</label>
+                        <label className="pf-label pf-label-sm">{ar('المخزون', 'Stock')}</label>
                         <input className="form-input" type="number" min="0" dir="ltr"
                           value={v.stock} onChange={e => setVariant(vi, 'stock', e.target.value)}
                           placeholder="100" />
                       </div>
                       <div className="pf-field">
-                        <label className="pf-label pf-label-sm">🏷️ SKU</label>
+                        <label className="pf-label pf-label-sm">SKU</label>
                         <input className="form-input" dir="ltr" value={v.sku}
                           onChange={e => setVariant(vi, 'sku', e.target.value)}
                           placeholder="SKU-001-V1" />

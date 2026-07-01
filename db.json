@@ -1183,7 +1183,7 @@
       "nameAr": "مناديل وجه",
       "nameEn": "Facial Tissues",
       "icon": "fa-face-smile",
-      "emoji": "🤧",
+      "emoji": "",
       "sortOrder": 1,
       "status": "active",
       "desc": ""
@@ -1194,7 +1194,7 @@
       "nameAr": "رولات",
       "nameEn": "Rolls",
       "icon": "fa-scroll",
-      "emoji": "🧻",
+      "emoji": "",
       "sortOrder": 2,
       "status": "active",
       "desc": ""
@@ -1205,7 +1205,7 @@
       "nameAr": "عروض عائلة",
       "nameEn": "Family Packs",
       "icon": "fa-box-open",
-      "emoji": "📦",
+      "emoji": "",
       "sortOrder": 6,
       "status": "active",
       "desc": ""

@@ -148,14 +148,14 @@ const About = () => {
           <div className="mv-grid">
             <Reveal direction="right">
               <div className="mv-card mv-card-green">
-                <span className="mv-icon" aria-hidden="true">🎯</span>
+                <span className="mv-icon" aria-hidden="true"><i className="fas fa-bullseye"></i></span>
                 <h3 className="mv-title mv-title-green">{t('about.mission')}</h3>
                 <p className="mv-text">{missionText}</p>
               </div>
             </Reveal>
             <Reveal direction="left" delay={100}>
               <div className="mv-card mv-card-orange">
-                <span className="mv-icon" aria-hidden="true">🔭</span>
+                <span className="mv-icon" aria-hidden="true"><i className="fas fa-eye"></i></span>
                 <h3 className="mv-title mv-title-orange">{t('about.vision')}</h3>
                 <p className="mv-text">{visionText}</p>
               </div>

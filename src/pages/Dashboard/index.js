@@ -319,7 +319,7 @@ const HBar = ({ items, unit = '' }) => {
   );
 };
 
-const emptyCategory = { slug: '', nameAr: '', nameEn: '', emoji: '📦', icon: 'fa-box', sortOrder: 1, status: 'active', desc: '', parentId: null };
+const emptyCategory = { slug: '', nameAr: '', nameEn: '', emoji: '', icon: 'fa-box', sortOrder: 1, status: 'active', desc: '', parentId: null };
 
 const buildCatTree = (cats, parentId = null) =>
   cats.filter(c => (c.parentId ?? null) === parentId)
@@ -384,10 +384,15 @@ const Dashboard = () => {
   const [mediaFiles, setMediaFiles] = useState([]);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [mediaFilter, setMediaFilter] = useState('all'); // 'all' | 'product' | 'upload'
+  const [mediaPage, setMediaPage] = useState(1);
   const [copiedUrl, setCopiedUrl] = useState(null);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [localDevUploads, setLocalDevUploads] = useState([]);
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    setMediaPage(1);
+  }, [mediaFilter]);
 
   const loadMedia = useCallback(async () => {
     setMediaLoading(true);
@@ -508,7 +513,7 @@ const Dashboard = () => {
     setCatEditData(null); setCatViewMode('add'); setCatEditOpenSecs(new Set(['basic','settings']));
   };
   const openCatEdit = (c) => {
-    setCatEditForm({ slug: c.slug, nameAr: c.nameAr, nameEn: c.nameEn||'', emoji: c.emoji||'📦', sortOrder: c.sortOrder||1, status: c.status, desc: c.desc||'', parentId: c.parentId??null });
+    setCatEditForm({ slug: c.slug, nameAr: c.nameAr, nameEn: c.nameEn||'', emoji: c.emoji||'', icon: c.icon||'fa-box', sortOrder: c.sortOrder||1, status: c.status, desc: c.desc||'', parentId: c.parentId??null });
     setCatEditData(c); setCatEditErr(''); setCatEditSaved(false);
     setCatViewMode('edit'); setCatEditOpenSecs(new Set(['basic','settings']));
   };
@@ -984,8 +989,8 @@ const Dashboard = () => {
   const [prodSort,      setProdSort]      = useState({ col: 'id', dir: 'desc' });
   const [selectedProds, setSelectedProds] = useState(new Set());
   const [prodPage,      setProdPage]      = useState(1);
-  const [prodPerPage,   setProdPerPage]   = useState(50);
-  useEffect(() => { setDashSearch(''); setClientFilter(null); setProdCatFilter('all'); setProdStatusFilter('all'); setSelectedProds(new Set()); setProdPage(1); }, [view]);
+  const [prodPerPage,   setProdPerPage]   = useState(10);
+  useEffect(() => { setDashSearch(''); setClientFilter(null); setProdCatFilter('all'); setProdStatusFilter('all'); setSelectedProds(new Set()); setProdPage(1); setMediaPage(1); }, [view]);
   useEffect(() => { setProdPage(1); }, [dashSearch, prodCatFilter, prodStatusFilter, prodSort]);
 
   /* ── Category filters ── */
@@ -1442,7 +1447,7 @@ const Dashboard = () => {
                           <td>
                             {p.image
                               ? <img src={p.image} alt="" className="prod-thumb" />
-                              : <div className="prod-thumb-empty">{p.icon || '📦'}</div>}
+                              : <div className="prod-thumb-empty"><i className="fas fa-box" style={{opacity:0.3}}></i></div>}
                           </td>
                           <td>
                             <div className="td-bold">{p.name}</div>
@@ -1575,8 +1580,8 @@ const Dashboard = () => {
                         <input className="form-input" dir="ltr" value={catEditForm.slug} onChange={e => setCatEditForm(f => ({...f, slug: e.target.value.toLowerCase().replace(/\s/g,'-')}))} placeholder="facial-tissues" />
                       </div>
                       <div className="pf-field">
-                        <label className="pf-label">{lang === 'en' ? 'Emoji / Icon' : 'الأيقونة / إيموجي'}</label>
-                        <input className="form-input" value={catEditForm.emoji} onChange={e => setCatEditForm(f => ({...f, emoji: e.target.value}))} placeholder="📦" style={{fontSize:'20px'}} />
+                        <label className="pf-label">{lang === 'en' ? 'FontAwesome Icon Class' : 'رمز أيقونة FontAwesome'}</label>
+                        <input className="form-input" dir="ltr" value={catEditForm.icon || ''} onChange={e => setCatEditForm(f => ({...f, icon: e.target.value}))} placeholder="fa-box" />
                       </div>
                     </div>
                   </div></div>
@@ -1702,7 +1707,7 @@ const Dashboard = () => {
                             <td>
                               <div style={{display:'flex', alignItems:'center', gap:'8px', paddingInlineStart: catLevelFilter !== 'all' ? '0' : `${c.depth * 24}px`}}>
                                 {c.depth > 0 && catLevelFilter === 'all' && <span style={{color:'var(--text-light)', fontSize:'12px'}}>└</span>}
-                                <span className="cat-emoji-badge">{c.emoji || '📦'}</span>
+                                <span className="cat-emoji-badge"><i className={`fas ${c.icon || 'fa-folder'}`}></i></span>
                                 <div>
                                   <div className="td-bold">{c.nameAr}</div>
                                   {hasChildren && <div style={{fontSize:'11px', color:'var(--primary)', marginTop:'2px'}}><i className="fas fa-sitemap"></i> {lang === 'en' ? 'Has sub-sections' : 'لها أقسام فرعية'}</div>}
@@ -1711,7 +1716,7 @@ const Dashboard = () => {
                             </td>
                             <td className="td-light" dir="ltr">{c.nameEn || '—'}</td>
                             <td><span className="badge-cat" dir="ltr">{c.slug}</span></td>
-                            <td className="td-light">{parent ? <span style={{display:'flex', alignItems:'center', gap:'4px'}}><span>{parent.emoji}</span><span>{parent.nameAr}</span></span> : <span style={{color:'var(--text-light)', fontSize:'12px'}}>{lang === 'en' ? 'Top Level' : 'رئيسي'}</span>}</td>
+                            <td className="td-light">{parent ? <span style={{display:'flex', alignItems:'center', gap:'6px'}}><span><i className={`fas ${parent.icon || 'fa-folder'}`} style={{fontSize:'12px', opacity:0.6}}></i></span><span>{parent.nameAr}</span></span> : <span style={{color:'var(--text-light)', fontSize:'12px'}}>{lang === 'en' ? 'Top Level' : 'رئيسي'}</span>}</td>
                             <td className="td-bold">{prodCount} {lang === 'en' ? 'product' : 'منتج'}</td>
                             <td><span className={`status-badge status-${c.status}`}>{c.status === 'active' ? (lang === 'en' ? 'Active' : 'نشط') : (lang === 'en' ? 'Hidden' : 'مخفي')}</span></td>
                             <td>
@@ -2109,11 +2114,11 @@ const Dashboard = () => {
                   <div className="content-section-title"><i className="fas fa-bullseye"></i> الرسالة والرؤية</div>
                   <div className="content-grid">
                     <div className="form-group">
-                      <label className="form-label">نص الرسالة 🎯</label>
+                      <label className="form-label">نص الرسالة</label>
                       <textarea className="form-textarea" value={cf('missionText')} onChange={e => setCf('missionText', e.target.value)} style={{ minHeight: '100px' }} placeholder="توفير منتجات ورقية عالية الجودة..." />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">نص الرؤية 🔭</label>
+                      <label className="form-label">نص الرؤية</label>
                       <textarea className="form-textarea" value={cf('visionText')} onChange={e => setCf('visionText', e.target.value)} style={{ minHeight: '100px' }} placeholder="أن نكون الخيار الأول..." />
                     </div>
                   </div>
@@ -2295,16 +2300,18 @@ const Dashboard = () => {
                   <p className="dash-section-desc">{lang === 'en' ? 'Enable shipping companies and enter API credentials for automatic tracking.' : 'فعّل شركات الشحن وأدخل بيانات API لكل شركة لتفعيل التتبع التلقائي.'}</p>
                   <div className="payment-gateways-grid">
                     {[
-                      { key: 'aramex',    nameAr: 'أرامكس الكويت',  nameEn: 'Aramex Kuwait',     emoji: '📦', bg: '#fff3e0', color: '#e65100', site: 'aramex.com' },
-                      { key: 'dhl',       nameAr: 'DHL الكويت',      nameEn: 'DHL Express Kuwait', emoji: '✈️', bg: '#fff9c4', color: '#d32f2f', site: 'dhl.com' },
-                      { key: 'zajel',     nameAr: 'زاجل إكسبريس',   nameEn: 'Zajel Express',      emoji: '🚀', bg: '#e8f5e9', color: '#2e7d32', site: 'zajel.com' },
-                      { key: 'fetchr',    nameAr: 'فيتشر الكويت',   nameEn: 'Fetchr Kuwait',      emoji: '🔄', bg: '#e3f2fd', color: '#1565c0', site: 'fetchr.com' },
-                      { key: 'mawasalat', nameAr: 'مواصلات',         nameEn: 'Mawasalat Express',  emoji: '🏠', bg: '#f3e5f5', color: '#6a1b9a', site: 'mawasalat.com' },
+                      { key: 'aramex',    nameAr: 'أرامكس الكويت',  nameEn: 'Aramex Kuwait',     icon: 'fa-box', bg: '#fff3e0', color: '#e65100', site: 'aramex.com' },
+                      { key: 'dhl',       nameAr: 'DHL الكويت',      nameEn: 'DHL Express Kuwait', icon: 'fa-plane', bg: '#fff9c4', color: '#d32f2f', site: 'dhl.com' },
+                      { key: 'zajel',     nameAr: 'زاجل إكسبريس',   nameEn: 'Zajel Express',      icon: 'fa-rocket', bg: '#e8f5e9', color: '#2e7d32', site: 'zajel.com' },
+                      { key: 'fetchr',    nameAr: 'فيتشر الكويت',   nameEn: 'Fetchr Kuwait',      icon: 'fa-arrows-rotate', bg: '#e3f2fd', color: '#1565c0', site: 'fetchr.com' },
+                      { key: 'mawasalat', nameAr: 'مواصلات',         nameEn: 'Mawasalat Express',  icon: 'fa-house', bg: '#f3e5f5', color: '#6a1b9a', site: 'mawasalat.com' },
                     ].map(co => (
                       <div key={co.key} className="gateway-card">
                         <div className="gateway-header">
                           <div className="gateway-info">
-                            <div className="gateway-icon" style={{ background: co.bg, fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{co.emoji}</div>
+                            <div className="gateway-icon" style={{ background: co.bg, fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <i className={`fas ${co.icon}`} style={{ color: co.color }}></i>
+                            </div>
                             <div>
                               <div className="gateway-name">{lang === 'en' ? co.nameEn : co.nameAr}</div>
                               <div className="gateway-sub">{lang === 'en' ? co.nameAr : co.nameEn}</div>
@@ -2627,51 +2634,97 @@ const Dashboard = () => {
               )}
 
               {/* Media Gallery Grid */}
-              <div className="media-grid">
-                {mediaFiles.filter(f => mediaFilter === 'all' || f.type === mediaFilter).length === 0 ? (
-                  <div className="media-empty">
-                    <i className="fas fa-images"></i>
-                    <p>{dt('media.noImages')}</p>
-                  </div>
-                ) : (
-                  mediaFiles
-                    .filter(f => mediaFilter === 'all' || f.type === mediaFilter)
-                    .map((file, idx) => (
-                      <div key={idx} className="media-card">
-                        <div className="media-thumb-wrap" onClick={() => setSelectedMedia(file)}>
-                          <img src={file.url} alt={file.name} className="media-thumb" loading="lazy" />
-                          <div className="media-hover-overlay">
-                            <i className="fas fa-magnifying-glass-plus"></i>
-                          </div>
+              {(() => {
+                const mediaPerPage = 10;
+                const filteredMedia = mediaFiles.filter(f => mediaFilter === 'all' || f.type === mediaFilter);
+                const mediaTotalPages = Math.max(1, Math.ceil(filteredMedia.length / mediaPerPage));
+                const mediaPageSafe = Math.min(mediaPage, mediaTotalPages);
+                const pagedMedia = filteredMedia.slice((mediaPageSafe - 1) * mediaPerPage, mediaPageSafe * mediaPerPage);
+
+                return (
+                  <>
+                    <div className="media-grid">
+                      {filteredMedia.length === 0 ? (
+                        <div className="media-empty">
+                          <i className="fas fa-images"></i>
+                          <p>{dt('media.noImages')}</p>
                         </div>
-                        <div className="media-info-wrap">
-                          <div className="media-file-name" title={file.name}>{file.name}</div>
-                          <div className="media-file-meta">
-                            {file.type === 'product' ? dt('media.products') : dt('media.uploads')}
-                            {file.size && ` · ${(file.size / 1024).toFixed(0)} KB`}
+                      ) : (
+                        pagedMedia.map((file, idx) => (
+                          <div key={idx} className="media-card">
+                            <div className="media-thumb-wrap" onClick={() => setSelectedMedia(file)}>
+                              <img src={file.url} alt={file.name} className="media-thumb" loading="lazy" />
+                              <div className="media-hover-overlay">
+                                <i className="fas fa-magnifying-glass-plus"></i>
+                              </div>
+                            </div>
+                            <div className="media-info-wrap">
+                              <div className="media-file-name" title={file.name}>{file.name}</div>
+                              <div className="media-file-meta">
+                                {file.type === 'product' ? dt('media.products') : dt('media.uploads')}
+                                {file.size && ` · ${(file.size / 1024).toFixed(0)} KB`}
+                              </div>
+                              <div className="media-actions-row">
+                                <button
+                                  className={`media-action-btn copy-btn${copiedUrl === file.name ? ' copied' : ''}`}
+                                  onClick={() => handleCopyPath(file.url, file.name)}
+                                  title={dt('media.copy')}
+                                >
+                                  <i className={`fas ${copiedUrl === file.name ? 'fa-check' : 'fa-copy'}`}></i>
+                                  <span>{copiedUrl === file.name ? dt('media.copied') : dt('media.copy')}</span>
+                                </button>
+                                <button
+                                  className="media-action-btn delete-btn"
+                                  onClick={() => handleMediaDelete(file)}
+                                  title={dt('media.delete')}
+                                >
+                                  <i className="fas fa-trash"></i>
+                                </button>
+                              </div>
+                            </div>
                           </div>
-                          <div className="media-actions-row">
-                            <button
-                              className={`media-action-btn copy-btn${copiedUrl === file.name ? ' copied' : ''}`}
-                              onClick={() => handleCopyPath(file.url, file.name)}
-                              title={dt('media.copy')}
-                            >
-                              <i className={`fas ${copiedUrl === file.name ? 'fa-check' : 'fa-copy'}`}></i>
-                              <span>{copiedUrl === file.name ? dt('media.copied') : dt('media.copy')}</span>
-                            </button>
-                            <button
-                              className="media-action-btn delete-btn"
-                              onClick={() => handleMediaDelete(file)}
-                              title={dt('media.delete')}
-                            >
-                              <i className="fas fa-trash"></i>
-                            </button>
-                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* ── Pagination bar ── */}
+                    {mediaTotalPages > 1 && (
+                      <div className="prod-pagination">
+                        <div className="prod-pag-info">
+                          {lang === 'en'
+                            ? `Showing ${(mediaPageSafe-1)*mediaPerPage+1}–${Math.min(mediaPageSafe*mediaPerPage, filteredMedia.length)} of ${filteredMedia.length}`
+                            : `عرض ${(mediaPageSafe-1)*mediaPerPage+1}–${Math.min(mediaPageSafe*mediaPerPage, filteredMedia.length)} من ${filteredMedia.length}`}
+                        </div>
+                        <div className="prod-pag-btns">
+                          <button className="prod-pag-btn" onClick={() => setMediaPage(1)} disabled={mediaPageSafe === 1} title={lang==='en'?'First':'الأول'}>
+                            <i className="fas fa-angles-right"></i>
+                          </button>
+                          <button className="prod-pag-btn" onClick={() => setMediaPage(p => Math.max(1, p-1))} disabled={mediaPageSafe === 1} title={lang==='en'?'Prev':'السابق'}>
+                            <i className="fas fa-chevron-right"></i>
+                          </button>
+                          {Array.from({ length: mediaTotalPages }, (_, i) => i + 1)
+                            .filter(n => n === 1 || n === mediaTotalPages || Math.abs(n - mediaPageSafe) <= 2)
+                            .reduce((acc, n, idx, arr) => {
+                              if (idx > 0 && n - arr[idx-1] > 1) acc.push('…');
+                              acc.push(n);
+                              return acc;
+                            }, [])
+                            .map((n, i) => n === '…'
+                              ? <span key={`ellipsis-${i}`} className="prod-pag-ellipsis">…</span>
+                              : <button key={n} className={`prod-pag-btn${n === mediaPageSafe ? ' prod-pag-active' : ''}`} onClick={() => setMediaPage(n)}>{n}</button>
+                            )}
+                          <button className="prod-pag-btn" onClick={() => setMediaPage(p => Math.min(mediaTotalPages, p+1))} disabled={mediaPageSafe === mediaTotalPages} title={lang==='en'?'Next':'التالي'}>
+                            <i className="fas fa-chevron-left"></i>
+                          </button>
+                          <button className="prod-pag-btn" onClick={() => setMediaPage(mediaTotalPages)} disabled={mediaPageSafe === mediaTotalPages} title={lang==='en'?'Last':'الأخير'}>
+                            <i className="fas fa-angles-left"></i>
+                          </button>
                         </div>
                       </div>
-                    ))
-                )}
-              </div>
+                    )}
+                  </>
+                );
+              })()}
 
               {/* View Image Modal */}
               {selectedMedia && (
@@ -2716,7 +2769,7 @@ const Dashboard = () => {
               <form onSubmit={handleProductSave}>
 
                 {/* ── Images ── */}
-                <div className="product-lang-divider">🖼️ {lang === 'en' ? 'Images' : 'الصور'}</div>
+                <div className="product-lang-divider"><i className="fas fa-image"></i> {lang === 'en' ? 'Images' : 'الصور'}</div>
                 <div className="modal-grid2">
                   <div className="form-group">
                     <label className="form-label">{dt('products.image')}</label>
@@ -2753,21 +2806,21 @@ const Dashboard = () => {
                 </div>
 
                 {/* ── Arabic ── */}
-                <div className="product-lang-divider">🇸🇦 عربي</div>
+                <div className="product-lang-divider"><i className="fas fa-globe"></i> عربي</div>
                 <div className="modal-grid2">
                   <div className="form-group"><label className="form-label">{lang === 'en' ? 'Product Name (Arabic) *' : 'اسم المنتج (عربي) *'}</label><input className="form-input" name="name" value={productForm.name} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required /></div>
                   <div className="form-group"><label className="form-label">{dt('products.desc')}</label><input className="form-input" name="desc" value={productForm.desc} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
                 </div>
 
                 {/* ── English ── */}
-                <div className="product-lang-divider">🇬🇧 English</div>
+                <div className="product-lang-divider"><i className="fas fa-globe"></i> English</div>
                 <div className="modal-grid2">
                   <div className="form-group"><label className="form-label">Product Name (English)</label><input className="form-input" name="nameEn" value={productForm.nameEn} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="e.g. Classic Facial Tissues" /></div>
                   <div className="form-group"><label className="form-label">Description (English)</label><input className="form-input" name="descEn" value={productForm.descEn} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="e.g. Soft 3-layer tissues..." /></div>
                 </div>
 
                 {/* ── Product Data ── */}
-                <div className="product-lang-divider">⚙️ {lang === 'en' ? 'Product Data' : 'بيانات المنتج'}</div>
+                <div className="product-lang-divider"><i className="fas fa-cog"></i> {lang === 'en' ? 'Product Data' : 'بيانات المنتج'}</div>
                 <div className="modal-grid2">
                   <div className="form-group"><label className="form-label">SKU ({lang === 'en' ? 'Product Code' : 'رمز المنتج'})</label><input className="form-input" name="sku" value={productForm.sku} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="e.g. JAW-FAC-001" /></div>
                   <div className="form-group"><label className="form-label">{dt('products.badge')} ({lang === 'en' ? 'optional' : 'اختياري'})</label><input className="form-input" name="badge" value={productForm.badge} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
@@ -2781,7 +2834,7 @@ const Dashboard = () => {
                   <div className="form-group"><label className="form-label">{dt('products.stock')} *</label><input className="form-input" type="number" min="0" name="stock" value={productForm.stock} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
                 </div>
                 {/* ── Shipping ── */}
-                <div className="product-lang-divider">🚚 {lang === 'en' ? 'Shipping' : 'الشحن'} / Shipping</div>
+                <div className="product-lang-divider"><i className="fas fa-truck"></i> {lang === 'en' ? 'Shipping' : 'الشحن'}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                   <label className="toggle-switch">
                     <input type="checkbox" checked={productForm.isPhysical} onChange={e => setProductForm(p => ({ ...p, isPhysical: e.target.checked }))} />
@@ -2811,15 +2864,15 @@ const Dashboard = () => {
                       <div className="form-group">
                         <label className="form-label">{lang === 'en' ? 'Country of Origin' : 'بلد المنشأ'}</label>
                         <select className="form-select" value={productForm.countryOfOrigin} onChange={e => setProductForm(p => ({ ...p, countryOfOrigin: e.target.value }))}>
-                          <option value="KW">🇰🇼 الكويت (KW)</option>
-                          <option value="SA">🇸🇦 السعودية (SA)</option>
-                          <option value="AE">🇦🇪 الإمارات (AE)</option>
-                          <option value="CN">🇨🇳 الصين (CN)</option>
-                          <option value="TR">🇹🇷 تركيا (TR)</option>
-                          <option value="IN">🇮🇳 الهند (IN)</option>
-                          <option value="US">🇺🇸 أمريكا (US)</option>
-                          <option value="DE">🇩🇪 ألمانيا (DE)</option>
-                          <option value="EG">🇪🇬 مصر (EG)</option>
+                          <option value="KW">الكويت (KW)</option>
+                          <option value="SA">السعودية (SA)</option>
+                          <option value="AE">الإمارات (AE)</option>
+                          <option value="CN">الصين (CN)</option>
+                          <option value="TR">تركيا (TR)</option>
+                          <option value="IN">الهند (IN)</option>
+                          <option value="US">أمريكا (US)</option>
+                          <option value="DE">ألمانيا (DE)</option>
+                          <option value="EG">مصر (EG)</option>
                         </select>
                       </div>
                       <div className="form-group">
@@ -2831,7 +2884,7 @@ const Dashboard = () => {
                 )}
 
                 {/* ── Variants / Packages ── */}
-                <div className="product-lang-divider">📦 {lang === 'en' ? 'Packages / Variants' : 'الباقات / الأنواع'}</div>
+                <div className="product-lang-divider"><i className="fas fa-cubes"></i> {lang === 'en' ? 'Packages / Variants' : 'الباقات / الأنواع'}</div>
                 <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '12px' }}>
                   {lang === 'en'
                     ? 'If the product comes in multiple packages (e.g. 1 box, 5 boxes, carton), add them here. Leave empty to use the main price above.'

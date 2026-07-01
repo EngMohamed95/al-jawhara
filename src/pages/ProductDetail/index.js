@@ -44,7 +44,7 @@ const ProductDetail = () => {
   if (!p) {
     return (
       <div className="pd-not-found">
-        <div style={{ fontSize: '4rem', marginBottom: '16px' }}>😕</div>
+        <div style={{ fontSize: '4rem', color: 'var(--text-light)', marginBottom: '16px' }}><i className="fas fa-circle-question"></i></div>
         <h2>{lang === 'ar' ? 'المنتج غير موجود' : 'Product Not Found'}</h2>
         <p style={{ color: 'var(--text-light)', marginBottom: '24px' }}>
           {lang === 'ar' ? 'لم نتمكن من العثور على هذا المنتج.' : 'We could not find this product.'}
@@ -124,7 +124,7 @@ const ProductDetail = () => {
             <div className="pd-img-main">
               {allImages.length > 0
                 ? <img src={allImages[activeImg]} alt={name} />
-                : <div className="pd-emoji-large">{p.icon || '📦'}</div>
+                : <div className="pd-emoji-large"><i className={`fas ${p.icon || 'fa-box'}`} style={{fontSize: '4rem', opacity: 0.3}}></i></div>
               }
             </div>
             {allImages.length > 1 && (
@@ -238,7 +238,7 @@ const ProductDetail = () => {
                       <div className="pd-related-img">
                         {rp.image
                           ? <img src={rp.image} alt={rpName} />
-                          : <span className="pd-related-emoji">{rp.icon || '📦'}</span>
+                          : <span className="pd-related-emoji"><i className={`fas ${rp.icon || 'fa-box'}`} style={{opacity:0.3}}></i></span>
                         }
                       </div>
                       <div className="pd-related-body">
