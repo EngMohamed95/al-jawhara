@@ -469,19 +469,37 @@ const Dashboard = () => {
     const url = IS_PROD ? '/api/upload.php' : 'http://localhost:3001/api/upload.php';
     // In dev, just return a local object URL for preview (no actual server upload)
     if (!IS_PROD) return URL.createObjectURL(file);
-    const res = await fetch(url, { method: 'POST', body: fd });
-    const json = await res.json();
-    return json.url || null;
+    try {
+      const res = await fetch(url, { method: 'POST', body: fd });
+      const json = await res.json();
+      if (!res.ok) {
+        alert(json.error || 'فشل رفع الملف / Upload failed');
+        return null;
+      }
+      return json.url || null;
+    } catch (err) {
+      alert('خطأ في الاتصال بالخادم: ' + err.message);
+      return null;
+    }
   };
 
   const uploadFiles = async (files) => {
     const IS_PROD = process.env.NODE_ENV === 'production';
     if (!IS_PROD) return Array.from(files).map(f => URL.createObjectURL(f));
-    const fd = new FormData();
-    Array.from(files).forEach(f => fd.append('files[]', f));
-    const res = await fetch('/api/upload.php', { method: 'POST', body: fd });
-    const json = await res.json();
-    return json.urls || (json.url ? [json.url] : []);
+    try {
+      const fd = new FormData();
+      Array.from(files).forEach(f => fd.append('files[]', f));
+      const res = await fetch('/api/upload.php', { method: 'POST', body: fd });
+      const json = await res.json();
+      if (!res.ok) {
+        alert(json.error || 'فشل رفع الملفات / Upload failed');
+        return [];
+      }
+      return json.urls || (json.url ? [json.url] : []);
+    } catch (err) {
+      alert('خطأ في الاتصال بالخادم: ' + err.message);
+      return [];
+    }
   };
 
   const handleMainImageChange = async (e) => {
