@@ -98,14 +98,21 @@ function preProcessField($resource, $key, $value) {
 }
 
 // ── Parse request ────────────────────────────────────────
-$rawPath = isset($_GET['path']) ? trim($_GET['path'], '/') : '';
+$rawQuery = $_SERVER['QUERY_STRING'] ?? '';
+$rawPath = '';
+
+if (preg_match('/(?:^|&)path=([^&]*)/i', $rawQuery, $matches)) {
+    $rawPath = rawurldecode($matches[1]);
+} elseif (isset($_GET['path'])) {
+    $rawPath = $_GET['path'];
+}
+$rawPath = trim($rawPath, '/');
 $method  = $_SERVER['REQUEST_METHOD'];
 $body    = json_decode(file_get_contents('php://input'), true) ?: [];
 
-// Split query string from path
-$qPos     = strpos($rawPath, '?');
-$path     = $qPos !== false ? substr($rawPath, 0, $qPos) : $rawPath;
-$pathQS   = $qPos !== false ? substr($rawPath, $qPos + 1) : '';
+$uri = parse_url($rawPath);
+$path = trim($uri['path'] ?? '', '/');
+$pathQS = $uri['query'] ?? '';
 
 $parts    = explode('/', $path);
 $resource = $parts[0] ?? '';
