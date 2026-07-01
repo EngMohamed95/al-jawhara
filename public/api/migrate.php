@@ -107,8 +107,16 @@ try {
         statsClients VARCHAR(100),
         paymentSettings TEXT, -- JSON string
         shippingZones TEXT, -- JSON string
-        whatsappNumbers TEXT -- JSON string
+        whatsappNumbers TEXT, -- JSON string
+        mapEmbedUrl TEXT
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+    // Ensure mapEmbedUrl column exists in case the table already exists
+    try {
+        $pdo->exec("ALTER TABLE site_content ADD COLUMN mapEmbedUrl TEXT NULL;");
+    } catch (Exception $e) {
+        // Column already exists or other error
+    }
 
     echo "Tables checked/created successfully.\n";
 
@@ -227,7 +235,7 @@ try {
             $stmt = $pdo->query("SELECT COUNT(*) FROM site_content");
             if ($stmt->fetchColumn() == 0 && isset($data['siteContent'][0])) {
                 $sc = $data['siteContent'][0];
-                $ins = $pdo->prepare("INSERT INTO site_content (id, heroBadge, heroTitle, heroSubtitle, ceoName, ceoTitle, ceoQuote, aboutStory, aboutHeaderImg, productsHeaderImg, clientsHeaderImg, contactHeaderImg, companyPhone, companyWhatsapp, companyEmail, companyAddress, workHours, founded, factoryArea, productionCapacity, statsYear, statsClients, paymentSettings, shippingZones, whatsappNumbers) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $ins = $pdo->prepare("INSERT INTO site_content (id, heroBadge, heroTitle, heroSubtitle, ceoName, ceoTitle, ceoQuote, aboutStory, aboutHeaderImg, productsHeaderImg, clientsHeaderImg, contactHeaderImg, companyPhone, companyWhatsapp, companyEmail, companyAddress, workHours, founded, factoryArea, productionCapacity, statsYear, statsClients, paymentSettings, shippingZones, whatsappNumbers, mapEmbedUrl) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 $ins->execute([
                     $sc['heroBadge'] ?? null,
                     $sc['heroTitle'] ?? null,
@@ -252,7 +260,8 @@ try {
                     $sc['statsClients'] ?? null,
                     isset($sc['paymentSettings']) ? json_encode($sc['paymentSettings'], JSON_UNESCAPED_UNICODE) : null,
                     isset($sc['shippingZones']) ? json_encode($sc['shippingZones'], JSON_UNESCAPED_UNICODE) : null,
-                    isset($sc['whatsappNumbers']) ? json_encode($sc['whatsappNumbers'], JSON_UNESCAPED_UNICODE) : null
+                    isset($sc['whatsappNumbers']) ? json_encode($sc['whatsappNumbers'], JSON_UNESCAPED_UNICODE) : null,
+                    $sc['mapEmbedUrl'] ?? null
                 ]);
                 echo "Imported site content.\n";
             }
