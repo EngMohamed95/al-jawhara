@@ -28,6 +28,7 @@ const LOCAL_TEMPLATE = path.join(__dirname, '..', 'public', 'api', 'data.json');
 async function deploy() {
   const client = new ftp.Client();
   client.ftp.verbose = true;
+  client.ftp.timeout = 300000; // 5 minutes timeout
 
   try {
     await client.access(FTP);
