@@ -106,10 +106,12 @@ foreach ($files as $f) {
     $mimeType = $f['type'];
     if (function_exists('finfo_open')) {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $detectedMime = finfo_file($finfo, $f['tmp_name']);
-        finfo_close($finfo);
-        if ($detectedMime) {
-            $mimeType = $detectedMime;
+        if ($finfo !== false) {
+            $detectedMime = finfo_file($finfo, $f['tmp_name']);
+            finfo_close($finfo);
+            if ($detectedMime) {
+                $mimeType = $detectedMime;
+            }
         }
     }
 

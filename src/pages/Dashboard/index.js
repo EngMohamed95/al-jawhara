@@ -471,7 +471,14 @@ const Dashboard = () => {
     if (!IS_PROD) return URL.createObjectURL(file);
     try {
       const res = await fetch(url, { method: 'POST', body: fd });
-      const json = await res.json();
+      const text = await res.text();
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        alert('خطأ من الخادم (Server Error):\n' + text);
+        return null;
+      }
       if (!res.ok) {
         alert(json.error || 'فشل رفع الملف / Upload failed');
         return null;
@@ -490,7 +497,14 @@ const Dashboard = () => {
       const fd = new FormData();
       Array.from(files).forEach(f => fd.append('files[]', f));
       const res = await fetch('/api/upload.php', { method: 'POST', body: fd });
-      const json = await res.json();
+      const text = await res.text();
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        alert('خطأ من الخادم (Server Error):\n' + text);
+        return [];
+      }
       if (!res.ok) {
         alert(json.error || 'فشل رفع الملفات / Upload failed');
         return [];

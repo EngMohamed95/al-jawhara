@@ -153,7 +153,14 @@ export default function ProductForm({ mode, productId, onBack }) {
     try {
       const fd = new FormData(); fd.append('file', file);
       const res  = await fetch('/api/upload.php', { method: 'POST', body: fd });
-      const json = await res.json();
+      const text = await res.text();
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        alert('خطأ من الخادم (Server Error):\n' + text);
+        return null;
+      }
       if (!res.ok) {
         alert(json.error || 'فشل رفع الملف / Upload failed');
         return null;
@@ -172,7 +179,14 @@ export default function ProductForm({ mode, productId, onBack }) {
       const fd = new FormData();
       Array.from(files).forEach(f => fd.append('files[]', f));
       const res  = await fetch('/api/upload.php', { method: 'POST', body: fd });
-      const json = await res.json();
+      const text = await res.text();
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        alert('خطأ من الخادم (Server Error):\n' + text);
+        return [];
+      }
       if (!res.ok) {
         alert(json.error || 'فشل رفع الملفات / Upload failed');
         return [];
