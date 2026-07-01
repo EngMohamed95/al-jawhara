@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo json_
 
 $uploadDir = __DIR__ . '/uploads/';
 if (!is_dir($uploadDir)) { 
-    if (!mkdir($uploadDir, 0755, true)) {
+    if (!@mkdir($uploadDir, 0755, true)) {
         http_response_code(500);
         echo json_encode(['error' => 'فشل في إنشاء مجلد الرفع. يرجى التحقق من صلاحيات المجلدات على الخادم. / Failed to create upload directory. Check folder permissions.']);
         exit;
