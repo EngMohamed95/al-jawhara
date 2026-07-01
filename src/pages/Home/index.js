@@ -4,6 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../translations';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
+import ProductImageSlider from '../../components/ProductImageSlider';
 import { clients } from '../Clients/clientsList';
 import './index.css';
 
@@ -138,26 +139,33 @@ const Home = () => {
             </div>
           ) : (
             <div className="home-products-grid">
-              {featured.map((p, i) => (
-                <Reveal key={p.id} delay={(i % 4) * 80} direction="up">
-                  <Link to={`/products/${p.id}`} className="home-product-card" style={{ textDecoration: 'none' }}>
-                    {p.badge && <span className="home-prod-badge">{p.badge}</span>}
-                    <div className="home-prod-img-wrap">
-                      {p.image
-                        ? <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} className="home-prod-img" loading="lazy" />
-                        : <span className="home-prod-emoji">{p.icon || '📦'}</span>}
-                    </div>
-                    <div className="home-prod-body">
-                      <span className="home-prod-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</span>
-                      <p className="home-prod-desc">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
-                      <span className="home-prod-view-btn">
-                        <i className="fas fa-eye"></i>
-                        {lang === 'ar' ? 'عرض المنتج' : 'View Product'}
-                      </span>
-                    </div>
-                  </Link>
-                </Reveal>
-              ))}
+              {featured.map((p, i) => {
+                const productImages = [];
+                if (p.image) productImages.push(p.image);
+                if (p.gallery && Array.isArray(p.gallery)) {
+                  p.gallery.forEach(img => {
+                    if (img && !productImages.includes(img)) productImages.push(img);
+                  });
+                }
+                return (
+                  <Reveal key={p.id} delay={(i % 4) * 80} direction="up">
+                    <Link to={`/products/${p.id}`} className="home-product-card" style={{ textDecoration: 'none' }}>
+                      {p.badge && <span className="home-prod-badge">{p.badge}</span>}
+                      <div className="home-prod-img-wrap">
+                        <ProductImageSlider images={productImages} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} />
+                      </div>
+                      <div className="home-prod-body">
+                        <span className="home-prod-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</span>
+                        <p className="home-prod-desc">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
+                        <span className="home-prod-view-btn">
+                          <i className="fas fa-eye"></i>
+                          {lang === 'ar' ? 'عرض المنتج' : 'View Product'}
+                        </span>
+                      </div>
+                    </Link>
+                  </Reveal>
+                );
+              })}
             </div>
           )}
           <Reveal direction="up" delay={200}>

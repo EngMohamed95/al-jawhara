@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
+import ProductImageSlider from '../../components/ProductImageSlider';
 import './index.css';
 
 
@@ -156,26 +157,33 @@ const Products = () => {
                     <i className="fas fa-box-open" aria-hidden="true"></i>
                     <p>{t('products.empty')}</p>
                   </div>
-                ) : filtered.map((p, i) => (
-                  <Reveal key={p.id} delay={(i % 4) * 70} direction="up">
-                  <Link to={`/products/${p.id}`} className="product-card" role="listitem" style={{ textDecoration: 'none' }}>
-                    <div className="product-card-img">
-                      {p.badge && <span className="product-badge">{p.badge}</span>}
-                      {p.image
-                        ? <img src={p.image} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} className="product-card-photo" />
-                        : p.icon || '📦'}
-                    </div>
-                    <div className="product-card-body">
-                      <span className="product-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</span>
-                      <p className="product-description">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
-                      <span className="product-view-btn">
-                        <i className="fas fa-eye" aria-hidden="true"></i>
-                        {lang === 'ar' ? 'عرض المنتج' : 'View Product'}
-                      </span>
-                    </div>
-                  </Link>
-                  </Reveal>
-                ))}
+                ) : filtered.map((p, i) => {
+                  const productImages = [];
+                  if (p.image) productImages.push(p.image);
+                  if (p.gallery && Array.isArray(p.gallery)) {
+                    p.gallery.forEach(img => {
+                      if (img && !productImages.includes(img)) productImages.push(img);
+                    });
+                  }
+                  return (
+                    <Reveal key={p.id} delay={(i % 4) * 70} direction="up">
+                      <Link to={`/products/${p.id}`} className="product-card" role="listitem" style={{ textDecoration: 'none' }}>
+                        <div className="product-card-img">
+                          {p.badge && <span className="product-badge">{p.badge}</span>}
+                          <ProductImageSlider images={productImages} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} />
+                        </div>
+                        <div className="product-card-body">
+                          <span className="product-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</span>
+                          <p className="product-description">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
+                          <span className="product-view-btn">
+                            <i className="fas fa-eye" aria-hidden="true"></i>
+                            {lang === 'ar' ? 'عرض المنتج' : 'View Product'}
+                          </span>
+                        </div>
+                      </Link>
+                    </Reveal>
+                  );
+                })}
               </div>
             </>
           )}

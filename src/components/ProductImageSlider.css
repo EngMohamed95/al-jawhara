@@ -1,0 +1,132 @@
+.prod-slider-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+}
+
+.prod-slider-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.prod-slider-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.prod-slider-img.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.prod-slider-single-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.prod-slider-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  color: var(--text-light);
+  font-size: 2rem;
+}
+
+/* Slide Arrows */
+.prod-slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) scale(0.9);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 11px;
+  opacity: 0;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Show arrows on hovering the card container */
+.home-product-card:hover .prod-slider-btn,
+.product-card:hover .prod-slider-btn {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.prod-slider-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.prod-slider-btn.prev {
+  right: 8px; /* Position prev on the right for RTL layout */
+}
+
+.prod-slider-btn.next {
+  left: 8px; /* Position next on the left for RTL layout */
+}
+
+/* Dots Indicator */
+.prod-slider-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 4px 8px;
+  border-radius: 99px;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.home-product-card:hover .prod-slider-dots,
+.product-card:hover .prod-slider-dots {
+  opacity: 1;
+}
+
+.prod-slider-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prod-slider-dot.active {
+  background: white;
+  transform: scale(1.2);
+}
