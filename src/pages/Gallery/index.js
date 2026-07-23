@@ -4,7 +4,7 @@ import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
 import './index.css';
 
-const GALLERY_IMAGES = Array.from({ length: 32 }, (_, i) => {
+const GALLERY_IMAGES = Array.from({ length: 27 }, (_, i) => {
   const num = String(i).padStart(2, '0');
   return {
     id: i,
@@ -12,7 +12,7 @@ const GALLERY_IMAGES = Array.from({ length: 32 }, (_, i) => {
     titleAr: 'معرض الجوهرة',
     titleEn: 'Al-Jawhara Gallery'
   };
-});
+}).filter(img => img.id !== 1);
 
 const Gallery = () => {
   const { lang } = useLanguage();
