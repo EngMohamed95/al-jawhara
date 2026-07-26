@@ -8,7 +8,7 @@ import ProductImageSlider from '../../components/ProductImageSlider';
 import { clients } from '../Clients/clientsList';
 import './index.css';
 
-const DEFAULT_HERO_VIDEO  = '/JawharaNewIntro.mp4';
+const DEFAULT_HERO_VIDEO  = '/videos/الجوهرة.mp4';
 const DEFAULT_HERO_POSTER = 'https://al-jawhara.com/wp-content/uploads/revslider/video-media/JawharaNewIntro_59_layer.jpeg';
 
 const featuredClients = clients.filter(

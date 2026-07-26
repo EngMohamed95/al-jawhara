@@ -27,3 +27,8 @@ public/api/email-config.php
 
 # RAW Images
 *.ARW
+
+# Large Video Files
+public/videos/الجوهرة.mp4
+public/videos/JawharaMovie.mp4
+
