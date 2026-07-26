@@ -108,7 +108,10 @@ try {
         paymentSettings TEXT, -- JSON string
         shippingZones TEXT, -- JSON string
         whatsappNumbers TEXT, -- JSON string
-        mapEmbedUrl TEXT
+        mapEmbedUrl TEXT,
+        heroVideoUrl TEXT,
+        heroPosterImg TEXT,
+        heroImage TEXT
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
     // Ensure mapEmbedUrl column exists in case the table already exists
@@ -117,6 +120,17 @@ try {
     } catch (Exception $e) {
         // Column already exists or other error
     }
+
+    // Ensure hero video and image columns exist
+    try {
+        $pdo->exec("ALTER TABLE site_content ADD COLUMN heroVideoUrl TEXT NULL;");
+    } catch (Exception $e) {}
+    try {
+        $pdo->exec("ALTER TABLE site_content ADD COLUMN heroPosterImg TEXT NULL;");
+    } catch (Exception $e) {}
+    try {
+        $pdo->exec("ALTER TABLE site_content ADD COLUMN heroImage TEXT NULL;");
+    } catch (Exception $e) {}
 
     echo "Tables checked/created successfully.\n";
 
@@ -267,6 +281,8 @@ try {
             }
         }
     }
+    // Set the default video path if it's currently unset or pointing to the old video
+    $pdo->exec("UPDATE site_content SET heroVideoUrl = '/videos/الجوهرة.mp4' WHERE id = 1 AND (heroVideoUrl IS NULL OR heroVideoUrl = '' OR heroVideoUrl = '/JawharaNewIntro.mp4');");
     
     echo json_encode(["status" => "success", "message" => "Migration completed successfully."]);
 } catch (Exception $e) {
