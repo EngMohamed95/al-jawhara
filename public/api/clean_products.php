@@ -8,7 +8,7 @@ header('Content-Type: text/plain; charset=utf-8');
 
 try {
     echo "Cleaning products from live database...\n";
-    $allowedIds = [1, 8, 12, 13, 15, 17, 19, 21, 27, 28, 36, 39, 41];
+    $allowedIds = [1, 8, 9, 12, 13, 15, 17, 19, 21, 24, 27, 28, 36, 39];
     $inQuery = implode(',', array_map('intval', $allowedIds));
     
     // Delete products not in allowed list
