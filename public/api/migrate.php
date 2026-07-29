@@ -282,7 +282,7 @@ try {
         }
     }
     // Set the default video path if it's currently unset or pointing to the old video
-    $pdo->exec("UPDATE site_content SET heroVideoUrl = '/videos/الجوهرة.mp4' WHERE id = 1 AND (heroVideoUrl IS NULL OR heroVideoUrl = '' OR heroVideoUrl = '/JawharaNewIntro.mp4');");
+    $pdo->exec("UPDATE site_content SET heroVideoUrl = '/videos/jawhara-hero.mp4' WHERE id = 1 AND (heroVideoUrl IS NULL OR heroVideoUrl = '' OR heroVideoUrl = '/JawharaNewIntro.mp4' OR heroVideoUrl = '/videos/الجوهرة.mp4');");
     
     echo json_encode(["status" => "success", "message" => "Migration completed successfully."]);
 } catch (Exception $e) {
