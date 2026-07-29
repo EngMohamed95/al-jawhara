@@ -166,9 +166,9 @@
       "id": 21,
       "icon": "✨",
       "image": "/products-image/21.PNG",
-      "name": "ماكسي رول هايرين 300 متر / 2 طبقة - موديل 21",
-      "nameEn": "Maxi Roll Hyrain 300 mtr / 2 ply - Model 21",
-      "category": "facial",
+      "name": "ماكسي رول حراير 300 متر / 2 طبقة - موديل 21",
+      "nameEn": "Maxi Roll Hrayer 300 mtr / 2 ply - Model 21",
+      "category": "rolls",
       "price": 1.5,
       "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
       "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
@@ -179,7 +179,17 @@
         "صنع في الكويت"
       ],
       "stock": 2050,
-      "status": "active"
+      "status": "active",
+      "sku": "",
+      "gallery": [],
+      "isPhysical": true,
+      "weight": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "countryOfOrigin": "KW",
+      "hsCode": "",
+      "variants": []
     },
     {
       "id": 24,
@@ -244,7 +254,7 @@
       "image": "/products-image/204.PNG",
       "name": "بلاستيك: نايس 600 ورقة - موديل 204",
       "nameEn": "Plastic: Nice 600 sheets - Model 204",
-      "category": "family",
+      "category": "facial",
       "price": 1.5,
       "desc": "باقة عائلية اقتصادية تحتوي على مجموعة متنوعة من علب المناديل الفاخرة.",
       "descEn": "An economy family bundle containing a variety of premium tissue boxes.",
@@ -255,7 +265,17 @@
         "جودة ممتازة"
       ],
       "stock": 2800,
-      "status": "active"
+      "status": "active",
+      "sku": "",
+      "gallery": [],
+      "isPhysical": true,
+      "weight": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "countryOfOrigin": "KW",
+      "hsCode": "",
+      "variants": []
     },
     {
       "id": 39,
@@ -263,7 +283,7 @@
       "image": "/products-image/207.png",
       "name": "بلاستيك: الجوهرة 200 ورقة - موديل 207",
       "nameEn": "Plastic: Jawhara 200 sheets - Model 207",
-      "category": "family",
+      "category": "facial",
       "price": 1.5,
       "desc": "باقة عائلية اقتصادية تحتوي على مجموعة متنوعة من علب المناديل الفاخرة.",
       "descEn": "An economy family bundle containing a variety of premium tissue boxes.",
@@ -274,7 +294,17 @@
         "جودة ممتازة"
       ],
       "stock": 2950,
-      "status": "active"
+      "status": "active",
+      "sku": "",
+      "gallery": [],
+      "isPhysical": true,
+      "weight": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "countryOfOrigin": "KW",
+      "hsCode": "",
+      "variants": []
     }
   ],
   "orders": [
@@ -667,52 +697,18 @@
       "parentId": null
     },
     {
-      "id": 3,
-      "slug": "pocket",
-      "nameAr": "محارم جيب",
-      "nameEn": "Pocket Tissues",
-      "emoji": "",
-      "icon": "fa-bag-shopping",
-      "sortOrder": 3,
-      "status": "active",
-      "desc": "",
-      "parentId": null
-    },
-    {
-      "id": 4,
-      "slug": "towels",
-      "nameAr": "مناشف",
-      "nameEn": "Paper Towels",
-      "emoji": "",
-      "icon": "fa-droplet",
-      "sortOrder": 4,
-      "status": "active",
-      "desc": "",
-      "parentId": null
-    },
-    {
-      "id": 5,
-      "slug": "napkins",
-      "nameAr": "مناديل مائدة",
-      "nameEn": "Dinner Napkins",
-      "emoji": "",
-      "icon": "fa-utensils",
-      "sortOrder": 5,
-      "status": "active",
-      "desc": "",
-      "parentId": null
-    },
-    {
       "id": 6,
       "slug": "family",
-      "nameAr": "عروض عائلة",
-      "nameEn": "Family Bundles",
+      "nameAr": "عروض ",
+      "nameEn": " Bundles",
       "emoji": "",
       "icon": "fa-house",
       "sortOrder": 6,
       "status": "active",
       "desc": "",
-      "parentId": null
+      "parentId": null,
+      "children": [],
+      "depth": 0
     }
   ]
 }
