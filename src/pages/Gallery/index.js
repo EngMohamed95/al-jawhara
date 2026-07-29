@@ -4,15 +4,26 @@ import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
 import './index.css';
 
-const GALLERY_IMAGES = Array.from({ length: 27 }, (_, i) => {
-  const num = String(i).padStart(2, '0');
-  return {
-    id: i,
-    src: `/Photo gallery/PhotoGallery${num}.jpg`,
-    titleAr: 'معرض الجوهرة',
-    titleEn: 'Al-Jawhara Gallery'
-  };
-}).filter(img => img.id !== 1);
+/* صورة الغلاف — الصورة الجماعية لفريق العمل */
+const COVER_IMAGE = '/Photo gallery/PhotoGallery04.jpg';
+
+/*
+ * قائمة منسّقة يدوياً: صور المصنع وفريق العمل فقط.
+ * مستبعد منها:
+ *  - الصور المكرّرة (16=00، 17/23/02=04، 19=06، 10=08، 25=12)
+ *  - الصورة 09 (نسخة معطوبة من 08 بشريط أسود على اليسار)
+ *  - صور المنتجات (03، 21، 22، 24، 26) — مكانها صفحة المنتجات
+ *  - الصورة الجماعية 04 لأنها ظاهرة بالفعل كغلاف الصفحة
+ */
+const GALLERY_IMAGES = [
+  '00', '05', '06', '07', '08', '11',
+  '12', '13', '14', '15', '18', '20',
+].map(num => ({
+  id: num,
+  src: `/Photo gallery/PhotoGallery${num}.jpg`,
+  titleAr: 'معرض الجوهرة',
+  titleEn: 'Al-Jawhara Gallery'
+}));
 
 const Gallery = () => {
   const { lang } = useLanguage();
@@ -43,7 +54,7 @@ const Gallery = () => {
         keywords="صور مصنع مناديل، مصنع الجوهرة، صور الجوهرة، tissue factory photo gallery"
       />
 
-      <header className="page-header gallery-header" style={{ backgroundImage: "linear-gradient(135deg, rgba(6, 80, 137, 0.95), rgba(11, 110, 79, 0.95)), url('/Photo gallery/PhotoGallery00.jpg')" }}>
+      <header className="page-header gallery-header" style={{ backgroundImage: `url('${COVER_IMAGE}')` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true">
