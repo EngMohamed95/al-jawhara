@@ -139,7 +139,7 @@
       "image": "/products-image/19.PNG",
       "name": "ماكسي رول الجوهرة 350 متر / 2 طبقة - موديل 19",
       "nameEn": "Maxi Roll Jawhara 350 mtr / 2 ply - Model 19",
-      "category": "facial",
+      "category": "rolls",
       "price": 1.5,
       "desc": "مناديل ورقية عالية الجودة مصنوعة من أفضل المواد الخام لتوفير النعومة والقوة.",
       "descEn": "High-quality tissue paper products made from premium raw materials for softness and strength.",
@@ -150,7 +150,17 @@
         "صنع في الكويت"
       ],
       "stock": 1950,
-      "status": "active"
+      "status": "active",
+      "sku": "",
+      "gallery": [],
+      "isPhysical": true,
+      "weight": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "countryOfOrigin": "KW",
+      "hsCode": "",
+      "variants": []
     },
     {
       "id": 21,
