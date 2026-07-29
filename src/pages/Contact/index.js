@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
+import { resolvePageHeader } from '../../siteImages';
 import './index.css';
 
 const DEFAULT_SOCIAL = [
@@ -33,7 +34,7 @@ const Contact = () => {
     ? (sc?.workHoursEn || 'Sunday – Thursday: 8 AM – 5 PM')
     : (sc?.workHours   || t('contact.workHoursFallback'));
   const mapEmbedUrl    = sc?.mapEmbedUrl     || '';
-  const contactHeaderImg = sc?.contactHeaderImg && !sc.contactHeaderImg.includes('unsplash.com') ? sc.contactHeaderImg : '';
+  const contactHeaderImg = resolvePageHeader(sc?.contactHeaderImg);
   const socialLinks    = DEFAULT_SOCIAL.map(s => ({ ...s, href: sc?.[s.field] || '#' })).filter(s => s.href !== '#' || true);
 
   const waNum    = whatsapp.replace(/\D/g, '');
@@ -71,7 +72,7 @@ const Contact = () => {
         keywords="تواصل الجوهرة، هاتف الجوهرة، عنوان الشعيبة، طلب عرض سعر"
       />
 
-      <header className="page-header" style={contactHeaderImg ? { backgroundImage: `url(${contactHeaderImg})`, backgroundSize:'cover', backgroundPosition:'center' } : {}}>
+      <header className="page-header" style={{ backgroundImage: `url(${contactHeaderImg})` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-envelope"></i></div>

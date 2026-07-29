@@ -8,7 +8,9 @@ import ProductImageSlider from '../../components/ProductImageSlider';
 import { clients } from '../Clients/clientsList';
 import './index.css';
 
-const DEFAULT_HERO_VIDEO  = '/videos/jawhara-hero.mp4';
+/* مؤقتاً: الفيديو الأصلي (jawhara-hero.mp4) حجمه 200 ميجا والاستضافة ترفض تقديمه،
+   لذا نستخدم فيديو أخف موجود وشغّال على السيرفر لحين ضغط الأصلي. */
+const DEFAULT_HERO_VIDEO  = '/videos/AlJawharaUV.mp4';
 const DEFAULT_HERO_POSTER = 'https://al-jawhara.com/wp-content/uploads/revslider/video-media/JawharaNewIntro_59_layer.jpeg';
 
 const featuredClients = clients.filter(

@@ -3,6 +3,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../translations';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
+import { resolvePageHeader } from '../../siteImages';
 import './index.css';
 
 const About = () => {
@@ -16,7 +17,7 @@ const About = () => {
   const ceoQuote    = sc?.ceoQuote   || '';
   const ceoImage    = sc?.ceoImage   || '';
   const aboutStoryImg   = sc?.aboutStoryImg   || '';
-  const aboutHeaderImg  = sc?.aboutHeaderImg && !sc.aboutHeaderImg.includes('unsplash.com') ? sc.aboutHeaderImg : '';
+  const aboutHeaderImg  = resolvePageHeader(sc?.aboutHeaderImg);
   const missionText = sc?.missionText || t('about.missionText');
   const visionText  = sc?.visionText  || t('about.visionText');
   const area     = sc?.factoryArea           || '4,500';
@@ -48,7 +49,7 @@ const About = () => {
       />
 
       {/* Header */}
-      <header className="page-header" style={aboutHeaderImg ? { backgroundImage: `url(${aboutHeaderImg})`, backgroundSize:'cover', backgroundPosition:'center' } : {}}>
+      <header className="page-header" style={{ backgroundImage: `url(${aboutHeaderImg})` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-circle-info"></i></div>

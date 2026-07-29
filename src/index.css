@@ -282,18 +282,29 @@ h1,h2,h3,h4,h5,h6 { font-weight: 700; line-height: 1.3; }
 /* ── Page Header ── */
 .page-header {
   background: var(--page-header-bg);
-  background-size: cover; background-position: center 60%;
+  background-size: cover;
+  /* 65% ينزل بالإطار لأسفل حتى يظهر صاحب الشركة والصف الأمامي في الصورة الجماعية */
+  background-position: center 65%;
+  background-repeat: no-repeat;
+  min-height: 420px;
   padding: 80px 0; color: white; text-align: center; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
 }
+/* تعتيم خفيف مركّز خلف النص بدل تغطية الصورة بالكامل — الصورة تفضل واضحة والنص مقروء */
 .page-header::before {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(4,61,107,0.68) 0%, rgba(6,80,137,0.58) 100%);
+  background:
+    radial-gradient(ellipse 62% 78% at 50% 50%, rgba(4,61,107,0.70) 0%, rgba(4,61,107,0.28) 62%, rgba(4,61,107,0.10) 100%),
+    linear-gradient(180deg, rgba(4,61,107,0.34) 0%, rgba(4,61,107,0.12) 45%, rgba(4,61,107,0.44) 100%);
   z-index: 0;
 }
-.page-header-content { position: relative; z-index: 1; }
-.page-header-icon { font-size: 3rem; margin-bottom: 15px; opacity: 0.9; }
+.page-header-content { position: relative; z-index: 1; width: 100%; }
+.page-header-icon { font-size: 3rem; margin-bottom: 15px; opacity: 0.95; }
 .page-header h1 { font-size: 2.5rem; font-weight: 800; color: white; margin-bottom: 10px; }
-.page-header p { font-size: 1.05rem; color: rgba(255,255,255,0.72); max-width: 500px; margin: 0 auto; }
+.page-header p { font-size: 1.05rem; color: rgba(255,255,255,0.95); max-width: 500px; margin: 0 auto; }
+.page-header h1,
+.page-header p,
+.page-header-icon { text-shadow: 0 2px 12px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.9); }
 
 /* ── Product Cards ── */
 .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; align-items: start; }

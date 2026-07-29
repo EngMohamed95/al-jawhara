@@ -1,28 +1,6 @@
 /* ── Gallery Page Layout ── */
 
-.gallery-header {
-  background-size: cover;
-  background-position: center 35%;   /* رفع الإطار لأعلى حتى تظهر وجوه الفريق */
-  min-height: 420px;
-  display: flex;
-  align-items: center;
-}
-
-/* تعتيم خفيف فقط — الصورة الجماعية تظل واضحة والنص يبقى مقروءاً
-   عبر تدرّج مركّز خلف النص بدل تغطية الصورة كلها */
-.gallery-header::before {
-  background:
-    radial-gradient(ellipse 60% 75% at 50% 50%, rgba(4,61,107,0.72) 0%, rgba(4,61,107,0.30) 60%, rgba(4,61,107,0.12) 100%),
-    linear-gradient(180deg, rgba(4,61,107,0.35) 0%, rgba(4,61,107,0.15) 45%, rgba(4,61,107,0.45) 100%);
-}
-
-.gallery-header h1,
-.gallery-header p,
-.gallery-header .page-header-icon {
-  text-shadow: 0 2px 12px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.9);
-}
-
-.gallery-header p { color: rgba(255,255,255,0.95); }
+/* الغلاف يرث تنسيق ‎.page-header‎ الموحّد من index.css */
 
 .gallery-grid {
   display: grid;

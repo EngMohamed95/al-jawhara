@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
+import { resolvePageHeader } from '../../siteImages';
 import './index.css';
 
 import { clients } from './clientsList';
@@ -43,7 +44,7 @@ const Clients = () => {
   const { siteContent: sc } = useApp();
   const [activeSectorKey, setActiveSectorKey] = useState('all');
 
-  const clientsHeaderImg = sc?.clientsHeaderImg && !sc.clientsHeaderImg.includes('unsplash.com') ? sc.clientsHeaderImg : '';
+  const clientsHeaderImg = resolvePageHeader(sc?.clientsHeaderImg);
 
   // Only display clients that have a valid local logo
   const clientsWithLogos = clients.filter(
@@ -69,7 +70,7 @@ const Clients = () => {
         keywords="عملاء الجوهرة، كارفور الكويت، سلطان سنتر، جمعيات تعاونية، مطاعم الكويت"
       />
 
-      <header className="page-header" style={clientsHeaderImg ? { backgroundImage: `url(${clientsHeaderImg})`, backgroundSize:'cover', backgroundPosition:'center' } : {}}>
+      <header className="page-header" style={{ backgroundImage: `url(${clientsHeaderImg})` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-handshake"></i></div>

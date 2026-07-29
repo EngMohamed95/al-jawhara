@@ -29,6 +29,8 @@ public/api/email-config.php
 *.ARW
 
 # Large Video Files
-public/videos/jawhara-hero.mp4
 public/videos/JawharaMovie.mp4
+
+# نسخ الفيديو الأصلية عالية الحجم — خارج مجلد النشر، للضغط قبل الاستخدام
+media-source/
 
