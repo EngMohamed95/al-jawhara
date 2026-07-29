@@ -2,10 +2,8 @@ import { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
+import { DEFAULT_PAGE_HEADER } from '../../siteImages';
 import './index.css';
-
-/* صورة الغلاف — الصورة الجماعية لفريق العمل */
-const COVER_IMAGE = '/Photo gallery/PhotoGallery04.jpg';
 
 /*
  * قائمة منسّقة يدوياً: صور المصنع وفريق العمل فقط.
@@ -54,7 +52,7 @@ const Gallery = () => {
         keywords="صور مصنع مناديل، مصنع الجوهرة، صور الجوهرة، tissue factory photo gallery"
       />
 
-      <header className="page-header gallery-header" style={{ backgroundImage: `url('${COVER_IMAGE}')` }}>
+      <header className="page-header gallery-header" style={{ backgroundImage: `url('${DEFAULT_PAGE_HEADER}')` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true">

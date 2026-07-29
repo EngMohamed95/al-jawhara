@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
-import { resolvePageHeader } from '../../siteImages';
+import { DEFAULT_PAGE_HEADER } from '../../siteImages';
 import './index.css';
 
 import { clients } from './clientsList';
@@ -41,10 +40,8 @@ const ClientCard = ({ client, sectorLabel, lang }) => {
 
 const Clients = () => {
   const { t, lang } = useLanguage();
-  const { siteContent: sc } = useApp();
   const [activeSectorKey, setActiveSectorKey] = useState('all');
 
-  const clientsHeaderImg = resolvePageHeader(sc?.clientsHeaderImg);
 
   // Only display clients that have a valid local logo
   const clientsWithLogos = clients.filter(
@@ -70,7 +67,7 @@ const Clients = () => {
         keywords="عملاء الجوهرة، كارفور الكويت، سلطان سنتر، جمعيات تعاونية، مطاعم الكويت"
       />
 
-      <header className="page-header" style={{ backgroundImage: `url(${clientsHeaderImg})` }}>
+      <header className="page-header" style={{ backgroundImage: `url(${DEFAULT_PAGE_HEADER})` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-handshake"></i></div>

@@ -5,7 +5,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
 import ProductImageSlider from '../../components/ProductImageSlider';
-import { resolvePageHeader } from '../../siteImages';
+import { DEFAULT_PAGE_HEADER } from '../../siteImages';
 import './index.css';
 
 
@@ -14,7 +14,7 @@ const normalizeQ = (s = '') =>
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
 
 const Products = () => {
-  const { groupedProducts, loading, error, cartTotalQty, siteContent: sc, categories } = useApp();
+  const { groupedProducts, loading, error, cartTotalQty, categories } = useApp();
   const { t, lang } = useLanguage();
   const [activeCat,   setActiveCat]   = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,7 +25,6 @@ const Products = () => {
     setCurrentPage(1);
   }, [activeCat, searchQuery]);
 
-  const productsHeaderImg = resolvePageHeader(sc?.productsHeaderImg);
 
   const getDescendantSlugs = (slug) => {
     const cat = (categories || []).find(c => c.slug === slug);
@@ -75,7 +74,7 @@ const Products = () => {
         keywords="منتجات الجوهرة، مناديل وجه، رولات مطبخ، محارم جيب، مناشف ورق"
       />
 
-      <header className="page-header" style={{ backgroundImage: `url(${productsHeaderImg})` }}>
+      <header className="page-header" style={{ backgroundImage: `url(${DEFAULT_PAGE_HEADER})` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-box-open"></i></div>

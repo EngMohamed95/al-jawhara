@@ -3,7 +3,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../translations';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
-import { resolvePageHeader } from '../../siteImages';
+import { DEFAULT_PAGE_HEADER } from '../../siteImages';
 import './index.css';
 
 const About = () => {
@@ -17,7 +17,6 @@ const About = () => {
   const ceoQuote    = sc?.ceoQuote   || '';
   const ceoImage    = sc?.ceoImage   || '';
   const aboutStoryImg   = sc?.aboutStoryImg   || '';
-  const aboutHeaderImg  = resolvePageHeader(sc?.aboutHeaderImg);
   const missionText = sc?.missionText || t('about.missionText');
   const visionText  = sc?.visionText  || t('about.visionText');
   const area     = sc?.factoryArea           || '4,500';
@@ -49,7 +48,7 @@ const About = () => {
       />
 
       {/* Header */}
-      <header className="page-header" style={{ backgroundImage: `url(${aboutHeaderImg})` }}>
+      <header className="page-header" style={{ backgroundImage: `url(${DEFAULT_PAGE_HEADER})` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-circle-info"></i></div>
@@ -94,28 +93,6 @@ const About = () => {
               </div>
             )}
           </div>
-        </div>
-      </section>
-
-      {/* Corporate Video Section */}
-      <section className="section about-video-section" aria-label={lang === 'ar' ? 'فيديو تعريفي' : 'Corporate Video'}>
-        <div className="container">
-          <Reveal direction="up">
-            <div className="section-header">
-              <h2 className="section-title">{lang === 'ar' ? 'فيديو تعريفي' : 'Corporate Video'}</h2>
-              <p className="section-subtitle">
-                {lang === 'ar' ? 'شاهد هذا الفيديو التعريفي عن شركة الجوهرة ومراحل الإنتاج المتطورة' : 'Watch this corporate video about Al-Jawhara and our advanced production stages'}
-              </p>
-            </div>
-          </Reveal>
-          <Reveal direction="up" delay={100}>
-            <div className="about-video-wrap">
-              <video controls className="about-video" poster="/Photo gallery/PhotoGallery01.jpg">
-                <source src="/videos/JawharaMovie.mp4" type="video/mp4" />
-                {lang === 'ar' ? 'متصفحك لا يدعم تشغيل الفيديو.' : 'Your browser does not support the video tag.'}
-              </video>
-            </div>
-          </Reveal>
         </div>
       </section>
 
