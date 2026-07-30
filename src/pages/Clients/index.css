@@ -1,3 +1,11 @@
+/* ── Clients Page Header ──
+   عامل التعبئة 800×600؛ إزاحة 65% الافتراضية (المخصّصة للصورة الجماعية) كانت
+   هتنزل على المنضدة، فنرفعها لـ 25% ليفضل وش العامل وستاك العلب ظاهرين. */
+.clients-header {
+  background-position: center 25%;
+  background-color: #0b3d6b;
+}
+
 .clients-stats {
   display: flex;
   gap: 20px;

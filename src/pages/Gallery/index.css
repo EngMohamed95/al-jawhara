@@ -1,6 +1,12 @@
 /* ── Gallery Page Layout ── */
 
-/* الغلاف يرث تنسيق ‎.page-header‎ الموحّد من index.css */
+/* الغلاف يرث تنسيق ‎.page-header‎ الموحّد من index.css.
+   صورة خط الإنتاج 1600×778؛ إزاحة 65% الافتراضية (المخصّصة للصورة الجماعية)
+   كانت هتنزل على قواعد الماكينات، فنتوسّطها ليظهر صف الرولات. */
+.gallery-header {
+  background-position: center center;
+  background-color: #0b3d6b;
+}
 
 .gallery-grid {
   display: grid;

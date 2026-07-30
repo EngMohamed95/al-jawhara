@@ -5,7 +5,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
 import ProductImageSlider from '../../components/ProductImageSlider';
-import { DEFAULT_PAGE_HEADER } from '../../siteImages';
+import { PRODUCTS_PAGE_HEADER } from '../../siteImages';
 import './index.css';
 
 
@@ -74,7 +74,7 @@ const Products = () => {
         keywords="منتجات الجوهرة، مناديل وجه، رولات مطبخ، رول تويلت"
       />
 
-      <header className="page-header" style={{ backgroundImage: `url(${DEFAULT_PAGE_HEADER})` }}>
+      <header className="page-header page-header-banner products-header" style={{ backgroundImage: `url(${PRODUCTS_PAGE_HEADER})` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-box-open"></i></div>

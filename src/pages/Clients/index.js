@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
-import { DEFAULT_PAGE_HEADER } from '../../siteImages';
+import { CLIENTS_PAGE_HEADER } from '../../siteImages';
 import './index.css';
 
 import { clients } from './clientsList';
@@ -67,7 +67,7 @@ const Clients = () => {
         keywords="عملاء الجوهرة، كارفور الكويت، سلطان سنتر، جمعيات تعاونية، مطاعم الكويت"
       />
 
-      <header className="page-header" style={{ backgroundImage: `url(${DEFAULT_PAGE_HEADER})` }}>
+      <header className="page-header clients-header" style={{ backgroundImage: `url(${CLIENTS_PAGE_HEADER})` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-handshake"></i></div>

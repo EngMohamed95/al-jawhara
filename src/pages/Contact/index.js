@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
-import { DEFAULT_PAGE_HEADER } from '../../siteImages';
+import { CONTACT_PAGE_HEADER } from '../../siteImages';
 import './index.css';
 
 const DEFAULT_SOCIAL = [
@@ -71,7 +71,7 @@ const Contact = () => {
         keywords="تواصل الجوهرة، هاتف الجوهرة، عنوان الشعيبة، طلب عرض سعر"
       />
 
-      <header className="page-header" style={{ backgroundImage: `url(${DEFAULT_PAGE_HEADER})` }}>
+      <header className="page-header page-header-banner contact-header" style={{ backgroundImage: `url(${CONTACT_PAGE_HEADER})` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-envelope"></i></div>

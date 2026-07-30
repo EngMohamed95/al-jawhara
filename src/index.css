@@ -314,6 +314,26 @@ h1,h2,h3,h4,h5,h6 { font-weight: 700; line-height: 1.3; }
 .page-header p,
 .page-header-icon { text-shadow: 0 2px 12px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.9); }
 
+/* ── Page Header: نمط البانر الجاهز ──
+   للأغلفة التي هي بانرات مصمَّمة ونصّها مطبوع داخل الصورة (مثل OUR PRODUCTS
+   و Intimate with Hygiene). القصّ والتعتيم الافتراضيان كانا يخفيان هذا النص،
+   لذلك نعرض البانر كاملاً بلا تعتيم. كل صفحة تحدّد aspect-ratio صورتها.
+   عنوان الصفحة يبقى في الـDOM مخفيّاً بصرياً فقط حفاظاً على الـSEO وقارئ الشاشة. */
+.page-header-banner {
+  background-size: contain;
+  background-position: center center;
+  min-height: 0;
+  padding: 0;
+}
+.page-header-banner::before { background: none; }
+.page-header-banner .page-header-content {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* ── Product Cards ── */
 .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; align-items: start; }
 .product-card {

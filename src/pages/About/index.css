@@ -1,3 +1,12 @@
+/* ── About Page Header ──
+   صورة رئيس مجلس الإدارة 800×600؛ إزاحة 65% الافتراضية (المخصّصة للصورة
+   الجماعية) كانت هتقصّ الوجه، فننزل لـ 28% رأسياً و35% أفقياً ليفضل الوجه ظاهر
+   على الشاشات العريضة والضيّقة. */
+.about-header {
+  background-position: 35% 28%;
+  background-color: #0b3d6b;
+}
+
 .about-story-section { background: white; }
 .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
 .story-badge {

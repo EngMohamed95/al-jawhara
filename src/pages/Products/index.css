@@ -1,3 +1,10 @@
+/* ── Products Page Header ──
+   بانر "OUR PRODUCTS" — يرث ‎.page-header-banner‎ ويحدّد نسبته فقط. */
+.products-header {
+  aspect-ratio: 1600 / 450;
+  background-color: #0b3d6b;
+}
+
 /* View product button on card */
 .product-view-btn {
   display: flex; align-items: center; justify-content: center; gap: 8px;

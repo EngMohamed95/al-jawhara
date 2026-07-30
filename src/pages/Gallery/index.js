@@ -2,25 +2,43 @@ import { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
-import { DEFAULT_PAGE_HEADER } from '../../siteImages';
+import { GALLERY_PAGE_HEADER } from '../../siteImages';
 import './index.css';
 
 /*
- * قائمة منسّقة يدوياً: صور المصنع وفريق العمل فقط.
- * مستبعد منها:
- *  - الصور المكرّرة (16=00، 17/23/02=04، 19=06، 10=08، 25=12)
- *  - الصورة 09 (نسخة معطوبة من 08 بشريط أسود على اليسار)
- *  - صور المنتجات (03، 21، 22، 24، 26) — مكانها صفحة المنتجات
- *  - الصورة الجماعية 04 لأنها ظاهرة بالفعل كغلاف الصفحة
+ * صور المصنع بالترتيب المطلوب:
+ * رئيس مجلس الإدارة → المكان والأعمال → المكن وخطوط الإنتاج → المنتجات.
+ * الملفات منسوخة من مجلد "Photo gallery" بأسماء مرتّبة ونظيفة تحت /gallery
+ * لأن الأسماء الأصلية فيها مسافات وأقواس.
+ * مستبعد منها بانرا التصميم (OUR PRODUCTS و Intimate with Hygiene) لأنهما
+ * عريضان ويظهران مقصوصين داخل كروت 4:3 — مكانهما أغلفة صفحتَي المنتجات والتواصل.
  */
 const GALLERY_IMAGES = [
-  '00', '05', '06', '07', '08', '11',
-  '12', '13', '14', '15', '18', '20',
-].map(num => ({
-  id: num,
-  src: `/Photo gallery/PhotoGallery${num}.jpg`,
-  titleAr: 'معرض الجوهرة',
-  titleEn: 'Al-Jawhara Gallery'
+  // ── رئيس مجلس الإدارة ──
+  ['01-ceo-desk',        'رئيس مجلس الإدارة',        'Chairman'],
+  ['02-ceo-portrait',    'رئيس مجلس الإدارة',        'Chairman'],
+  ['03-ceo-meeting',     'لقاءات العمل',             'Business Meetings'],
+  ['04-ceo-office-wide', 'لقاءات العمل',             'Business Meetings'],
+  // ── المكان والأعمال ──
+  ['05-team-group',      'فريق العمل',               'Our Team'],
+  ['06-team-truck',      'فريق العمل والتوزيع',      'Team & Distribution'],
+  ['07-warehouse',       'المخازن والتجهيز',         'Warehouse & Handling'],
+  // ── المكن وخطوط الإنتاج ──
+  ['08-rolls-line',      'خط إنتاج الرولات',         'Paper Roll Line'],
+  ['09-rolls-line-2',    'خط إنتاج الرولات',         'Paper Roll Line'],
+  ['10-rolls-line-3',    'خط إنتاج الرولات',         'Paper Roll Line'],
+  ['11-printing-line',   'خط الطباعة',               'Printing Line'],
+  ['12-printing-line-2', 'خط الطباعة',               'Printing Line'],
+  ['13-folding-line',    'خط الطي والتغليف',         'Folding & Wrapping Line'],
+  ['14-rewinder-line',   'ماكينة إعادة اللف',        'Rewinding Machine'],
+  // ── المنتجات ──
+  ['15-packing-boxes',   'تعبئة علب المناديل',       'Tissue Box Packing'],
+  ['16-packing-rolls',   'تعبئة رولات المطبخ',       'Kitchen Roll Packing'],
+].map(([id, titleAr, titleEn]) => ({
+  id,
+  src: `/gallery/${id}.jpg`,
+  titleAr,
+  titleEn,
 }));
 
 const Gallery = () => {
@@ -52,7 +70,7 @@ const Gallery = () => {
         keywords="صور مصنع مناديل، مصنع الجوهرة، صور الجوهرة، tissue factory photo gallery"
       />
 
-      <header className="page-header gallery-header" style={{ backgroundImage: `url('${DEFAULT_PAGE_HEADER}')` }}>
+      <header className="page-header gallery-header" style={{ backgroundImage: `url('${GALLERY_PAGE_HEADER}')` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true">
