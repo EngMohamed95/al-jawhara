@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import { sendOrderConfirmationEmail } from '../services/emailService';
 
@@ -25,87 +25,11 @@ export const AppProvider = ({ children }) => {
   const [error, setError]             = useState(null);
   const [auth, setAuth]               = useState(getStoredAuth);
 
-  const groupedProducts = useMemo(() => {
-    const groupedMap = new Map();
-
-    products.forEach(p => {
-      const regexAr = /\s*-\s*(موديل|تصميم رقم|باقة|تصميم)\s+(\d+|\w+)/i;
-      const regexEn = /\s*-\s*(model|design\s+#|design|pack)\s+(\d+|\w+)/i;
-
-      const matchAr = p.name.match(regexAr);
-      let baseAr = p.name;
-      let variantAr = '';
-      if (matchAr) {
-        baseAr = p.name.replace(regexAr, '').trim();
-        variantAr = matchAr[0].replace(/^\s*-\s*/, '').trim();
-      }
-
-      let baseEn = p.nameEn || p.name;
-      let variantEn = '';
-      const matchEn = p.nameEn ? p.nameEn.match(regexEn) : null;
-      if (matchEn) {
-        baseEn = p.nameEn.replace(regexEn, '').trim();
-        variantEn = matchEn[0].replace(/^\s*-\s*/, '').trim();
-      } else if (matchAr) {
-        variantEn = matchAr[0].replace(/^\s*-\s*/, '').trim();
-      }
-
-      const groupKey = baseAr.toLowerCase().trim();
-
-      if (!groupedMap.has(groupKey)) {
-        groupedMap.set(groupKey, {
-          baseProduct: {
-            ...p,
-            name: baseAr,
-            nameEn: p.nameEn ? baseEn : undefined,
-            variants: []
-          },
-          rawItems: []
-        });
-      }
-
-      const group = groupedMap.get(groupKey);
-      group.rawItems.push({
-        item: p,
-        variantAr: variantAr || p.name,
-        variantEn: variantEn || p.nameEn || p.name
-      });
-    });
-
-    const result = [];
-    groupedMap.forEach(({ baseProduct, rawItems }) => {
-      if (rawItems.length > 1) {
-        const variants = rawItems.map(({ item, variantAr, variantEn }) => ({
-          id: item.id,
-          nameAr: variantAr,
-          nameEn: variantEn,
-          price: item.price,
-          stock: item.stock,
-          image: item.image,
-          sku: item.sku || `SKU-${item.id}`,
-          status: item.status
-        }));
-
-        const images = Array.from(new Set(rawItems.map(ri => ri.item.image).filter(Boolean)));
-        const activeItems = rawItems.filter(ri => ri.item.status === 'active');
-        const repItem = activeItems.length > 0 ? activeItems[0].item : rawItems[0].item;
-
-        result.push({
-          ...baseProduct,
-          id: repItem.id,
-          image: repItem.image || baseProduct.image,
-          gallery: images,
-          variants: variants,
-          status: activeItems.length > 0 ? 'active' : 'inactive',
-          stock: rawItems.reduce((sum, ri) => sum + (ri.item.stock || 0), 0)
-        });
-      } else {
-        result.push(rawItems[0].item);
-      }
-    });
-
-    return result;
-  }, [products]);
+  /* كل صف في قاعدة البيانات = منتج واحد يظهر للمستخدم، فعدد المنتجات في الموقع
+     مطابق دائماً لعددها في الداشبورد. المنتج اللي له أكثر من صورة يستخدم حقل
+     gallery، والمنتج اللي له موديلات فعلية يستخدم حقل variants — الاتنين
+     بيتظبطوا من الداشبورد، مش باستنتاج تلقائي من الاسم. */
+  const groupedProducts = products;
 
   /* ── Cart — persisted per user in localStorage ── */
   const getCartKey  = (a) => `jawhara_cart_${a?.id || 'guest'}`;

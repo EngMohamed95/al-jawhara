@@ -8,20 +8,14 @@ import './index.css';
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const { products, groupedProducts, loading, addToCart, cart, updateCartQty } = useApp();
+  const { groupedProducts, loading, addToCart, cart, updateCartQty } = useApp();
   const { lang } = useLanguage();
 
-  // Find product by its ID or where one of its variants has this ID
-  let p = groupedProducts ? groupedProducts.find(pr => String(pr.id) === String(id)) : null;
-
-  if (!p && groupedProducts && !loading && products) {
-    const rawProd = products.find(pr => String(pr.id) === String(id));
-    if (rawProd) {
-      const regexAr = /\s*-\s*(موديل|تصميم رقم|باقة|تصميم)\s+(\d+|\w+)/i;
-      const baseAr = rawProd.name.replace(regexAr, '').trim().toLowerCase();
-      p = groupedProducts.find(pr => pr.name.toLowerCase().trim() === baseAr);
-    }
-  }
+  // Find the product by its own ID, or by the ID of one of its variants
+  const p = (groupedProducts || []).find(pr =>
+    String(pr.id) === String(id) ||
+    (pr.variants || []).some(v => String(v.id) === String(id))
+  ) || null;
 
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
