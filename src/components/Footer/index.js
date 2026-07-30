@@ -58,7 +58,7 @@ const Footer = () => {
           <nav aria-label={t('footer.ourProds')}>
             <h3 className="footer-heading">{t('footer.ourProds')}</h3>
             <ul className="footer-links">
-              {['facial','rolls','pocket','towels','napkins'].map(k => (
+              {['facial','rolls'].map(k => (
                 <li key={k}><Link to="/products"><i className={`fas ${chevron}`} aria-hidden="true"></i>{t(`products.cats.${k}`)}</Link></li>
               ))}
             </ul>

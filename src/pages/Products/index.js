@@ -69,9 +69,9 @@ const Products = () => {
       <Seo
         title={t('products.title')}
         description={lang === 'ar'
-          ? 'تشكيلة متكاملة من المناديل الورقية — مناديل وجه، رولات مطبخ، محارم جيب، مناشف ورق، مناديل مائدة.'
-          : 'A complete range of tissue paper products — facial tissues, kitchen rolls, pocket tissues, paper towels, napkins.'}
-        keywords="منتجات الجوهرة، مناديل وجه، رولات مطبخ، محارم جيب، مناشف ورق"
+          ? 'تشكيلة متكاملة من المناديل الورقية — مناديل وجه ورولات مطبخ وتواليت.'
+          : 'A complete range of tissue paper products — facial tissues, kitchen and toilet rolls.'}
+        keywords="منتجات الجوهرة، مناديل وجه، رولات مطبخ، رول تويلت"
       />
 
       <header className="page-header" style={{ backgroundImage: `url(${DEFAULT_PAGE_HEADER})` }}>

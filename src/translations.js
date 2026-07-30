@@ -102,10 +102,6 @@ const t = {
     cats: {
       facial:  { ar: 'مناديل الوجه',    en: 'Facial Tissue' },
       rolls:   { ar: 'الرولات',          en: 'Rolls' },
-      pocket:  { ar: 'محارم الجيب',      en: 'Pocket' },
-      towels:  { ar: 'المناشف',          en: 'Towels' },
-      napkins: { ar: 'مناديل المائدة',   en: 'Napkins' },
-      family:  { ar: 'عروض العائلة',     en: 'Family Packs' },
     },
   },
 

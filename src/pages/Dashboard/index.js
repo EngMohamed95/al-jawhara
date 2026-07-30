@@ -12,10 +12,6 @@ import './index.css';
 const categoryLabels = {
   facial: { ar: 'مناديل وجه', en: 'Facial Tissues' },
   rolls:  { ar: 'رولات',      en: 'Rolls' },
-  pocket: { ar: 'محارم جيب',  en: 'Pocket Tissues' },
-  towels: { ar: 'مناشف',      en: 'Paper Towels' },
-  napkins:{ ar: 'مناديل مائدة', en: 'Dinner Napkins' },
-  family: { ar: 'عروض عائلة', en: 'Family Bundles' },
 };
 const orderStatusLabels  = { active: { ar: 'نشط', en: 'Active' }, pending: { ar: 'قيد المراجعة', en: 'Pending' }, inactive: { ar: 'متوقف', en: 'Inactive' }, shipped: { ar: 'تم الشحن', en: 'Shipped' }, cancelled: { ar: 'ملغي', en: 'Cancelled' } };
 const productStatusLabels= { active: { ar: 'نشط', en: 'Active' }, pending: { ar: 'قيد المراجعة', en: 'Pending' }, inactive: { ar: 'متوقف', en: 'Inactive' } };

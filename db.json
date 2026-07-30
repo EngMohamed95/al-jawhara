@@ -661,20 +661,6 @@
       "status": "active",
       "desc": "",
       "parentId": null
-    },
-    {
-      "id": 6,
-      "slug": "family",
-      "nameAr": "عروض ",
-      "nameEn": " Bundles",
-      "emoji": "",
-      "icon": "fa-house",
-      "sortOrder": 6,
-      "status": "active",
-      "desc": "",
-      "parentId": null,
-      "children": [],
-      "depth": 0
     }
   ]
 }
