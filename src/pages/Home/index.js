@@ -8,8 +8,9 @@ import ProductImageSlider from '../../components/ProductImageSlider';
 import { clients } from '../Clients/clientsList';
 import './index.css';
 
-/* خلفية الهيرو صورة ثابتة (بدون فيديو).
-   البوستر القديم كان يشير إلى مسار WordPress لم يعد موجوداً (404) بعد تحويل الموقع إلى React. */
+/* خلفية الهيرو فيديو، والصورة تعمل كـ poster وكـ fallback
+   في حال فشل تشغيل الفيديو أو على الأجهزة التي توفّر الداتا. */
+const DEFAULT_HERO_VIDEO = '/videos/herosection.mp4';
 const DEFAULT_HERO_IMAGE = '/Photo gallery/PhotoGallery08.jpg';
 
 const featuredClients = clients.filter(
@@ -26,6 +27,7 @@ const Home = () => {
   const heroTitle   = lang === 'ar' ? (sc?.heroTitle    || t('home.heroTitle'))    : t('home.heroTitle');
   const heroSub     = lang === 'ar' ? (sc?.heroSubtitle || t('home.heroSubtitle')) : t('home.heroSubtitle');
   const heroImage     = sc?.heroImage     || DEFAULT_HERO_IMAGE;
+  const heroVideo     = sc?.heroVideoUrl  || DEFAULT_HERO_VIDEO;
 
   const ceoName      = sc?.ceoName  || 'Bilal Mohammad Ghadar';
   const ceoTitle     = sc?.ceoTitle || (lang === 'ar' ? 'المدير العام' : 'General Manager');
@@ -62,11 +64,25 @@ const Home = () => {
       {/* ── Hero with video background ── */}
       <section className="hero hero-video-section" aria-label="القسم التعريفي">
 
-        {/* Background: static image */}
+        {/* Fallback layer — visible while the video loads or if it fails */}
         <div
-          className="hero-video-bg"
-          style={{ backgroundImage: `url(${heroImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+          className="hero-video-fallback"
+          style={{ backgroundImage: `url(${heroImage})` }}
           aria-hidden="true"
+        />
+
+        {/* Background: video (sits above the fallback image) */}
+        <video
+          className="hero-video-bg"
+          src={heroVideo}
+          poster={heroImage}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+          onError={e => { e.currentTarget.style.display = 'none'; }}
         />
 
         {/* Dark overlay so text is readable */}
