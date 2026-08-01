@@ -36,7 +36,7 @@ const GALLERY_IMAGES = [
   ['16-packing-rolls',   'تعبئة رولات المطبخ',       'Kitchen Roll Packing'],
 ].map(([id, titleAr, titleEn]) => ({
   id,
-  src: `/gallery/${id}.jpg`,
+  src: `/gallery-images/${id}.jpg`,
   titleAr,
   titleEn,
 }));
