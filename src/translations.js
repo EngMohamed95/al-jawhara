@@ -120,10 +120,11 @@ const t = {
       restaurants:{ ar: 'مطاعم',             en: 'Restaurants' },
       delivery:  { ar: 'توصيل طعام',        en: 'Food Delivery' },
       hotels:    { ar: 'فنادق ونوادي',       en: 'Hotels & Clubs' },
+      hospitals: { ar: 'مستشفيات',            en: 'Hospitals' },
     },
     stats: [
-      { icon: 'fa-users',  num: '80+', label: { ar: 'عميل معتمد',     en: 'Trusted Clients' } },
-      { icon: 'fa-store',  num: '6',   label: { ar: 'قطاعات مختلفة',  en: 'Sectors' } },
+      { icon: 'fa-users',  num: '70+', label: { ar: 'عميل معتمد',     en: 'Trusted Clients' } },
+      { icon: 'fa-store',  num: '7',   label: { ar: 'قطاعات مختلفة',  en: 'Sectors' } },
       { icon: 'fa-globe',  num: '3',   label: { ar: 'دول خليجية',     en: 'Gulf Countries' } },
       { icon: 'fa-star',   num: '26+', label: { ar: 'عام من الشراكة', en: 'Years of Partnership' } },
     ],
