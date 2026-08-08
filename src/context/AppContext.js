@@ -20,6 +20,7 @@ export const AppProvider = ({ children }) => {
   const [users, setUsers]             = useState([]);
   const [coupons, setCoupons]         = useState([]);
   const [categories, setCategories]   = useState([]);
+  const [clients, setClients]         = useState([]);
   const [siteContent, setSiteContent] = useState(getStoredSiteContent);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState(null);
@@ -51,13 +52,14 @@ export const AppProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const [prods, ords, usrs, content, coups, cats] = await Promise.all([
+      const [prods, ords, usrs, content, coups, cats, clis] = await Promise.all([
         api.getProducts(),
         api.getOrders(),
         api.getUsers(),
         api.getSiteContent(),
         api.getCoupons(),
         api.getCategories(),
+        api.getClients(),
       ]);
       setProducts(prods);
       setOrders(ords);
@@ -66,6 +68,7 @@ export const AppProvider = ({ children }) => {
       try { localStorage.setItem('jawhara_site_content', JSON.stringify(content)); } catch {}
       setCoupons(coups);
       setCategories(cats);
+      setClients(clis);
     } catch {
       setError('تعذر الاتصال بالخادم. تأكد من تشغيل قاعدة البيانات (npm start).');
     } finally {
@@ -134,6 +137,11 @@ export const AppProvider = ({ children }) => {
   const addCategory    = async (d)     => { const n = await api.createCategory(d);      setCategories(p => [...p, n]); return n; };
   const updateCategory = async (id, d) => { const u = await api.updateCategory(id, d);  setCategories(p => p.map(x => String(x.id) === String(id) ? u : x)); return u; };
   const deleteCategory = async (id)    => { await api.deleteCategory(id);                setCategories(p => p.filter(x => String(x.id) !== String(id))); };
+
+  /* ── Clients ── */
+  const addClient    = async (d)     => { const n = await api.createClient(d);      setClients(p => [...p, n]); return n; };
+  const updateClient = async (id, d) => { const u = await api.updateClient(id, d);  setClients(p => p.map(x => String(x.id) === String(id) ? u : x)); return u; };
+  const deleteClient = async (id)    => { await api.deleteClient(id);                setClients(p => p.filter(x => String(x.id) !== String(id))); };
 
   /* ── Orders ── */
   const updateOrderStatus = async (id, status) => {
@@ -222,12 +230,13 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{
-      products, groupedProducts, orders, users, coupons, categories, siteContent, loading, error, auth,
+      products, groupedProducts, orders, users, coupons, categories, clients, siteContent, loading, error, auth,
       login, logout, registerCustomer,
       addProduct, updateProduct, deleteProduct,
       addUser, updateUser, deleteUser,
       addCoupon, updateCoupon, deleteCoupon,
       addCategory, updateCategory, deleteCategory,
+      addClient, updateClient, deleteClient,
       updateOrderStatus,
       saveSiteContent,
       cart, addToCart, removeFromCart, updateCartQty, clearCart,

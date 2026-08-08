@@ -64,6 +64,12 @@ const api = {
   updateCategory:   (id, d)  => req(`categories/${id}`, { method: 'PUT',    body: JSON.stringify(d) }),
   deleteCategory:   (id)     => req(`categories/${id}`, { method: 'DELETE' }),
 
+  // Clients
+  getClients:    ()       => req('clients'),
+  createClient:  (data)   => req('clients',       { method: 'POST',   body: JSON.stringify(data) }),
+  updateClient:  (id, d)  => req(`clients/${id}`, { method: 'PUT',    body: JSON.stringify(d) }),
+  deleteClient:  (id)     => req(`clients/${id}`, { method: 'DELETE' }),
+
   // Coupons
   getCoupons:    ()       => req('coupons'),
   createCoupon:  (data)   => req('coupons',       { method: 'POST',   body: JSON.stringify(data) }),

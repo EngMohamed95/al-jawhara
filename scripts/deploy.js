@@ -19,11 +19,13 @@ const FTP = {
   port: 21,
 };
 
-const BUILD_DIR      = path.join(__dirname, '..', 'build');
-const REMOTE_DIR     = '/public_html';
-const REMOTE_DATA    = '/public_html/api/data.json';
-const LOCAL_BACKUP   = path.join(__dirname, '..', 'build', 'api', 'data.json');
-const LOCAL_TEMPLATE = path.join(__dirname, '..', 'public', 'api', 'data.json');
+const BUILD_DIR       = path.join(__dirname, '..', 'build');
+const REMOTE_DIR      = '/public_html';
+const REMOTE_DATA     = '/public_html/api/data.json';
+const LOCAL_BACKUP    = path.join(__dirname, '..', 'build', 'api', 'data.json');
+const LOCAL_TEMPLATE  = path.join(__dirname, '..', 'public', 'api', 'data.json');
+const REMOTE_UPLOADS  = '/public_html/api/uploads';
+const LOCAL_UPLOADS   = path.join(__dirname, '..', 'build', 'api', 'uploads');
 
 async function deploy() {
   const client = new ftp.Client();
@@ -86,6 +88,16 @@ async function deploy() {
       // سنرفع القالب كما هو
     }
 
+    // ── 1b. حفظ الصور المرفوعة من الداشبورد (منتجات، لوجوهات عملاء...) ──
+    let serverUploadsExist = false;
+    try {
+      await client.downloadToDir(LOCAL_UPLOADS, REMOTE_UPLOADS);
+      serverUploadsExist = true;
+      console.log('💾 Server api/uploads backed up successfully');
+    } catch {
+      console.log('⚠️  No existing api/uploads folder on server — nothing to back up');
+    }
+
     // ── 2. رفع الـ build كاملاً ──
     console.log('\n📦 Uploading build to server...');
     await client.ensureDir(REMOTE_DIR);
@@ -99,6 +111,12 @@ async function deploy() {
       console.log('✅ Server data restored — no data loss\n');
     } else {
       console.log('✅ Template data.json uploaded\n');
+    }
+
+    // ── 3b. إعادة رفع الصور المحفوظة (تحمي صور المنتجات ولوجوهات العملاء) ──
+    if (serverUploadsExist) {
+      await client.uploadFromDir(LOCAL_UPLOADS, REMOTE_UPLOADS);
+      console.log('✅ Server uploads restored — no image loss\n');
     }
 
     console.log('✅ Server updated: https://aljawhara.matix.one\n');

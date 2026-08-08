@@ -81,6 +81,17 @@ try {
         `desc` TEXT
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
+    // Clients Table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS clients (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        nameAr VARCHAR(255) NOT NULL,
+        sectorKey VARCHAR(50) DEFAULT 'retail',
+        logo TEXT,
+        sortOrder INT DEFAULT 0,
+        status VARCHAR(50) DEFAULT 'active'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
     // Site Content Table
     $pdo->exec("CREATE TABLE IF NOT EXISTS site_content (
         id INT PRIMARY KEY DEFAULT 1,
@@ -243,6 +254,24 @@ try {
                     ]);
                 }
                 echo "Imported coupons.\n";
+            }
+
+            // Import Clients
+            $stmt = $pdo->query("SELECT COUNT(*) FROM clients");
+            if ($stmt->fetchColumn() == 0 && isset($data['clients'])) {
+                $ins = $pdo->prepare("INSERT INTO clients (id, name, nameAr, sectorKey, logo, sortOrder, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                foreach ($data['clients'] as $cl) {
+                    $ins->execute([
+                        $cl['id'] ?? null,
+                        $cl['name'] ?? '',
+                        $cl['nameAr'] ?? '',
+                        $cl['sectorKey'] ?? 'retail',
+                        $cl['logo'] ?? null,
+                        $cl['sortOrder'] ?? 0,
+                        $cl['status'] ?? 'active'
+                    ]);
+                }
+                echo "Imported clients.\n";
             }
 
             // Import Site Content

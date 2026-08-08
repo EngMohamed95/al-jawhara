@@ -19,14 +19,25 @@ const roleLabels         = { admin: { ar: 'مدير', en: 'Admin' }, editor: { a
 const userStatusLabels   = { active: { ar: 'نشط', en: 'Active' }, suspended: { ar: 'موقوف', en: 'Suspended' }, pending: { ar: 'قيد المراجعة', en: 'Pending' }, locked: { ar: 'مقفل', en: 'Locked' } };
 
 const ROLE_PERMISSIONS = {
-  admin:  { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: true,  content: true,  reports: true,  shipping: true,  payments: true,  coupons: true,  media: true  },
-  editor: { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: false, content: true,  reports: true,  shipping: false, payments: false, coupons: true,  media: true  },
-  viewer: { products: false, categories: false, inventory: true,  orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false, media: false },
+  admin:  { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: true,  content: true,  reports: true,  shipping: true,  payments: true,  coupons: true,  media: true,  clients: true  },
+  editor: { products: true,  categories: true,  inventory: true,  orders: true,  invoices: true,  users: false, content: true,  reports: true,  shipping: false, payments: false, coupons: true,  media: true,  clients: true  },
+  viewer: { products: false, categories: false, inventory: true,  orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false, media: false, clients: false },
 };
 
 const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '', countryOfOrigin: 'KW', hsCode: '', variants: [] };
 const emptyUser    = { username: '', password: '', name: '', email: '', phone: '', role: 'viewer', status: 'active' };
 const emptyCoupon  = { code: '', type: 'percent', value: '', minOrder: '', maxUses: '', expiry: '', status: 'active', desc: '' };
+const emptyClient  = { name: '', nameAr: '', sectorKey: 'retail', logo: '', sortOrder: 0, status: 'active' };
+const CLIENT_SECTORS = ['retail', 'coops', 'cafes', 'restaurants', 'delivery', 'hotels', 'hospitals'];
+const clientSectorLabels = {
+  retail:      { ar: 'تجزئة',           en: 'Retail' },
+  coops:       { ar: 'جمعيات تعاونية',  en: 'Co-ops' },
+  cafes:       { ar: 'كافيهات',         en: 'Cafes' },
+  restaurants: { ar: 'مطاعم',           en: 'Restaurants' },
+  delivery:    { ar: 'توصيل طعام',      en: 'Food Delivery' },
+  hotels:      { ar: 'فنادق ونوادي',    en: 'Hotels & Clubs' },
+  hospitals:   { ar: 'مستشفيات',        en: 'Hospitals' },
+};
 
 /* ── Translation dictionary ── */
 const DASH_T = {
@@ -93,6 +104,15 @@ const DASH_T = {
   'users.role':      { ar: 'الدور',        en: 'Role' },
   'users.status':    { ar: 'الحالة',       en: 'Status' },
   'users.actions':   { ar: 'إجراءات',      en: 'Actions' },
+  // Clients
+  'nav.clients':      { ar: 'العملاء',            en: 'Clients' },
+  'clients.title':    { ar: 'العملاء',            en: 'Clients' },
+  'clients.add':      { ar: 'إضافة عميل',         en: 'Add Client' },
+  'clients.name':     { ar: 'الاسم (إنجليزي)',    en: 'Name (EN)' },
+  'clients.nameAr':   { ar: 'الاسم (عربي)',       en: 'Name (AR)' },
+  'clients.sector':   { ar: 'القطاع',             en: 'Sector' },
+  'clients.logo':     { ar: 'الشعار',             en: 'Logo' },
+  'clients.actions':  { ar: 'إجراءات',            en: 'Actions' },
   // Coupons
   'coupons.title':   { ar: 'الكوبونات',    en: 'Coupons' },
   'coupons.add':     { ar: 'إضافة كوبون',  en: 'Add Coupon' },
@@ -334,12 +354,13 @@ const getDescendantSlugs = (slug, cats) => {
 
 const Dashboard = () => {
   const {
-    products, orders, users, coupons, categories, siteContent,
+    products, orders, users, coupons, categories, clients, siteContent,
     loading, error, auth,
     addProduct, updateProduct, deleteProduct,
     addUser, updateUser, deleteUser,
     addCoupon, updateCoupon, deleteCoupon,
     addCategory, updateCategory, deleteCategory,
+    addClient, updateClient, deleteClient,
     updateOrderStatus,
     saveSiteContent,
   } = useApp();
@@ -756,6 +777,48 @@ const Dashboard = () => {
     } catch { setCouponErr('حدث خطأ أثناء الحفظ.'); }
   };
 
+  /* ── Client modal ── */
+  const [clientModal, setClientModal] = useState(null);
+  const [editClientRow, setEditClientRow] = useState(null);
+  const [clientForm,  setClientForm]  = useState(emptyClient);
+  const [clientSaved, setClientSaved] = useState(false);
+  const [clientErr,   setClientErr]   = useState('');
+  const [clientLogoPreview, setClientLogoPreview] = useState('');
+  const [uploadingClientLogo, setUploadingClientLogo] = useState(false);
+
+  const openAddClient  = () => { setClientForm(emptyClient); setClientLogoPreview(''); setClientErr(''); setClientSaved(false); setClientModal('add'); };
+  const openEditClient = (c) => {
+    setClientForm({ name: c.name, nameAr: c.nameAr, sectorKey: c.sectorKey || 'retail', logo: c.logo || '', sortOrder: c.sortOrder || 0, status: c.status || 'active' });
+    setClientLogoPreview(''); setEditClientRow(c); setClientErr(''); setClientSaved(false); setClientModal('edit');
+  };
+  const closeClientModal = () => { setClientModal(null); setEditClientRow(null); setClientLogoPreview(''); };
+
+  const handleClientLogoChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingClientLogo(true);
+    const url = await uploadFile(file);
+    if (url) { setClientForm(p => ({ ...p, logo: url })); setClientLogoPreview(url); }
+    setUploadingClientLogo(false);
+  };
+
+  const handleClientSave = async (e) => {
+    e.preventDefault(); setClientErr('');
+    if (!clientForm.name.trim() || !clientForm.nameAr.trim()) { setClientErr('اسم العميل بالعربي والإنجليزي مطلوب'); return; }
+    if (!clientForm.logo) { setClientErr('شعار العميل مطلوب'); return; }
+    const data = { ...clientForm, sortOrder: parseInt(clientForm.sortOrder) || 0 };
+    try {
+      if (clientModal === 'add') await addClient(data);
+      else await updateClient(editClientRow.id, { ...editClientRow, ...data });
+      setClientSaved(true); setTimeout(closeClientModal, 900);
+    } catch { setClientErr('حدث خطأ أثناء الحفظ.'); }
+  };
+
+  const handleDeleteClient = async (c) => {
+    if (!window.confirm(`هل أنت متأكد من حذف "${c.name}"؟`)) return;
+    try { await deleteClient(c.id); } catch { alert('تعذر الحذف.'); }
+  };
+
   /* ── Site Content ── */
   const [contentForm,    setContentForm]    = useState(null);
   const [contentSaved,   setContentSaved]   = useState(false);
@@ -1072,6 +1135,12 @@ const Dashboard = () => {
       [c.code, c.type === 'percent' ? 'نسبة' : 'مبلغ', c.desc, c.status === 'active' ? 'نشط' : 'متوقف'].some(f => ns(f).includes(q))
     );
   }, [coupons, dashSearch]);
+
+  const filteredClients = useMemo(() => {
+    const q = ns(dashSearch);
+    if (!q) return clients;
+    return clients.filter(c => ns(c.name).includes(q) || ns(c.nameAr).includes(q) || ns(c.sectorKey).includes(q));
+  }, [clients, dashSearch]);
 
   /* ── Analytics ── */
   const [analyticsRange, setAnalyticsRange] = useState('30d'); // 'today'|'7d'|'30d'|'month'|'all'
@@ -2114,9 +2183,11 @@ const Dashboard = () => {
             <div>
               <div className="dash-header-row" style={{ marginBottom: 0 }}>
                 <div className="dashboard-title" style={{ margin: 0 }}>{dt('content.title')}</div>
-                <button className="btn btn-green btn-sm" onClick={handleContentSave} disabled={contentLoading}>
-                  {contentLoading ? <><i className="fas fa-spinner fa-spin"></i> {dt('common.saving')}</> : <><i className="fas fa-save"></i> {dt('content.saveAll')}</>}
-                </button>
+                {contentTab !== 'clients' && (
+                  <button className="btn btn-green btn-sm" onClick={handleContentSave} disabled={contentLoading}>
+                    {contentLoading ? <><i className="fas fa-spinner fa-spin"></i> {dt('common.saving')}</> : <><i className="fas fa-save"></i> {dt('content.saveAll')}</>}
+                  </button>
+                )}
               </div>
               <p className="dash-section-desc" style={{ marginBottom: 16 }}>{lang === 'en' ? 'Control all texts and images across all site pages. Changes appear immediately after saving.' : 'تحكم في نصوص وصور كل صفحات الموقع. التغييرات تظهر فوراً بعد الحفظ.'}</p>
 
@@ -2128,6 +2199,7 @@ const Dashboard = () => {
                   { id: 'contact', label: dt('content.contact'), icon: 'fa-phone' },
                   { id: 'banners', label: dt('content.banners'), icon: 'fa-images' },
                   { id: 'general', label: dt('content.general'), icon: 'fa-gear' },
+                  { id: 'clients', label: dt('nav.clients'),     icon: 'fa-handshake' },
                 ].map(t => (
                   <button key={t.id} className={`content-tab-btn${contentTab === t.id ? ' active' : ''}`} onClick={() => setContentTab(t.id)}>
                     <i className={`fas ${t.icon}`}></i> {t.label}
@@ -2339,11 +2411,55 @@ const Dashboard = () => {
                   </div>
                 </>)}
 
+                {/* ═══ CLIENTS ═══ */}
+                {contentTab === 'clients' && (<>
+                  <div className="content-section-title"><i className="fas fa-handshake"></i> {dt('clients.title')}</div>
+                  <div className="dash-header-row">
+                    <p className="dash-section-desc" style={{ margin: 0 }}>{lang === 'en' ? 'Manage the client logos shown on the homepage and the Clients page.' : 'إدارة شعارات العملاء الظاهرة في الصفحة الرئيسية وصفحة العملاء.'}</p>
+                    {perms.clients && (
+                      <button type="button" className="btn btn-green btn-sm" onClick={openAddClient}><i className="fas fa-plus"></i> {dt('clients.add')}</button>
+                    )}
+                  </div>
+                  <div className="dash-search-bar">
+                    <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
+                    <input type="search" className="dash-search-input" placeholder={lang === 'en' ? 'Search by name or sector...' : 'ابحث بالاسم أو القطاع...'} value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                    {dashSearch && <button type="button" className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
+                    {dashSearch && <span className="dash-search-count">{filteredClients.length} {lang === 'en' ? 'results' : 'نتيجة'}</span>}
+                  </div>
+                  <div className="data-table">
+                    <table>
+                      <thead><tr><th>{dt('clients.logo')}</th><th>{dt('clients.name')}</th><th>{dt('clients.nameAr')}</th><th>{dt('clients.sector')}</th><th>{dt('common.status')}</th><th>{dt('clients.actions')}</th></tr></thead>
+                      <tbody>
+                        {filteredClients.map(c => (
+                          <tr key={c.id}>
+                            <td>
+                              {c.logo
+                                ? <img src={c.logo} alt="" className="prod-thumb" />
+                                : <div className="prod-thumb-empty"><i className="fas fa-handshake" style={{opacity:0.3}}></i></div>}
+                            </td>
+                            <td className="td-primary" dir="ltr">{c.name}</td>
+                            <td className="td-bold">{c.nameAr}</td>
+                            <td><span className="badge-cat">{clientSectorLabels[c.sectorKey]?.[lang] || clientSectorLabels[c.sectorKey]?.ar || c.sectorKey}</span></td>
+                            <td><span className={`status-badge status-${c.status}`}>{c.status === 'active' ? dt('common.active') : dt('common.inactive')}</span></td>
+                            <td>
+                              <button type="button" className="action-btn action-btn-edit" onClick={() => openEditClient(c)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
+                              <button type="button" className="action-btn action-btn-delete" onClick={() => handleDeleteClient(c)}><i className="fas fa-trash"></i> {dt('common.delete')}</button>
+                            </td>
+                          </tr>
+                        ))}
+                        {clients.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>{lang === 'en' ? 'No clients yet' : 'لا يوجد عملاء بعد'}</td></tr>}
+                      </tbody>
+                    </table>
+                  </div>
+                </>)}
+
+                {contentTab !== 'clients' && (
                 <div className="content-save-row">
                   <button type="submit" className="btn btn-green" disabled={contentLoading}>
                     {contentLoading ? <><i className="fas fa-spinner fa-spin"></i> {dt('common.saving')}</> : <><i className="fas fa-save"></i> {dt('common.saveDB')}</>}
                   </button>
                 </div>
+                )}
               </form>
             </div>
           )}
@@ -3157,6 +3273,55 @@ const Dashboard = () => {
                 <div className="modal-actions">
                   <button type="button" onClick={closeCouponModal} className="btn btn-outline">{dt('common.cancel')}</button>
                   <button type="submit" className="btn btn-green"><i className="fas fa-save"></i> {dt('common.save')}</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ══ Client Modal ══ */}
+        {clientModal && (
+          <div className="modal-overlay" onClick={e => e.target === e.currentTarget && closeClientModal()}>
+            <div className="modal" role="dialog">
+              <div className="modal-header">
+                <h3>{clientModal === 'add' ? dt('clients.add') : (lang === 'en' ? 'Edit Client' : 'تعديل العميل')}</h3>
+                <button className="modal-close" onClick={closeClientModal}><i className="fas fa-xmark"></i></button>
+              </div>
+              {clientSaved && <AlertSuccess msg={dt('common.savedOk')} />}
+              {clientErr   && <AlertError  msg={clientErr} />}
+              <form onSubmit={handleClientSave}>
+                <div className="form-group">
+                  <label className="form-label">{dt('clients.logo')} *</label>
+                  <label className="img-upload-box">
+                    {(clientForm.logo || clientLogoPreview)
+                      ? <img src={clientForm.logo || clientLogoPreview} alt="" className="img-upload-preview" />
+                      : <div className="img-upload-placeholder"><i className="fas fa-image"></i><span>{lang === 'en' ? 'Choose image' : 'اختر صورة'}</span></div>}
+                    <input type="file" accept="image/*" onChange={handleClientLogoChange} style={{display:'none'}} />
+                    {(clientForm.logo || clientLogoPreview) && (
+                      <button type="button" className="img-upload-remove" onClick={e => { e.preventDefault(); setClientForm(p=>({...p,logo:''})); setClientLogoPreview(''); }}>
+                        <i className="fas fa-xmark"></i>
+                      </button>
+                    )}
+                  </label>
+                  {uploadingClientLogo && <div style={{fontSize:'11px',color:'var(--text-light)',marginTop:'4px'}}><i className="fas fa-spinner fa-spin"></i> {lang === 'en' ? 'Uploading...' : 'جاري الرفع...'}</div>}
+                </div>
+                <div className="modal-grid2">
+                  <div className="form-group"><label className="form-label">{dt('clients.name')} *</label><input className="form-input" name="name" value={clientForm.name} onChange={e => setClientForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" required /></div>
+                  <div className="form-group"><label className="form-label">{dt('clients.nameAr')} *</label><input className="form-input" name="nameAr" value={clientForm.nameAr} onChange={e => setClientForm(p=>({...p,[e.target.name]:e.target.value}))} required /></div>
+                </div>
+                <div className="modal-grid2">
+                  <div className="form-group"><label className="form-label">{dt('clients.sector')}</label>
+                    <select className="form-select" name="sectorKey" value={clientForm.sectorKey} onChange={e => setClientForm(p=>({...p,[e.target.name]:e.target.value}))}>
+                      {CLIENT_SECTORS.map(key => (
+                        <option key={key} value={key}>{clientSectorLabels[key][lang] || clientSectorLabels[key].ar}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group"><label className="form-label">{dt('common.status')}</label><select className="form-select" name="status" value={clientForm.status} onChange={e => setClientForm(p=>({...p,[e.target.name]:e.target.value}))}><option value="active">{dt('common.active')}</option><option value="inactive">{dt('common.inactive')}</option></select></div>
+                </div>
+                <div className="modal-actions">
+                  <button type="button" onClick={closeClientModal} className="btn btn-outline">{dt('common.cancel')}</button>
+                  <button type="submit" className="btn btn-green" disabled={uploadingClientLogo}><i className="fas fa-save"></i> {dt('common.save')}</button>
                 </div>
               </form>
             </div>

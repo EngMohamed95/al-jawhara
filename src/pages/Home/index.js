@@ -5,7 +5,6 @@ import translations from '../../translations';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
 import ProductImageSlider from '../../components/ProductImageSlider';
-import { clients } from '../Clients/clientsList';
 import './index.css';
 
 /* خلفية الهيرو فيديو، والصورة تعمل كـ poster وكـ fallback
@@ -13,14 +12,13 @@ import './index.css';
 const DEFAULT_HERO_VIDEO = '/videos/herosection.mp4';
 const DEFAULT_HERO_IMAGE = '/Photo gallery/PhotoGallery08.jpg';
 
-const featuredClients = clients.filter(
-  c => c.logo && c.logo.startsWith('/logos/') && !c.logo.includes('sultan.png')
-);
-
 const Home = () => {
-  const { groupedProducts, loading, siteContent: sc } = useApp();
+  const { groupedProducts, clients, loading, siteContent: sc } = useApp();
   const { t, lang } = useLanguage();
   const featured = groupedProducts.filter(p => p.status === 'active').slice(0, 8);
+  const featuredClients = clients
+    .filter(c => c.logo && c.status !== 'inactive')
+    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
   /* Hero content — use DB value only in Arabic, always use translation in English */
   const heroBadge   = lang === 'ar' ? (sc?.heroBadge    || t('home.heroBadge'))    : t('home.heroBadge');

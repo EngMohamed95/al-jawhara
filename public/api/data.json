@@ -448,5 +448,718 @@
       "desc": "",
       "parentId": null
     }
+  ],
+  "clients": [
+    {
+      "id": 1,
+      "name": "City Hyper",
+      "nameAr": "سيتي هايبر",
+      "sectorKey": "retail",
+      "logo": "/logos/CityCenter.png",
+      "sortOrder": 1,
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "name": "HyperMax",
+      "nameAr": "هايبر ماكس",
+      "sectorKey": "retail",
+      "logo": "/logos/HyperMax.jpg",
+      "sortOrder": 2,
+      "status": "active"
+    },
+    {
+      "id": 3,
+      "name": "Sultan Center",
+      "nameAr": "سلطان سنتر",
+      "sectorKey": "retail",
+      "logo": "/logos/Sultan.jpg",
+      "sortOrder": 3,
+      "status": "active"
+    },
+    {
+      "id": 4,
+      "name": "Oncost",
+      "nameAr": "أونكوست",
+      "sectorKey": "retail",
+      "logo": "/logos/Oncost.png",
+      "sortOrder": 4,
+      "status": "active"
+    },
+    {
+      "id": 5,
+      "name": "Romaitha",
+      "nameAr": "جمعية الرميثة",
+      "sectorKey": "coops",
+      "logo": "/logos/Romaitha.png",
+      "sortOrder": 5,
+      "status": "active"
+    },
+    {
+      "id": 6,
+      "name": "Wafra",
+      "nameAr": "جمعية الوفرة",
+      "sectorKey": "coops",
+      "logo": "https://al-jawhara.com/wp-content/uploads/2021/03/Wafra.png",
+      "sortOrder": 6,
+      "status": "active"
+    },
+    {
+      "id": 7,
+      "name": "Dahia",
+      "nameAr": "جمعية الضاحية",
+      "sectorKey": "coops",
+      "logo": "https://al-jawhara.com/wp-content/uploads/2021/03/Dahia.png",
+      "sortOrder": 7,
+      "status": "active"
+    },
+    {
+      "id": 8,
+      "name": "Naim",
+      "nameAr": "جمعية النعيم",
+      "sectorKey": "coops",
+      "logo": "https://al-jawhara.com/wp-content/uploads/2021/03/Naim.png",
+      "sortOrder": 8,
+      "status": "active"
+    },
+    {
+      "id": 9,
+      "name": "Solibikhat",
+      "nameAr": "جمعية الصليبيخات",
+      "sectorKey": "coops",
+      "logo": "https://al-jawhara.com/wp-content/uploads/2021/03/Solibikhat.png",
+      "sortOrder": 9,
+      "status": "active"
+    },
+    {
+      "id": 10,
+      "name": "Salwa",
+      "nameAr": "جمعية سلوى",
+      "sectorKey": "coops",
+      "logo": "/logos/Salwa.png",
+      "sortOrder": 10,
+      "status": "active"
+    },
+    {
+      "id": 11,
+      "name": "Jabrieh",
+      "nameAr": "جمعية الجابرية",
+      "sectorKey": "coops",
+      "logo": "https://al-jawhara.com/wp-content/uploads/2021/03/Jabrieh.png",
+      "sortOrder": 11,
+      "status": "active"
+    },
+    {
+      "id": 12,
+      "name": "Saad",
+      "nameAr": "جمعية سعد العبدالله",
+      "sectorKey": "coops",
+      "logo": "/logos/Saad.png",
+      "sortOrder": 12,
+      "status": "active"
+    },
+    {
+      "id": 13,
+      "name": "Sora",
+      "nameAr": "جمعية الصوابر",
+      "sectorKey": "coops",
+      "logo": "https://al-jawhara.com/wp-content/uploads/2021/03/Sora.png",
+      "sortOrder": 13,
+      "status": "active"
+    },
+    {
+      "id": 14,
+      "name": "Salam",
+      "nameAr": "جمعية السلام",
+      "sectorKey": "coops",
+      "logo": "/logos/Salam.png",
+      "sortOrder": 14,
+      "status": "active"
+    },
+    {
+      "id": 15,
+      "name": "Adan",
+      "nameAr": "جمعية العدان",
+      "sectorKey": "coops",
+      "logo": "/logos/Adan.png",
+      "sortOrder": 15,
+      "status": "active"
+    },
+    {
+      "id": 16,
+      "name": "Jothen",
+      "nameAr": "جمعية الجثوم",
+      "sectorKey": "coops",
+      "logo": "https://al-jawhara.com/wp-content/uploads/2021/03/Jothen.png",
+      "sortOrder": 16,
+      "status": "active"
+    },
+    {
+      "id": 17,
+      "name": "Salmieh",
+      "nameAr": "جمعية السالمية",
+      "sectorKey": "coops",
+      "logo": "/logos/Salmieh.png",
+      "sortOrder": 17,
+      "status": "active"
+    },
+    {
+      "id": 18,
+      "name": "Bayan",
+      "nameAr": "جمعية بيان",
+      "sectorKey": "coops",
+      "logo": "/logos/Bayan.png",
+      "sortOrder": 18,
+      "status": "active"
+    },
+    {
+      "id": 19,
+      "name": "Kaifan",
+      "nameAr": "جمعية كيفان",
+      "sectorKey": "coops",
+      "logo": "/logos/Kaifan.png",
+      "sortOrder": 19,
+      "status": "active"
+    },
+    {
+      "id": 20,
+      "name": "Khaldieh",
+      "nameAr": "جمعية الخالدية",
+      "sectorKey": "coops",
+      "logo": "https://al-jawhara.com/wp-content/uploads/2021/03/Khaldieh.png",
+      "sortOrder": 20,
+      "status": "active"
+    },
+    {
+      "id": 21,
+      "name": "Abdali",
+      "nameAr": "جمعية العبدلي",
+      "sectorKey": "coops",
+      "logo": "https://al-jawhara.com/wp-content/uploads/2021/03/Abdali.png",
+      "sortOrder": 21,
+      "status": "active"
+    },
+    {
+      "id": 22,
+      "name": "Souq",
+      "nameAr": "سوق",
+      "sectorKey": "coops",
+      "logo": "https://al-jawhara.com/wp-content/uploads/2021/03/Souq.png",
+      "sortOrder": 22,
+      "status": "active"
+    },
+    {
+      "id": 23,
+      "name": "Chamieh",
+      "nameAr": "جمعية الشامية",
+      "sectorKey": "coops",
+      "logo": "/logos/Chamieh.png",
+      "sortOrder": 23,
+      "status": "active"
+    },
+    {
+      "id": 24,
+      "name": "Ahmadi",
+      "nameAr": "جمعية الأحمدي",
+      "sectorKey": "coops",
+      "logo": "/logos/Ahmadi.png",
+      "sortOrder": 24,
+      "status": "active"
+    },
+    {
+      "id": 25,
+      "name": "Shohadaa",
+      "nameAr": "جمعية الشهداء",
+      "sectorKey": "coops",
+      "logo": "/logos/Shohadaa.png",
+      "sortOrder": 25,
+      "status": "active"
+    },
+    {
+      "id": 26,
+      "name": "Shaab",
+      "nameAr": "جمعية الشعب",
+      "sectorKey": "coops",
+      "logo": "/logos/Shaab.png",
+      "sortOrder": 26,
+      "status": "active"
+    },
+    {
+      "id": 27,
+      "name": "Sadeek",
+      "nameAr": "جمعية الصديق",
+      "sectorKey": "coops",
+      "logo": "/logos/Sadeek.png",
+      "sortOrder": 27,
+      "status": "active"
+    },
+    {
+      "id": 28,
+      "name": "Jaber Al-Ali",
+      "nameAr": "جمعية جابر العلي",
+      "sectorKey": "coops",
+      "logo": "/logos/SaberAli.png",
+      "sortOrder": 28,
+      "status": "active"
+    },
+    {
+      "id": 29,
+      "name": "Sabah Ahmad",
+      "nameAr": "جمعية صباح الأحمد",
+      "sectorKey": "coops",
+      "logo": "/logos/SabahAhmad.png",
+      "sortOrder": 29,
+      "status": "active"
+    },
+    {
+      "id": 30,
+      "name": "Reqa",
+      "nameAr": "جمعية الرقعي",
+      "sectorKey": "coops",
+      "logo": "/logos/Reqa.png",
+      "sortOrder": 30,
+      "status": "active"
+    },
+    {
+      "id": 31,
+      "name": "Qayrawan",
+      "nameAr": "جمعية القيروان",
+      "sectorKey": "coops",
+      "logo": "/logos/Qayrawan.png",
+      "sortOrder": 31,
+      "status": "active"
+    },
+    {
+      "id": 32,
+      "name": "Fayhaa",
+      "nameAr": "جمعية الفيحاء",
+      "sectorKey": "coops",
+      "logo": "/logos/Fayhaa.png",
+      "sortOrder": 32,
+      "status": "active"
+    },
+    {
+      "id": 33,
+      "name": "Fahaihel",
+      "nameAr": "جمعية الفحيحيل",
+      "sectorKey": "coops",
+      "logo": "/logos/Fahaihel.png",
+      "sortOrder": 33,
+      "status": "active"
+    },
+    {
+      "id": 34,
+      "name": "Salibieh",
+      "nameAr": "جمعية الصليبية",
+      "sectorKey": "coops",
+      "logo": "/logos/Salibieh.png",
+      "sortOrder": 34,
+      "status": "active"
+    },
+    {
+      "id": 35,
+      "name": "Farwanieh",
+      "nameAr": "جمعية الفروانية",
+      "sectorKey": "coops",
+      "logo": "/logos/Farwanieh.png",
+      "sortOrder": 35,
+      "status": "active"
+    },
+    {
+      "id": 36,
+      "name": "Gharnata",
+      "nameAr": "جمعية غرناطة",
+      "sectorKey": "coops",
+      "logo": "/logos/Gharnata.png",
+      "sortOrder": 36,
+      "status": "active"
+    },
+    {
+      "id": 37,
+      "name": "Khaytan",
+      "nameAr": "جمعية خيطان",
+      "sectorKey": "coops",
+      "logo": "/logos/Khaytan.png",
+      "sortOrder": 37,
+      "status": "active"
+    },
+    {
+      "id": 38,
+      "name": "Manqaf",
+      "nameAr": "جمعية المنقف",
+      "sectorKey": "coops",
+      "logo": "/logos/Manqaf.png",
+      "sortOrder": 38,
+      "status": "active"
+    },
+    {
+      "id": 39,
+      "name": "Yarmouk",
+      "nameAr": "جمعية اليرموك",
+      "sectorKey": "coops",
+      "logo": "/logos/Yarmouk.png",
+      "sortOrder": 39,
+      "status": "active"
+    },
+    {
+      "id": 40,
+      "name": "Abu Fatira",
+      "nameAr": "جمعية أبو فطيرة",
+      "sectorKey": "coops",
+      "logo": "/logos/Fatira.png",
+      "sortOrder": 40,
+      "status": "active"
+    },
+    {
+      "id": 41,
+      "name": "Starbucks",
+      "nameAr": "ستاربكس",
+      "sectorKey": "cafes",
+      "logo": "/logos/starbucks.png",
+      "sortOrder": 41,
+      "status": "active"
+    },
+    {
+      "id": 42,
+      "name": "Coffee",
+      "nameAr": "كوفي",
+      "sectorKey": "cafes",
+      "logo": "/logos/Coffee.png",
+      "sortOrder": 42,
+      "status": "active"
+    },
+    {
+      "id": 43,
+      "name": "Chili's",
+      "nameAr": "تشيليز",
+      "sectorKey": "restaurants",
+      "logo": "/logos/chilis.png",
+      "sortOrder": 43,
+      "status": "active"
+    },
+    {
+      "id": 44,
+      "name": "Kababji",
+      "nameAr": "كبابجي",
+      "sectorKey": "restaurants",
+      "logo": "/logos/Kababji.png",
+      "sortOrder": 44,
+      "status": "active"
+    },
+    {
+      "id": 45,
+      "name": "Maraya Al Khaleej",
+      "nameAr": "مرايا الخليج",
+      "sectorKey": "coops",
+      "logo": "/logos/Maraya.png",
+      "sortOrder": 45,
+      "status": "active"
+    },
+    {
+      "id": 46,
+      "name": "E-Club",
+      "nameAr": "إي كلوب",
+      "sectorKey": "restaurants",
+      "logo": "/logos/eclub.png",
+      "sortOrder": 46,
+      "status": "active"
+    },
+    {
+      "id": 47,
+      "name": "Kasap",
+      "nameAr": "كساب",
+      "sectorKey": "restaurants",
+      "logo": "/logos/Kasap.png",
+      "sortOrder": 47,
+      "status": "active"
+    },
+    {
+      "id": 48,
+      "name": "Lite",
+      "nameAr": "لايت",
+      "sectorKey": "restaurants",
+      "logo": "/logos/Lite.png",
+      "sortOrder": 48,
+      "status": "active"
+    },
+    {
+      "id": 49,
+      "name": "Shrimpy",
+      "nameAr": "شريمبي",
+      "sectorKey": "restaurants",
+      "logo": "/logos/Shrimpy.png",
+      "sortOrder": 49,
+      "status": "active"
+    },
+    {
+      "id": 50,
+      "name": "Ocean Basket",
+      "nameAr": "أوشن باسكت",
+      "sectorKey": "restaurants",
+      "logo": "/logos/OceanBasket.png",
+      "sortOrder": 50,
+      "status": "active"
+    },
+    {
+      "id": 51,
+      "name": "Le Royal",
+      "nameAr": "لو رويال",
+      "sectorKey": "restaurants",
+      "logo": "/logos/LeRoyal.png",
+      "sortOrder": 51,
+      "status": "active"
+    },
+    {
+      "id": 52,
+      "name": "Gia",
+      "nameAr": "جيا",
+      "sectorKey": "restaurants",
+      "logo": "/logos/Gia.png",
+      "sortOrder": 52,
+      "status": "active"
+    },
+    {
+      "id": 53,
+      "name": "Frosting",
+      "nameAr": "فروستينج",
+      "sectorKey": "restaurants",
+      "logo": "/logos/Frosting.png",
+      "sortOrder": 53,
+      "status": "active"
+    },
+    {
+      "id": 54,
+      "name": "Diet Care",
+      "nameAr": "دايت كار",
+      "sectorKey": "restaurants",
+      "logo": "/logos/DietCar.png",
+      "sortOrder": 54,
+      "status": "active"
+    },
+    {
+      "id": 55,
+      "name": "Crazy Chicken",
+      "nameAr": "كريزي تشيكن",
+      "sectorKey": "restaurants",
+      "logo": "/logos/CrazyChicken.png",
+      "sortOrder": 55,
+      "status": "active"
+    },
+    {
+      "id": 56,
+      "name": "Bazza",
+      "nameAr": "بازا",
+      "sectorKey": "restaurants",
+      "logo": "/logos/Bazza.png",
+      "sortOrder": 56,
+      "status": "active"
+    },
+    {
+      "id": 57,
+      "name": "Ayyame",
+      "nameAr": "أيامي",
+      "sectorKey": "restaurants",
+      "logo": "/logos/Ayyame.png",
+      "sortOrder": 57,
+      "status": "active"
+    },
+    {
+      "id": 58,
+      "name": "Applebee's",
+      "nameAr": "آبلبيز",
+      "sectorKey": "restaurants",
+      "logo": "/logos/Applebees.png",
+      "sortOrder": 58,
+      "status": "active"
+    },
+    {
+      "id": 59,
+      "name": "Adams",
+      "nameAr": "آدامز",
+      "sectorKey": "restaurants",
+      "logo": "/logos/Adams.png",
+      "sortOrder": 59,
+      "status": "active"
+    },
+    {
+      "id": 60,
+      "name": "Subway",
+      "nameAr": "صب واي",
+      "sectorKey": "restaurants",
+      "logo": "/logos/Subway.jpg",
+      "sortOrder": 60,
+      "status": "active"
+    },
+    {
+      "id": 61,
+      "name": "Talabat",
+      "nameAr": "طلبات",
+      "sectorKey": "delivery",
+      "logo": "/logos/talabat.png",
+      "sortOrder": 61,
+      "status": "active"
+    },
+    {
+      "id": 62,
+      "name": "Taw9eel",
+      "nameAr": "توصيل",
+      "sectorKey": "delivery",
+      "logo": "/logos/taw9eel.png",
+      "sortOrder": 62,
+      "status": "active"
+    },
+    {
+      "id": 63,
+      "name": "Trolley",
+      "nameAr": "تروليه",
+      "sectorKey": "delivery",
+      "logo": "/logos/trolley.png",
+      "sortOrder": 63,
+      "status": "active"
+    },
+    {
+      "id": 64,
+      "name": "Regency",
+      "nameAr": "ريجنسي",
+      "sectorKey": "hotels",
+      "logo": "/logos/Regency.png",
+      "sortOrder": 64,
+      "status": "active"
+    },
+    {
+      "id": 65,
+      "name": "Raddison",
+      "nameAr": "راديسون",
+      "sectorKey": "hotels",
+      "logo": "/logos/Raddison.png",
+      "sortOrder": 65,
+      "status": "active"
+    },
+    {
+      "id": 66,
+      "name": "Jazeera",
+      "nameAr": "الجزيرة",
+      "sectorKey": "hotels",
+      "logo": "/logos/Jazeera.png",
+      "sortOrder": 66,
+      "status": "active"
+    },
+    {
+      "id": 67,
+      "name": "Safir ",
+      "nameAr": "السفير",
+      "sectorKey": "hotels",
+      "logo": "/logos/Safir.png",
+      "sortOrder": 67,
+      "status": "active"
+    },
+    {
+      "id": 68,
+      "name": "Dar Al Shifa Hospital",
+      "nameAr": "مستشفى دار الشفا",
+      "sectorKey": "hospitals",
+      "logo": "/logos/DarAlShifa.png",
+      "sortOrder": 68,
+      "status": "active"
+    },
+    {
+      "id": 69,
+      "name": "Al Salam Hospital",
+      "nameAr": "مستشفى السلام",
+      "sectorKey": "hospitals",
+      "logo": "/logos/SalamHospital.jpg",
+      "sortOrder": 69,
+      "status": "active"
+    },
+    {
+      "id": 70,
+      "name": "Al Mowasat Hospital",
+      "nameAr": "مستشفى المواساة",
+      "sectorKey": "hospitals",
+      "logo": "/logos/Mowasat.svg",
+      "sortOrder": 70,
+      "status": "active"
+    },
+    {
+      "id": 71,
+      "name": "Taiba Hospital",
+      "nameAr": "مستشفى طيبة",
+      "sectorKey": "hospitals",
+      "logo": "/logos/Taiba.png",
+      "sortOrder": 71,
+      "status": "active"
+    },
+    {
+      "id": 72,
+      "name": "Sidra Hospital",
+      "nameAr": "مستشفى سدرة",
+      "sectorKey": "hospitals",
+      "logo": "/logos/Sidra.png",
+      "sortOrder": 72,
+      "status": "active"
+    },
+    {
+      "id": 73,
+      "name": "International Hospital",
+      "nameAr": "المستشفى الدولي",
+      "sectorKey": "hospitals",
+      "logo": "/logos/InternationalHospital.png",
+      "sortOrder": 73,
+      "status": "active"
+    },
+    {
+      "id": 74,
+      "name": "Kuwait Hospital",
+      "nameAr": "مستشفى الكويت",
+      "sectorKey": "hospitals",
+      "logo": "/logos/KuwaitHospital.png",
+      "sortOrder": 74,
+      "status": "active"
+    },
+    {
+      "id": 75,
+      "name": "Al Seef Hospital",
+      "nameAr": "مستشفى السيف",
+      "sectorKey": "hospitals",
+      "logo": "/logos/AlSeef.png",
+      "sortOrder": 75,
+      "status": "active"
+    },
+    {
+      "id": 76,
+      "name": "Alia International Hospital",
+      "nameAr": "مستشفى عالية الدولي",
+      "sectorKey": "hospitals",
+      "logo": "/logos/Aalia.svg",
+      "sortOrder": 76,
+      "status": "active"
+    },
+    {
+      "id": 77,
+      "name": "Al Orf Hospital",
+      "nameAr": "مستشفى العرف",
+      "sectorKey": "hospitals",
+      "logo": "/logos/AlOrf.gif",
+      "sortOrder": 77,
+      "status": "active"
+    },
+    {
+      "id": 78,
+      "name": "Hadi Clinic",
+      "nameAr": "مستشفى هادي",
+      "sectorKey": "hospitals",
+      "logo": "/logos/Hadi.svg",
+      "sortOrder": 78,
+      "status": "active"
+    },
+    {
+      "id": 79,
+      "name": "Royal",
+      "nameAr": "رويال",
+      "sectorKey": "hospitals",
+      "logo": "/logos/Royal.png",
+      "sortOrder": 79,
+      "status": "active"
+    }
   ]
 }

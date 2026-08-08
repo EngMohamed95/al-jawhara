@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import { useApp } from '../../context/AppContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
 import { CLIENTS_PAGE_HEADER } from '../../siteImages';
 import './index.css';
-
-import { clients } from './clientsList';
 
 const getInitials = (name) => name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
 
@@ -40,13 +39,13 @@ const ClientCard = ({ client, sectorLabel, lang }) => {
 
 const Clients = () => {
   const { t, lang } = useLanguage();
+  const { clients } = useApp();
   const [activeSectorKey, setActiveSectorKey] = useState('all');
 
-
-  // Only display clients that have a valid local logo
-  const clientsWithLogos = clients.filter(
-    c => c.logo && c.logo.startsWith('/logos/') && !c.logo.includes('sultan.png')
-  );
+  // Only display active clients that have a logo, ordered as set in the dashboard
+  const clientsWithLogos = clients
+    .filter(c => c.logo && c.status !== 'inactive')
+    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || a.name.localeCompare(b.name));
 
   const sectorKeys = ['all', ...new Set(clientsWithLogos.map(c => c.sectorKey))];
 
