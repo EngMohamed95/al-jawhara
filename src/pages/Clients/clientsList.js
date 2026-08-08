@@ -2,9 +2,9 @@ const BASE = 'https://al-jawhara.com/wp-content/uploads';
 
 export const clients = [
   // ── تجزئة ──────────────────────────────────────────────
-  { name: 'City Center',       nameAr: 'سيتي سنتر',              sectorKey: 'retail',       logo: '/logos/CityCenter.png' },
-  { name: 'Carrefour',         nameAr: 'كارفور',                  sectorKey: 'retail',       logo: '/logos/carrefour.png' },
-  { name: 'Sultan Center',     nameAr: 'سلطان سنتر',              sectorKey: 'retail',       logo: '/logos/sultan.png' },
+  { name: 'City Hyper',  nameAr: 'سيتي هايبر',              sectorKey: 'retail',       logo: '/logos/CityCenter.png' },
+  { name: 'HyperMax',          nameAr: 'هايبر ماكس',              sectorKey: 'retail',       logo: '/logos/HyperMax.jpg' },
+  { name: 'Sultan Center',     nameAr: 'سلطان سنتر',              sectorKey: 'retail',       logo: '/logos/Sultan.jpg' },
   { name: 'Oncost',            nameAr: 'أونكوست',                 sectorKey: 'retail',       logo: '/logos/Oncost.png' },
 
   // ── جمعيات تعاونية ─────────────────────────────────────
@@ -52,22 +52,22 @@ export const clients = [
   // ── مطاعم ───────────────────────────────────────────────
   { name: "Chili's",           nameAr: 'تشيليز',                  sectorKey: 'restaurants',  logo: '/logos/chilis.png' },
   { name: 'Kababji',           nameAr: 'كبابجي',                  sectorKey: 'restaurants',  logo: '/logos/Kababji.png' },
-  { name: 'Maraya Al Khaleej', nameAr: 'مرايا الخليج',            sectorKey: 'restaurants',  logo: '/logos/Maraya.png' },
+  { name: 'Maraya Al Khaleej', nameAr: 'مرايا الخليج',            sectorKey: 'coops',        logo: '/logos/Maraya.png' },
   { name: 'E-Club',            nameAr: 'إي كلوب',                 sectorKey: 'restaurants',  logo: '/logos/eclub.png' },
   { name: 'Kasap',             nameAr: 'كساب',                    sectorKey: 'restaurants',  logo: '/logos/Kasap.png' },
   { name: 'Lite',              nameAr: 'لايت',                    sectorKey: 'restaurants',  logo: '/logos/Lite.png' },
   { name: 'Shrimpy',           nameAr: 'شريمبي',                  sectorKey: 'restaurants',  logo: '/logos/Shrimpy.png' },
-  { name: 'Safir',             nameAr: 'السفير',                  sectorKey: 'restaurants',  logo: '/logos/Safir.png' },
   { name: 'Ocean Basket',      nameAr: 'أوشن باسكت',              sectorKey: 'restaurants',  logo: '/logos/OceanBasket.png' },
   { name: 'Le Royal',          nameAr: 'لو رويال',                sectorKey: 'restaurants',  logo: '/logos/LeRoyal.png' },
   { name: 'Gia',               nameAr: 'جيا',                     sectorKey: 'restaurants',  logo: '/logos/Gia.png' },
   { name: 'Frosting',          nameAr: 'فروستينج',                sectorKey: 'restaurants',  logo: '/logos/Frosting.png' },
-  { name: 'Diet Car',          nameAr: 'دايت كار',                sectorKey: 'restaurants',  logo: '/logos/DietCar.png' },
+  { name: 'Diet Care',         nameAr: 'دايت كار',                sectorKey: 'restaurants',  logo: '/logos/DietCar.png' },
   { name: 'Crazy Chicken',     nameAr: 'كريزي تشيكن',             sectorKey: 'restaurants',  logo: '/logos/CrazyChicken.png' },
   { name: 'Bazza',             nameAr: 'بازا',                    sectorKey: 'restaurants',  logo: '/logos/Bazza.png' },
   { name: 'Ayyame',            nameAr: 'أيامي',                   sectorKey: 'restaurants',  logo: '/logos/Ayyame.png' },
   { name: "Applebee's",        nameAr: 'آبلبيز',                  sectorKey: 'restaurants',  logo: '/logos/Applebees.png' },
   { name: 'Adams',             nameAr: 'آدامز',                   sectorKey: 'restaurants',  logo: '/logos/Adams.png' },
+  { name: 'Subway',            nameAr: 'صب واي',                  sectorKey: 'restaurants',  logo: '/logos/Subway.jpg' },
 
   // ── توصيل طعام ─────────────────────────────────────────
   { name: 'Talabat',           nameAr: 'طلبات',                   sectorKey: 'delivery',     logo: '/logos/talabat.png' },
@@ -77,8 +77,9 @@ export const clients = [
   // ── فنادق ونوادي ────────────────────────────────────────
   { name: 'Regency',           nameAr: 'ريجنسي',                  sectorKey: 'hotels',       logo: '/logos/Regency.png' },
   { name: 'Raddison',          nameAr: 'راديسون',                 sectorKey: 'hotels',       logo: '/logos/Raddison.png' },
-  { name: 'Royal',             nameAr: 'رويال',                   sectorKey: 'hotels',       logo: '/logos/Royal.png' },
   { name: 'Jazeera',           nameAr: 'الجزيرة',                 sectorKey: 'hotels',       logo: '/logos/Jazeera.png' },
+    { name: 'Safir ',      nameAr: 'السفير',                  sectorKey: 'hotels',       logo: '/logos/Safir.png' },
+
 
   // ── مستشفيات ────────────────────────────────────────────
   { name: 'Dar Al Shifa Hospital',    nameAr: 'مستشفى دار الشفا',   sectorKey: 'hospitals',    logo: '/logos/DarAlShifa.png' },
@@ -92,4 +93,6 @@ export const clients = [
   { name: 'Alia International Hospital', nameAr: 'مستشفى عالية الدولي', sectorKey: 'hospitals', logo: '/logos/Aalia.svg' },
   { name: 'Al Orf Hospital',          nameAr: 'مستشفى العرف',       sectorKey: 'hospitals',    logo: '/logos/AlOrf.gif' },
   { name: 'Hadi Clinic',              nameAr: 'مستشفى هادي',        sectorKey: 'hospitals',    logo: '/logos/Hadi.svg' },
+  { name: 'Royal',             nameAr: 'رويال',                   sectorKey: 'hospitals',    logo: '/logos/Royal.png' },
+
 ];
