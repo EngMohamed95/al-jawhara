@@ -26,6 +26,8 @@ const LOCAL_BACKUP    = path.join(__dirname, '..', 'build', 'api', 'data.json');
 const LOCAL_TEMPLATE  = path.join(__dirname, '..', 'public', 'api', 'data.json');
 const REMOTE_UPLOADS  = '/public_html/api/uploads';
 const LOCAL_UPLOADS   = path.join(__dirname, '..', 'build', 'api', 'uploads');
+const REMOTE_DB_CONFIG = '/public_html/api/db.php';
+const LOCAL_DB_BACKUP  = path.join(__dirname, '..', 'build', 'api', 'db.php.live-backup');
 
 async function deploy() {
   const client = new ftp.Client();
@@ -98,6 +100,17 @@ async function deploy() {
       console.log('⚠️  No existing api/uploads folder on server — nothing to back up');
     }
 
+    // ── 1c. حفظ db.php الموجودة على السيرفر (بيانات اتصال قاعدة البيانات الحقيقية
+    //        ممكن تكون اتغيرت مباشرة على السيرفر ومش موجودة في الكود المحلي) ──
+    let serverDbConfigExists = false;
+    try {
+      await client.downloadTo(LOCAL_DB_BACKUP, REMOTE_DB_CONFIG);
+      serverDbConfigExists = true;
+      console.log('💾 Server db.php (DB credentials) backed up successfully');
+    } catch {
+      console.log('⚠️  No existing api/db.php on server — will use template');
+    }
+
     // ── 2. رفع الـ build كاملاً ──
     console.log('\n📦 Uploading build to server...');
     await client.ensureDir(REMOTE_DIR);
@@ -117,6 +130,14 @@ async function deploy() {
     if (serverUploadsExist) {
       await client.uploadFromDir(LOCAL_UPLOADS, REMOTE_UPLOADS);
       console.log('✅ Server uploads restored — no image loss\n');
+    }
+
+    // ── 3c. إعادة رفع db.php المحفوظة (تحمي بيانات اتصال قاعدة البيانات الحقيقية) ──
+    if (serverDbConfigExists) {
+      await client.uploadFrom(LOCAL_DB_BACKUP, REMOTE_DB_CONFIG);
+      console.log('✅ Server db.php restored — DB credentials untouched\n');
+    } else {
+      console.log('✅ Template db.php uploaded\n');
     }
 
     console.log('✅ Server updated: https://aljawhara.matix.one\n');

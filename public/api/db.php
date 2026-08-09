@@ -5,7 +5,7 @@
 define('DB_HOST', '127.0.0.1');
 define('DB_NAME', 'aljwhra');
 define('DB_USER', 'aljwhra');
-define('DB_PASS', 'M5LLBcpan5bX4Jka');
+define('DB_PASS', 'Dz3fk6NSzZDXimsW');
 define('DB_CHARSET', 'utf8mb4');
 
 try {
