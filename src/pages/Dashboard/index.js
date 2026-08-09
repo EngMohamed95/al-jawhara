@@ -112,6 +112,7 @@ const DASH_T = {
   'clients.nameAr':   { ar: 'الاسم (عربي)',       en: 'Name (AR)' },
   'clients.sector':   { ar: 'القطاع',             en: 'Sector' },
   'clients.logo':     { ar: 'الشعار',             en: 'Logo' },
+  'clients.order':    { ar: 'الترتيب',            en: 'Order' },
   'clients.actions':  { ar: 'إجراءات',            en: 'Actions' },
   // Coupons
   'coupons.title':   { ar: 'الكوبونات',    en: 'Coupons' },
@@ -819,6 +820,41 @@ const Dashboard = () => {
     try { await deleteClient(c.id); } catch { alert('تعذر الحذف.'); }
   };
 
+  const [reorderingClients, setReorderingClients] = useState(false);
+  const [dragClientId, setDragClientId] = useState(null);
+  const [dragOverClientId, setDragOverClientId] = useState(null);
+
+  const handleClientDragStart = (e, id) => {
+    setDragClientId(id);
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', String(id)); } catch {}
+  };
+  const handleClientDragOver = (e, id) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragClientId != null && id !== dragOverClientId) setDragOverClientId(id);
+  };
+  const handleClientDragEnd = () => { setDragClientId(null); setDragOverClientId(null); };
+  const handleClientDrop = async (e, targetId) => {
+    e.preventDefault();
+    const draggedId = dragClientId;
+    setDragClientId(null); setDragOverClientId(null);
+    if (draggedId == null || String(draggedId) === String(targetId)) return;
+    const sorted = [...clients].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || a.name.localeCompare(b.name));
+    const fromIdx = sorted.findIndex(x => String(x.id) === String(draggedId));
+    const toIdx   = sorted.findIndex(x => String(x.id) === String(targetId));
+    if (fromIdx === -1 || toIdx === -1) return;
+    const [moved] = sorted.splice(fromIdx, 1);
+    sorted.splice(toIdx, 0, moved);
+    setReorderingClients(true);
+    try {
+      for (let i = 0; i < sorted.length; i++) {
+        if ((sorted[i].sortOrder || 0) !== i) await updateClient(sorted[i].id, { ...sorted[i], sortOrder: i });
+      }
+    } catch { alert('تعذر تحديث الترتيب.'); }
+    setReorderingClients(false);
+  };
+
   /* ── Site Content ── */
   const [contentForm,    setContentForm]    = useState(null);
   const [contentSaved,   setContentSaved]   = useState(false);
@@ -1137,9 +1173,10 @@ const Dashboard = () => {
   }, [coupons, dashSearch]);
 
   const filteredClients = useMemo(() => {
+    const sorted = [...clients].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || a.name.localeCompare(b.name));
     const q = ns(dashSearch);
-    if (!q) return clients;
-    return clients.filter(c => ns(c.name).includes(q) || ns(c.nameAr).includes(q) || ns(c.sectorKey).includes(q));
+    if (!q) return sorted;
+    return sorted.filter(c => ns(c.name).includes(q) || ns(c.nameAr).includes(q) || ns(c.sectorKey).includes(q));
   }, [clients, dashSearch]);
 
   /* ── Analytics ── */
@@ -2428,10 +2465,26 @@ const Dashboard = () => {
                   </div>
                   <div className="data-table">
                     <table>
-                      <thead><tr><th>{dt('clients.logo')}</th><th>{dt('clients.name')}</th><th>{dt('clients.nameAr')}</th><th>{dt('clients.sector')}</th><th>{dt('common.status')}</th><th>{dt('clients.actions')}</th></tr></thead>
+                      <thead><tr><th>{dt('clients.order')}</th><th>{dt('clients.logo')}</th><th>{dt('clients.name')}</th><th>{dt('clients.nameAr')}</th><th>{dt('clients.sector')}</th><th>{dt('common.status')}</th><th>{dt('clients.actions')}</th></tr></thead>
                       <tbody>
-                        {filteredClients.map(c => (
-                          <tr key={c.id}>
+                        {filteredClients.map((c) => (
+                          <tr
+                            key={c.id}
+                            className={`${dragClientId === c.id ? 'client-row-dragging' : ''} ${dragOverClientId === c.id && dragClientId !== c.id ? 'client-row-drag-over' : ''}`}
+                            onDragOver={e => !dashSearch && handleClientDragOver(e, c.id)}
+                            onDrop={e => !dashSearch && handleClientDrop(e, c.id)}
+                          >
+                            <td>
+                              <span
+                                className="drag-handle"
+                                draggable={!dashSearch && !reorderingClients}
+                                onDragStart={e => handleClientDragStart(e, c.id)}
+                                onDragEnd={handleClientDragEnd}
+                                title={dashSearch ? (lang === 'en' ? 'Clear search to reorder' : 'امسح البحث لإعادة الترتيب') : (lang === 'en' ? 'Drag to reorder' : 'اسحب لإعادة الترتيب')}
+                              >
+                                <i className="fas fa-grip-vertical"></i>
+                              </span>
+                            </td>
                             <td>
                               {c.logo
                                 ? <img src={c.logo} alt="" className="prod-thumb" />
@@ -2447,7 +2500,7 @@ const Dashboard = () => {
                             </td>
                           </tr>
                         ))}
-                        {clients.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>{lang === 'en' ? 'No clients yet' : 'لا يوجد عملاء بعد'}</td></tr>}
+                        {clients.length === 0 && <tr><td colSpan="7" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>{lang === 'en' ? 'No clients yet' : 'لا يوجد عملاء بعد'}</td></tr>}
                       </tbody>
                     </table>
                   </div>
