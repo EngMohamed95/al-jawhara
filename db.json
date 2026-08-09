@@ -663,6 +663,15 @@
       "parentId": null
     }
   ],
+  "clientSectors": [
+    { "id": 1, "key": "retail",      "nameAr": "تجزئة",             "nameEn": "Retail",         "sortOrder": 1 },
+    { "id": 2, "key": "coops",       "nameAr": "جمعيات تعاونية",    "nameEn": "Co-ops",         "sortOrder": 2 },
+    { "id": 3, "key": "cafes",       "nameAr": "كافيهات",           "nameEn": "Cafes",          "sortOrder": 3 },
+    { "id": 4, "key": "restaurants", "nameAr": "مطاعم",             "nameEn": "Restaurants",    "sortOrder": 4 },
+    { "id": 5, "key": "delivery",    "nameAr": "توصيل طعام",        "nameEn": "Food Delivery",  "sortOrder": 5 },
+    { "id": 6, "key": "hotels",      "nameAr": "فنادق ونوادي",      "nameEn": "Hotels & Clubs", "sortOrder": 6 },
+    { "id": 7, "key": "hospitals",   "nameAr": "مستشفيات",          "nameEn": "Hospitals",      "sortOrder": 7 }
+  ],
   "clients": [
     {
       "id": 1,

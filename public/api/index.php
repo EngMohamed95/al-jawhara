@@ -25,6 +25,7 @@ $tableMapping = [
     'coupons'      => 'coupons',
     'categories'   => 'categories',
     'clients'      => 'clients',
+    'clientSectors'=> 'client_sectors',
     'siteContent'  => 'site_content',
     'site_content' => 'site_content'
 ];
@@ -212,7 +213,7 @@ if ($method === 'GET' && $id === null) {
     }
     
     // Sort categories or products if applicable
-    if ($table === 'categories' || $table === 'clients') {
+    if ($table === 'categories' || $table === 'clients' || $table === 'client_sectors') {
         $sql .= " ORDER BY sortOrder ASC";
     }
     

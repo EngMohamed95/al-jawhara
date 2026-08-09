@@ -92,6 +92,15 @@ try {
         status VARCHAR(50) DEFAULT 'active'
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
+    // Client Sectors Table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS client_sectors (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        `key` VARCHAR(100) UNIQUE NOT NULL,
+        nameAr VARCHAR(255) NOT NULL,
+        nameEn VARCHAR(255),
+        sortOrder INT DEFAULT 0
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
     // Site Content Table
     $pdo->exec("CREATE TABLE IF NOT EXISTS site_content (
         id INT PRIMARY KEY DEFAULT 1,
@@ -272,6 +281,22 @@ try {
                     ]);
                 }
                 echo "Imported clients.\n";
+            }
+
+            // Import Client Sectors
+            $stmt = $pdo->query("SELECT COUNT(*) FROM client_sectors");
+            if ($stmt->fetchColumn() == 0 && isset($data['clientSectors'])) {
+                $ins = $pdo->prepare("INSERT INTO client_sectors (id, `key`, nameAr, nameEn, sortOrder) VALUES (?, ?, ?, ?, ?)");
+                foreach ($data['clientSectors'] as $cs) {
+                    $ins->execute([
+                        $cs['id'] ?? null,
+                        $cs['key'] ?? '',
+                        $cs['nameAr'] ?? '',
+                        $cs['nameEn'] ?? '',
+                        $cs['sortOrder'] ?? 0
+                    ]);
+                }
+                echo "Imported client sectors.\n";
             }
 
             // Import Site Content

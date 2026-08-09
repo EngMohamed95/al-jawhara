@@ -39,7 +39,7 @@ const ClientCard = ({ client, sectorLabel, lang }) => {
 
 const Clients = () => {
   const { t, lang } = useLanguage();
-  const { clients } = useApp();
+  const { clients, clientSectors } = useApp();
   const [activeSectorKey, setActiveSectorKey] = useState('all');
 
   // Only display active clients that have a logo, ordered as set in the dashboard
@@ -49,8 +49,12 @@ const Clients = () => {
 
   const sectorKeys = ['all', ...new Set(clientsWithLogos.map(c => c.sectorKey))];
 
-  const getSectorLabel = (key) =>
-    key === 'all' ? t('clients.all') : t(`clients.sectors.${key}`);
+  const getSectorLabel = (key) => {
+    if (key === 'all') return t('clients.all');
+    const s = clientSectors.find(x => x.key === key);
+    if (!s) return key;
+    return (lang === 'en' ? s.nameEn : s.nameAr) || s.nameAr || s.nameEn || key;
+  };
 
   const filtered = activeSectorKey === 'all'
     ? clientsWithLogos

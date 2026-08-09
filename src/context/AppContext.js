@@ -21,6 +21,7 @@ export const AppProvider = ({ children }) => {
   const [coupons, setCoupons]         = useState([]);
   const [categories, setCategories]   = useState([]);
   const [clients, setClients]         = useState([]);
+  const [clientSectors, setClientSectors] = useState([]);
   const [siteContent, setSiteContent] = useState(getStoredSiteContent);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState(null);
@@ -52,7 +53,7 @@ export const AppProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const [prods, ords, usrs, content, coups, cats, clis] = await Promise.all([
+      const [prods, ords, usrs, content, coups, cats, clis, clisec] = await Promise.all([
         api.getProducts(),
         api.getOrders(),
         api.getUsers(),
@@ -60,6 +61,7 @@ export const AppProvider = ({ children }) => {
         api.getCoupons(),
         api.getCategories(),
         api.getClients(),
+        api.getClientSectors(),
       ]);
       setProducts(prods);
       setOrders(ords);
@@ -69,6 +71,7 @@ export const AppProvider = ({ children }) => {
       setCoupons(coups);
       setCategories(cats);
       setClients(clis);
+      setClientSectors(clisec);
     } catch {
       setError('تعذر الاتصال بالخادم. تأكد من تشغيل قاعدة البيانات (npm start).');
     } finally {
@@ -142,6 +145,11 @@ export const AppProvider = ({ children }) => {
   const addClient    = async (d)     => { const n = await api.createClient(d);      setClients(p => [...p, n]); return n; };
   const updateClient = async (id, d) => { const u = await api.updateClient(id, d);  setClients(p => p.map(x => String(x.id) === String(id) ? u : x)); return u; };
   const deleteClient = async (id)    => { await api.deleteClient(id);                setClients(p => p.filter(x => String(x.id) !== String(id))); };
+
+  /* ── Client Sectors ── */
+  const addClientSector    = async (d)     => { const n = await api.createClientSector(d);      setClientSectors(p => [...p, n]); return n; };
+  const updateClientSector = async (id, d) => { const u = await api.updateClientSector(id, d);  setClientSectors(p => p.map(x => String(x.id) === String(id) ? u : x)); return u; };
+  const deleteClientSector = async (id)    => { await api.deleteClientSector(id);                setClientSectors(p => p.filter(x => String(x.id) !== String(id))); };
 
   /* ── Orders ── */
   const updateOrderStatus = async (id, status) => {
@@ -230,13 +238,14 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{
-      products, groupedProducts, orders, users, coupons, categories, clients, siteContent, loading, error, auth,
+      products, groupedProducts, orders, users, coupons, categories, clients, clientSectors, siteContent, loading, error, auth,
       login, logout, registerCustomer,
       addProduct, updateProduct, deleteProduct,
       addUser, updateUser, deleteUser,
       addCoupon, updateCoupon, deleteCoupon,
       addCategory, updateCategory, deleteCategory,
       addClient, updateClient, deleteClient,
+      addClientSector, updateClientSector, deleteClientSector,
       updateOrderStatus,
       saveSiteContent,
       cart, addToCart, removeFromCart, updateCartQty, clearCart,

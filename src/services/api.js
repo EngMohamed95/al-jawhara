@@ -70,6 +70,12 @@ const api = {
   updateClient:  (id, d)  => req(`clients/${id}`, { method: 'PUT',    body: JSON.stringify(d) }),
   deleteClient:  (id)     => req(`clients/${id}`, { method: 'DELETE' }),
 
+  // Client Sectors
+  getClientSectors:    ()       => req('clientSectors'),
+  createClientSector:  (data)   => req('clientSectors',       { method: 'POST',   body: JSON.stringify(data) }),
+  updateClientSector:  (id, d)  => req(`clientSectors/${id}`, { method: 'PUT',    body: JSON.stringify(d) }),
+  deleteClientSector:  (id)     => req(`clientSectors/${id}`, { method: 'DELETE' }),
+
   // Coupons
   getCoupons:    ()       => req('coupons'),
   createCoupon:  (data)   => req('coupons',       { method: 'POST',   body: JSON.stringify(data) }),

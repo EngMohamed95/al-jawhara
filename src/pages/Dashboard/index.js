@@ -27,17 +27,9 @@ const ROLE_PERMISSIONS = {
 const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '', countryOfOrigin: 'KW', hsCode: '', variants: [] };
 const emptyUser    = { username: '', password: '', name: '', email: '', phone: '', role: 'viewer', status: 'active' };
 const emptyCoupon  = { code: '', type: 'percent', value: '', minOrder: '', maxUses: '', expiry: '', status: 'active', desc: '' };
-const emptyClient  = { name: '', nameAr: '', sectorKey: 'retail', logo: '', sortOrder: 0, status: 'active' };
-const CLIENT_SECTORS = ['retail', 'coops', 'cafes', 'restaurants', 'delivery', 'hotels', 'hospitals'];
-const clientSectorLabels = {
-  retail:      { ar: 'تجزئة',           en: 'Retail' },
-  coops:       { ar: 'جمعيات تعاونية',  en: 'Co-ops' },
-  cafes:       { ar: 'كافيهات',         en: 'Cafes' },
-  restaurants: { ar: 'مطاعم',           en: 'Restaurants' },
-  delivery:    { ar: 'توصيل طعام',      en: 'Food Delivery' },
-  hotels:      { ar: 'فنادق ونوادي',    en: 'Hotels & Clubs' },
-  hospitals:   { ar: 'مستشفيات',        en: 'Hospitals' },
-};
+const emptyClient  = { name: '', nameAr: '', sectorKey: '', logo: '', sortOrder: 0, status: 'active' };
+const emptyClientSector = { key: '', nameAr: '', nameEn: '' };
+const slugify = (s) => s.toString().trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
 /* ── Translation dictionary ── */
 const DASH_T = {
@@ -355,13 +347,14 @@ const getDescendantSlugs = (slug, cats) => {
 
 const Dashboard = () => {
   const {
-    products, orders, users, coupons, categories, clients, siteContent,
+    products, orders, users, coupons, categories, clients, clientSectors, siteContent,
     loading, error, auth,
     addProduct, updateProduct, deleteProduct,
     addUser, updateUser, deleteUser,
     addCoupon, updateCoupon, deleteCoupon,
     addCategory, updateCategory, deleteCategory,
     addClient, updateClient, deleteClient,
+    addClientSector, updateClientSector, deleteClientSector,
     updateOrderStatus,
     saveSiteContent,
   } = useApp();
@@ -789,7 +782,7 @@ const Dashboard = () => {
 
   const openAddClient  = () => { setClientForm(emptyClient); setClientLogoPreview(''); setClientErr(''); setClientSaved(false); setClientModal('add'); };
   const openEditClient = (c) => {
-    setClientForm({ name: c.name, nameAr: c.nameAr, sectorKey: c.sectorKey || 'retail', logo: c.logo || '', sortOrder: c.sortOrder || 0, status: c.status || 'active' });
+    setClientForm({ name: c.name, nameAr: c.nameAr, sectorKey: c.sectorKey || '', logo: c.logo || '', sortOrder: c.sortOrder || 0, status: c.status || 'active' });
     setClientLogoPreview(''); setEditClientRow(c); setClientErr(''); setClientSaved(false); setClientModal('edit');
   };
   const closeClientModal = () => { setClientModal(null); setEditClientRow(null); setClientLogoPreview(''); };
@@ -807,6 +800,7 @@ const Dashboard = () => {
     e.preventDefault(); setClientErr('');
     if (!clientForm.name.trim() || !clientForm.nameAr.trim()) { setClientErr('اسم العميل بالعربي والإنجليزي مطلوب'); return; }
     if (!clientForm.logo) { setClientErr('شعار العميل مطلوب'); return; }
+    if (!clientForm.sectorKey) { setClientErr('يجب اختيار القطاع'); return; }
     const data = { ...clientForm, sortOrder: parseInt(clientForm.sortOrder) || 0 };
     try {
       if (clientModal === 'add') await addClient(data);
@@ -853,6 +847,56 @@ const Dashboard = () => {
       }
     } catch { alert('تعذر تحديث الترتيب.'); }
     setReorderingClients(false);
+  };
+
+  /* ── Client Sectors ── */
+  const sortedClientSectors = useMemo(() =>
+    [...clientSectors].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || a.nameAr.localeCompare(b.nameAr)),
+    [clientSectors]
+  );
+  const clientSectorLabel = (key) => {
+    const s = clientSectors.find(x => x.key === key);
+    if (!s) return key || '—';
+    return (lang === 'en' ? s.nameEn : s.nameAr) || s.nameAr || s.nameEn;
+  };
+  const [clientSectorFilter, setClientSectorFilter] = useState('all');
+
+  const [sectorModal, setSectorModal] = useState(null); // null | 'manage' | 'add' | 'edit'
+  const [editSectorRow, setEditSectorRow] = useState(null);
+  const [sectorForm, setSectorForm] = useState(emptyClientSector);
+  const [sectorErr, setSectorErr] = useState('');
+
+  const openManageSectors = () => setSectorModal('manage');
+  const closeSectorModal  = () => { setSectorModal(null); setEditSectorRow(null); setSectorErr(''); };
+  const openAddSector  = () => { setSectorForm(emptyClientSector); setSectorErr(''); setSectorModal('add'); };
+  const openEditSector = (s) => { setSectorForm({ key: s.key, nameAr: s.nameAr, nameEn: s.nameEn || '' }); setEditSectorRow(s); setSectorErr(''); setSectorModal('edit'); };
+  const backToManageSectors = () => { setEditSectorRow(null); setSectorErr(''); setSectorModal('manage'); };
+
+  const handleSectorSave = async (e) => {
+    e.preventDefault(); setSectorErr('');
+    if (!sectorForm.nameAr.trim()) { setSectorErr('اسم القطاع بالعربي مطلوب'); return; }
+    const key = (sectorForm.key.trim() ? slugify(sectorForm.key) : slugify(sectorForm.nameEn || sectorForm.nameAr));
+    if (!key) { setSectorErr('تعذر تحديد مفتاح للقطاع، جرب اسم إنجليزي مختلف'); return; }
+    const dup = clientSectors.some(s => s.key === key && (sectorModal === 'add' || s.id !== editSectorRow?.id));
+    if (dup) { setSectorErr('يوجد قطاع آخر بنفس المفتاح، جرب اسمًا مختلفًا'); return; }
+    try {
+      if (sectorModal === 'add') {
+        const nextOrder = clientSectors.reduce((m, s) => Math.max(m, s.sortOrder || 0), 0) + 1;
+        await addClientSector({ key, nameAr: sectorForm.nameAr.trim(), nameEn: sectorForm.nameEn.trim(), sortOrder: nextOrder });
+      } else {
+        await updateClientSector(editSectorRow.id, { ...editSectorRow, key, nameAr: sectorForm.nameAr.trim(), nameEn: sectorForm.nameEn.trim() });
+      }
+      backToManageSectors();
+    } catch { setSectorErr('حدث خطأ أثناء الحفظ.'); }
+  };
+
+  const handleDeleteSector = async (s) => {
+    const count = clients.filter(c => c.sectorKey === s.key).length;
+    const msg = count > 0
+      ? `يستخدم هذا القطاع ${count} عميل حاليًا. حذفه لن يحذف العملاء لكنهم سيبقون بدون قطاع معروف. هل تريد المتابعة؟`
+      : `هل أنت متأكد من حذف قطاع "${s.nameAr}"؟`;
+    if (!window.confirm(msg)) return;
+    try { await deleteClientSector(s.id); } catch { alert('تعذر الحذف.'); }
   };
 
   /* ── Site Content ── */
@@ -1087,7 +1131,7 @@ const Dashboard = () => {
   const [selectedProds, setSelectedProds] = useState(new Set());
   const [prodPage,      setProdPage]      = useState(1);
   const [prodPerPage,   setProdPerPage]   = useState(10);
-  useEffect(() => { setDashSearch(''); setClientFilter(null); setProdCatFilter('all'); setProdStatusFilter('all'); setSelectedProds(new Set()); setProdPage(1); setMediaPage(1); setInvPage(1); setCatPage(1); }, [view]);
+  useEffect(() => { setDashSearch(''); setClientFilter(null); setClientSectorFilter('all'); setProdCatFilter('all'); setProdStatusFilter('all'); setSelectedProds(new Set()); setProdPage(1); setMediaPage(1); setInvPage(1); setCatPage(1); }, [view]);
   useEffect(() => { setProdPage(1); }, [dashSearch, prodCatFilter, prodStatusFilter, prodSort]);
 
   /* ── Category filters ── */
@@ -1174,10 +1218,11 @@ const Dashboard = () => {
 
   const filteredClients = useMemo(() => {
     const sorted = [...clients].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || a.name.localeCompare(b.name));
+    const bySector = clientSectorFilter === 'all' ? sorted : sorted.filter(c => c.sectorKey === clientSectorFilter);
     const q = ns(dashSearch);
-    if (!q) return sorted;
-    return sorted.filter(c => ns(c.name).includes(q) || ns(c.nameAr).includes(q) || ns(c.sectorKey).includes(q));
-  }, [clients, dashSearch]);
+    if (!q) return bySector;
+    return bySector.filter(c => ns(c.name).includes(q) || ns(c.nameAr).includes(q) || ns(c.sectorKey).includes(q));
+  }, [clients, dashSearch, clientSectorFilter]);
 
   /* ── Analytics ── */
   const [analyticsRange, setAnalyticsRange] = useState('30d'); // 'today'|'7d'|'30d'|'month'|'all'
@@ -2454,14 +2499,29 @@ const Dashboard = () => {
                   <div className="dash-header-row">
                     <p className="dash-section-desc" style={{ margin: 0 }}>{lang === 'en' ? 'Manage the client logos shown on the homepage and the Clients page.' : 'إدارة شعارات العملاء الظاهرة في الصفحة الرئيسية وصفحة العملاء.'}</p>
                     {perms.clients && (
-                      <button type="button" className="btn btn-green btn-sm" onClick={openAddClient}><i className="fas fa-plus"></i> {dt('clients.add')}</button>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button type="button" className="btn btn-outline btn-sm" onClick={openManageSectors}><i className="fas fa-sliders"></i> {lang === 'en' ? 'Manage Sectors' : 'إدارة القطاعات'}</button>
+                        <button type="button" className="btn btn-green btn-sm" onClick={openAddClient}><i className="fas fa-plus"></i> {dt('clients.add')}</button>
+                      </div>
                     )}
                   </div>
-                  <div className="dash-search-bar">
-                    <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
-                    <input type="search" className="dash-search-input" placeholder={lang === 'en' ? 'Search by name or sector...' : 'ابحث بالاسم أو القطاع...'} value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
-                    {dashSearch && <button type="button" className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
-                    {dashSearch && <span className="dash-search-count">{filteredClients.length} {lang === 'en' ? 'results' : 'نتيجة'}</span>}
+                  <div className="dash-filters-row">
+                    <div className="dash-search-bar">
+                      <i className="fas fa-magnifying-glass dash-search-icon" aria-hidden="true"></i>
+                      <input type="search" className="dash-search-input" placeholder={lang === 'en' ? 'Search by name or sector...' : 'ابحث بالاسم أو القطاع...'} value={dashSearch} onChange={e => setDashSearch(e.target.value)} autoComplete="off" />
+                      {dashSearch && <button type="button" className="dash-search-clear" onClick={() => setDashSearch('')}><i className="fas fa-xmark"></i></button>}
+                    </div>
+                    <label className="dash-filter-select-wrap">
+                      <i className="fas fa-filter" aria-hidden="true"></i>
+                      <select className="dash-filter-select" value={clientSectorFilter} onChange={e => setClientSectorFilter(e.target.value)}>
+                        <option value="all">{lang === 'en' ? 'All Sectors' : 'كل القطاعات'}</option>
+                        {sortedClientSectors.map(s => {
+                          const count = clients.filter(c => c.sectorKey === s.key).length;
+                          return <option key={s.id} value={s.key}>{lang === 'en' ? (s.nameEn || s.nameAr) : s.nameAr} ({count})</option>;
+                        })}
+                      </select>
+                    </label>
+                    {(dashSearch || clientSectorFilter !== 'all') && <span className="dash-search-count">{filteredClients.length} {lang === 'en' ? 'results' : 'نتيجة'}</span>}
                   </div>
                   <div className="data-table">
                     <table>
@@ -2492,7 +2552,7 @@ const Dashboard = () => {
                             </td>
                             <td className="td-primary" dir="ltr">{c.name}</td>
                             <td className="td-bold">{c.nameAr}</td>
-                            <td><span className="badge-cat">{clientSectorLabels[c.sectorKey]?.[lang] || clientSectorLabels[c.sectorKey]?.ar || c.sectorKey}</span></td>
+                            <td><span className="badge-cat">{clientSectorLabel(c.sectorKey)}</span></td>
                             <td><span className={`status-badge status-${c.status}`}>{c.status === 'active' ? dt('common.active') : dt('common.inactive')}</span></td>
                             <td>
                               <button type="button" className="action-btn action-btn-edit" onClick={() => openEditClient(c)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
@@ -2501,6 +2561,7 @@ const Dashboard = () => {
                           </tr>
                         ))}
                         {clients.length === 0 && <tr><td colSpan="7" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>{lang === 'en' ? 'No clients yet' : 'لا يوجد عملاء بعد'}</td></tr>}
+                        {clients.length > 0 && filteredClients.length === 0 && <tr><td colSpan="7" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>{lang === 'en' ? 'No matching clients' : 'لا يوجد عملاء مطابقون'}</td></tr>}
                       </tbody>
                     </table>
                   </div>
@@ -3364,11 +3425,13 @@ const Dashboard = () => {
                 </div>
                 <div className="modal-grid2">
                   <div className="form-group"><label className="form-label">{dt('clients.sector')}</label>
-                    <select className="form-select" name="sectorKey" value={clientForm.sectorKey} onChange={e => setClientForm(p=>({...p,[e.target.name]:e.target.value}))}>
-                      {CLIENT_SECTORS.map(key => (
-                        <option key={key} value={key}>{clientSectorLabels[key][lang] || clientSectorLabels[key].ar}</option>
+                    <select className="form-select" name="sectorKey" value={clientForm.sectorKey} onChange={e => setClientForm(p=>({...p,[e.target.name]:e.target.value}))} required>
+                      <option value="" disabled>{lang === 'en' ? '— Select —' : '— اختر —'}</option>
+                      {sortedClientSectors.map(s => (
+                        <option key={s.id} value={s.key}>{lang === 'en' ? (s.nameEn || s.nameAr) : s.nameAr}</option>
                       ))}
                     </select>
+                    {clientSectors.length === 0 && <div style={{fontSize:'11px',color:'var(--text-light)',marginTop:'4px'}}>{lang === 'en' ? 'No sectors yet — add one from "Manage Sectors" first.' : 'لا يوجد قطاعات بعد — أضف قطاعًا من "إدارة القطاعات" أولاً.'}</div>}
                   </div>
                   <div className="form-group"><label className="form-label">{dt('common.status')}</label><select className="form-select" name="status" value={clientForm.status} onChange={e => setClientForm(p=>({...p,[e.target.name]:e.target.value}))}><option value="active">{dt('common.active')}</option><option value="inactive">{dt('common.inactive')}</option></select></div>
                 </div>
@@ -3377,6 +3440,65 @@ const Dashboard = () => {
                   <button type="submit" className="btn btn-green" disabled={uploadingClientLogo}><i className="fas fa-save"></i> {dt('common.save')}</button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* ══ Client Sector Modal ══ */}
+        {sectorModal && (
+          <div className="modal-overlay" onClick={e => e.target === e.currentTarget && closeSectorModal()}>
+            <div className={`modal${sectorModal === 'manage' ? ' modal-lg' : ''}`} role="dialog">
+              {sectorModal === 'manage' && (<>
+                <div className="modal-header">
+                  <h3><i className="fas fa-sliders" style={{ marginInlineEnd: '8px' }}></i>{lang === 'en' ? 'Manage Sectors' : 'إدارة القطاعات'}</h3>
+                  <button className="modal-close" onClick={closeSectorModal}><i className="fas fa-xmark"></i></button>
+                </div>
+                <div className="dash-header-row" style={{ marginBottom: '16px' }}>
+                  <p className="dash-section-desc" style={{ margin: 0 }}>{lang === 'en' ? 'Sectors used to classify clients on the Clients page.' : 'القطاعات المستخدمة لتصنيف العملاء في صفحة العملاء.'}</p>
+                  <button type="button" className="btn btn-green btn-sm" onClick={openAddSector}><i className="fas fa-plus"></i> {lang === 'en' ? 'Add Sector' : 'إضافة قطاع'}</button>
+                </div>
+                <div className="data-table">
+                  <table>
+                    <thead><tr><th>{dt('clients.nameAr')}</th><th>{dt('clients.name')}</th><th>{lang === 'en' ? 'Clients' : 'العملاء'}</th><th>{dt('clients.actions')}</th></tr></thead>
+                    <tbody>
+                      {sortedClientSectors.map(s => (
+                        <tr key={s.id}>
+                          <td className="td-bold">{s.nameAr}</td>
+                          <td className="td-primary" dir="ltr">{s.nameEn}</td>
+                          <td><span className="badge-cat">{clients.filter(c => c.sectorKey === s.key).length}</span></td>
+                          <td>
+                            <button type="button" className="action-btn action-btn-edit" onClick={() => openEditSector(s)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
+                            <button type="button" className="action-btn action-btn-delete" onClick={() => handleDeleteSector(s)}><i className="fas fa-trash"></i> {dt('common.delete')}</button>
+                          </td>
+                        </tr>
+                      ))}
+                      {clientSectors.length === 0 && <tr><td colSpan="4" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '30px' }}>{lang === 'en' ? 'No sectors yet' : 'لا يوجد قطاعات بعد'}</td></tr>}
+                    </tbody>
+                  </table>
+                </div>
+              </>)}
+
+              {(sectorModal === 'add' || sectorModal === 'edit') && (<>
+                <div className="modal-header">
+                  <h3>{sectorModal === 'add' ? (lang === 'en' ? 'Add Sector' : 'إضافة قطاع') : (lang === 'en' ? 'Edit Sector' : 'تعديل القطاع')}</h3>
+                  <button className="modal-close" onClick={closeSectorModal}><i className="fas fa-xmark"></i></button>
+                </div>
+                {sectorErr && <AlertError msg={sectorErr} />}
+                <form onSubmit={handleSectorSave}>
+                  <div className="modal-grid2">
+                    <div className="form-group"><label className="form-label">{dt('clients.nameAr')} *</label><input className="form-input" value={sectorForm.nameAr} onChange={e => setSectorForm(p => ({ ...p, nameAr: e.target.value }))} required /></div>
+                    <div className="form-group"><label className="form-label">{dt('clients.name')}</label><input className="form-input" dir="ltr" value={sectorForm.nameEn} onChange={e => setSectorForm(p => ({ ...p, nameEn: e.target.value }))} /></div>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Key <span style={{fontSize:'11px', color:'var(--text-light)', fontWeight:400}}>{lang === 'en' ? '(auto-generated if left empty)' : '(يُنشأ تلقائيًا لو تُرك فارغًا)'}</span></label>
+                    <input className="form-input" dir="ltr" value={sectorForm.key} onChange={e => setSectorForm(p => ({ ...p, key: e.target.value }))} placeholder={slugify(sectorForm.nameEn || sectorForm.nameAr) || 'sector-key'} />
+                  </div>
+                  <div className="modal-actions">
+                    <button type="button" onClick={backToManageSectors} className="btn btn-outline">{dt('common.cancel')}</button>
+                    <button type="submit" className="btn btn-green"><i className="fas fa-save"></i> {dt('common.save')}</button>
+                  </div>
+                </form>
+              </>)}
             </div>
           </div>
         )}
