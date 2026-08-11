@@ -848,25 +848,28 @@
   font-size: 13px;
 }
 
-/* Products table — horizontal scroll */
+/* Products table — auto layout so long names never wrap or overlap;
+   horizontal scroll is the fallback when content needs more than the screen. */
 .prod-table-wrap { overflow-x: auto !important; }
-.prod-grid-table { min-width: 900px; width: 100%; table-layout: fixed; }
+.prod-grid-table { min-width: 900px; width: 100%; table-layout: auto; }
 .prod-grid-table th { cursor: default; user-select: none; }
 .prod-grid-table th:hover { color: var(--text); }
 .prod-grid-table td { vertical-align: middle; }
+.prod-grid-table th, .prod-grid-table td { white-space: nowrap; }
 
-/* Fixed column widths */
+/* Minimum column widths — content (kept on one line via nowrap) can grow them further */
 .prod-grid-table th:nth-child(1)  { width: 36px;  }   /* checkbox */
-.prod-grid-table th:nth-child(2)  { width: 56px;  }   /* ID */
-.prod-grid-table th:nth-child(3)  { width: 58px;  }   /* img */
-.prod-grid-table th:nth-child(4)  { width: 180px; }   /* name */
-.prod-grid-table th:nth-child(5)  { width: 100px; }   /* category */
-.prod-grid-table th:nth-child(6)  { width: 80px;  }   /* SKU */
-.prod-grid-table th:nth-child(7)  { width: 90px;  }   /* price */
-.prod-grid-table th:nth-child(8)  { width: 80px;  }   /* stock */
-.prod-grid-table th:nth-child(9)  { width: 76px;  }   /* variants */
-.prod-grid-table th:nth-child(10) { width: 90px;  }   /* status */
-.prod-grid-table th:nth-child(11) { width: 130px; }   /* actions */
+.prod-grid-table th:nth-child(2)  { width: 34px;  }   /* drag-to-reorder */
+.prod-grid-table th:nth-child(3)  { width: 56px;  }   /* ID */
+.prod-grid-table th:nth-child(4)  { width: 58px;  }   /* img */
+.prod-grid-table th:nth-child(5)  { width: 200px; }   /* name */
+.prod-grid-table th:nth-child(6)  { width: 100px; }   /* category */
+.prod-grid-table th:nth-child(7)  { width: 80px;  }   /* SKU */
+.prod-grid-table th:nth-child(8)  { width: 90px;  }   /* price */
+.prod-grid-table th:nth-child(9)  { width: 80px;  }   /* stock */
+.prod-grid-table th:nth-child(10) { width: 76px;  }   /* variants */
+.prod-grid-table th:nth-child(11) { width: 90px;  }   /* status */
+.prod-grid-table th:nth-child(12) { width: 130px; }   /* actions */
 
 .prod-actions-td {
   display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;

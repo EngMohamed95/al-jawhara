@@ -38,8 +38,14 @@ try {
         badge VARCHAR(100),
         specs TEXT, -- Stored as JSON string
         stock INT DEFAULT 0,
-        status VARCHAR(50) DEFAULT 'active'
+        status VARCHAR(50) DEFAULT 'active',
+        sortOrder INT DEFAULT 0
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+    // Ensure sortOrder column exists in case the table already exists
+    try {
+        $pdo->exec("ALTER TABLE products ADD COLUMN sortOrder INT DEFAULT 0;");
+    } catch (Exception $e) {}
 
     // Orders Table
     $pdo->exec("CREATE TABLE IF NOT EXISTS orders (
@@ -99,6 +105,16 @@ try {
         nameAr VARCHAR(255) NOT NULL,
         nameEn VARCHAR(255),
         sortOrder INT DEFAULT 0
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+    // Gallery Images Table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS gallery_images (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        image TEXT,
+        titleAr VARCHAR(255),
+        titleEn VARCHAR(255),
+        sortOrder INT DEFAULT 0,
+        status VARCHAR(50) DEFAULT 'active'
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
     // Site Content Table
@@ -297,6 +313,23 @@ try {
                     ]);
                 }
                 echo "Imported client sectors.\n";
+            }
+
+            // Import Gallery Images
+            $stmt = $pdo->query("SELECT COUNT(*) FROM gallery_images");
+            if ($stmt->fetchColumn() == 0 && isset($data['galleryImages'])) {
+                $ins = $pdo->prepare("INSERT INTO gallery_images (id, image, titleAr, titleEn, sortOrder, status) VALUES (?, ?, ?, ?, ?, ?)");
+                foreach ($data['galleryImages'] as $g) {
+                    $ins->execute([
+                        $g['id'] ?? null,
+                        $g['image'] ?? null,
+                        $g['titleAr'] ?? '',
+                        $g['titleEn'] ?? '',
+                        $g['sortOrder'] ?? 0,
+                        $g['status'] ?? 'active'
+                    ]);
+                }
+                echo "Imported gallery images.\n";
             }
 
             // Import Site Content

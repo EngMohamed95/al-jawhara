@@ -56,7 +56,8 @@ const Products = () => {
       ...(p.variants || []).map(v => v.nameEn)
     ].some(
       f => f && normalizeQ(f).includes(sq)
-    ));
+    ))
+    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
   const itemsPerPage = 10;
   const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));

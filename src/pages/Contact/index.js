@@ -31,7 +31,7 @@ const Contact = () => {
     ? (sc?.companyAddressEn || 'Industrial Area — Shuaiba, Kuwait')
     : (sc?.companyAddress   || t('contact.addressFallback'));
   const workHours = lang === 'en'
-    ? (sc?.workHoursEn || 'Sunday – Thursday: 8 AM – 5 PM')
+    ? (sc?.workHoursEn || 'Saturday – Thursday: 8 AM – 4 PM')
     : (sc?.workHours   || t('contact.workHoursFallback'));
   const mapEmbedUrl    = sc?.mapEmbedUrl     || '';
   const socialLinks    = DEFAULT_SOCIAL.map(s => ({ ...s, href: sc?.[s.field] || '#' })).filter(s => s.href !== '#' || true);
@@ -66,8 +66,8 @@ const Contact = () => {
       <Seo
         title={t('contact.title')}
         description={lang === 'ar'
-          ? `تواصل مع شركة الجوهرة للمناديل الورقية — ${phone} — ${address}`
-          : `Contact Al-Jawhara Tissue Paper Co. — ${phone} — ${address}`}
+          ? `تواصل مع شركة الجوهرة لإنتج محارم الورق ومشتقاته — ${phone} — ${address}`
+          : `Contact Al-Jawhra Tissue Paper & Derivatives Co. — ${phone} — ${address}`}
         keywords="تواصل الجوهرة، هاتف الجوهرة، عنوان الشعيبة، طلب عرض سعر"
       />
 

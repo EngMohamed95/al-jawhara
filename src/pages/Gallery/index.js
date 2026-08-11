@@ -1,49 +1,21 @@
 import { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useApp } from '../../context/AppContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
 import { GALLERY_PAGE_HEADER } from '../../siteImages';
 import './index.css';
 
-/*
- * صور المصنع بالترتيب المطلوب:
- * رئيس مجلس الإدارة → المكان والأعمال → المكن وخطوط الإنتاج → المنتجات.
- * الملفات منسوخة من مجلد "Photo gallery" بأسماء مرتّبة ونظيفة تحت /gallery
- * لأن الأسماء الأصلية فيها مسافات وأقواس.
- * مستبعد منها بانرا التصميم (OUR PRODUCTS و Intimate with Hygiene) لأنهما
- * عريضان ويظهران مقصوصين داخل كروت 4:3 — مكانهما أغلفة صفحتَي المنتجات والتواصل.
- */
-const GALLERY_IMAGES = [
-  // ── رئيس مجلس الإدارة ──
-  ['01-ceo-desk',        'رئيس مجلس الإدارة',        'Chairman'],
-  ['02-ceo-portrait',    'رئيس مجلس الإدارة',        'Chairman'],
-  ['03-ceo-meeting',     'لقاءات العمل',             'Business Meetings'],
-  ['04-ceo-office-wide', 'لقاءات العمل',             'Business Meetings'],
-  // ── المكان والأعمال ──
-  ['05-team-group',      'فريق العمل',               'Our Team'],
-  ['06-team-truck',      'فريق العمل والتوزيع',      'Team & Distribution'],
-  ['07-warehouse',       'المخازن والتجهيز',         'Warehouse & Handling'],
-  // ── المكن وخطوط الإنتاج ──
-  ['08-rolls-line',      'خط إنتاج الرولات',         'Paper Roll Line'],
-  ['09-rolls-line-2',    'خط إنتاج الرولات',         'Paper Roll Line'],
-  ['10-rolls-line-3',    'خط إنتاج الرولات',         'Paper Roll Line'],
-  ['11-printing-line',   'خط الطباعة',               'Printing Line'],
-  ['12-printing-line-2', 'خط الطباعة',               'Printing Line'],
-  ['13-folding-line',    'خط الطي والتغليف',         'Folding & Wrapping Line'],
-  ['14-rewinder-line',   'ماكينة إعادة اللف',        'Rewinding Machine'],
-  // ── المنتجات ──
-  ['15-packing-boxes',   'تعبئة علب المناديل',       'Tissue Box Packing'],
-  ['16-packing-rolls',   'تعبئة رولات المطبخ',       'Kitchen Roll Packing'],
-].map(([id, titleAr, titleEn]) => ({
-  id,
-  src: `/gallery-images/${id}.jpg`,
-  titleAr,
-  titleEn,
-}));
-
 const Gallery = () => {
   const { lang } = useLanguage();
+  const { galleryImages } = useApp();
   const [activeImgIdx, setActiveImgIdx] = useState(null);
+
+  /* الترتيب يُدار من لوحة التحكم (معرض الصور) — نفس منطق ترتيب العملاء */
+  const GALLERY_IMAGES = galleryImages
+    .filter(g => g.status !== 'inactive')
+    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+    .map(g => ({ id: g.id, src: g.image, titleAr: g.titleAr, titleEn: g.titleEn }));
 
   const openLightbox = (idx) => setActiveImgIdx(idx);
   const closeLightbox = () => setActiveImgIdx(null);

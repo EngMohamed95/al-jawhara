@@ -76,6 +76,12 @@ const api = {
   updateClientSector:  (id, d)  => req(`clientSectors/${id}`, { method: 'PUT',    body: JSON.stringify(d) }),
   deleteClientSector:  (id)     => req(`clientSectors/${id}`, { method: 'DELETE' }),
 
+  // Gallery Images
+  getGalleryImages:    ()       => req('galleryImages'),
+  createGalleryImage:  (data)   => req('galleryImages',       { method: 'POST',   body: JSON.stringify(data) }),
+  updateGalleryImage:  (id, d)  => req(`galleryImages/${id}`, { method: 'PUT',    body: JSON.stringify(d) }),
+  deleteGalleryImage:  (id)     => req(`galleryImages/${id}`, { method: 'DELETE' }),
+
   // Coupons
   getCoupons:    ()       => req('coupons'),
   createCoupon:  (data)   => req('coupons',       { method: 'POST',   body: JSON.stringify(data) }),

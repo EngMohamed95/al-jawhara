@@ -22,6 +22,7 @@ export const AppProvider = ({ children }) => {
   const [categories, setCategories]   = useState([]);
   const [clients, setClients]         = useState([]);
   const [clientSectors, setClientSectors] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([]);
   const [siteContent, setSiteContent] = useState(getStoredSiteContent);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState(null);
@@ -53,7 +54,7 @@ export const AppProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const [prods, ords, usrs, content, coups, cats, clis, clisec] = await Promise.all([
+      const [prods, ords, usrs, content, coups, cats, clis, clisec, galimgs] = await Promise.all([
         api.getProducts(),
         api.getOrders(),
         api.getUsers(),
@@ -62,6 +63,9 @@ export const AppProvider = ({ children }) => {
         api.getCategories(),
         api.getClients(),
         api.getClientSectors(),
+        // Fails soft: on prod this table only exists after migrate.php has been run,
+        // and a missing gallery table shouldn't take the whole site down.
+        api.getGalleryImages().catch(() => []),
       ]);
       setProducts(prods);
       setOrders(ords);
@@ -72,6 +76,7 @@ export const AppProvider = ({ children }) => {
       setCategories(cats);
       setClients(clis);
       setClientSectors(clisec);
+      setGalleryImages(galimgs);
     } catch {
       setError('تعذر الاتصال بالخادم. تأكد من تشغيل قاعدة البيانات (npm start).');
     } finally {
@@ -150,6 +155,11 @@ export const AppProvider = ({ children }) => {
   const addClientSector    = async (d)     => { const n = await api.createClientSector(d);      setClientSectors(p => [...p, n]); return n; };
   const updateClientSector = async (id, d) => { const u = await api.updateClientSector(id, d);  setClientSectors(p => p.map(x => String(x.id) === String(id) ? u : x)); return u; };
   const deleteClientSector = async (id)    => { await api.deleteClientSector(id);                setClientSectors(p => p.filter(x => String(x.id) !== String(id))); };
+
+  /* ── Gallery Images ── */
+  const addGalleryImage    = async (d)     => { const n = await api.createGalleryImage(d);      setGalleryImages(p => [...p, n]); return n; };
+  const updateGalleryImage = async (id, d) => { const u = await api.updateGalleryImage(id, d);  setGalleryImages(p => p.map(x => String(x.id) === String(id) ? u : x)); return u; };
+  const deleteGalleryImage = async (id)    => { await api.deleteGalleryImage(id);                setGalleryImages(p => p.filter(x => String(x.id) !== String(id))); };
 
   /* ── Orders ── */
   const updateOrderStatus = async (id, status) => {
@@ -238,7 +248,7 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{
-      products, groupedProducts, orders, users, coupons, categories, clients, clientSectors, siteContent, loading, error, auth,
+      products, groupedProducts, orders, users, coupons, categories, clients, clientSectors, galleryImages, siteContent, loading, error, auth,
       login, logout, registerCustomer,
       addProduct, updateProduct, deleteProduct,
       addUser, updateUser, deleteUser,
@@ -246,6 +256,7 @@ export const AppProvider = ({ children }) => {
       addCategory, updateCategory, deleteCategory,
       addClient, updateClient, deleteClient,
       addClientSector, updateClientSector, deleteClientSector,
+      addGalleryImage, updateGalleryImage, deleteGalleryImage,
       updateOrderStatus,
       saveSiteContent,
       cart, addToCart, removeFromCart, updateCartQty, clearCart,

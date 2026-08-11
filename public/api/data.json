@@ -17,7 +17,8 @@
         "طول ممتاز"
       ],
       "stock": 1050,
-      "status": "active"
+      "status": "active",
+      "sortOrder": 0
     },
     {
       "id": 8,
@@ -40,7 +41,8 @@
       "gallery": [
         "/products-image/9.png",
         "/products-image/24.PNG"
-      ]
+      ],
+      "sortOrder": 1
     },
     {
       "id": 12,
@@ -59,7 +61,8 @@
         "صنع في الكويت"
       ],
       "stock": 1600,
-      "status": "active"
+      "status": "active",
+      "sortOrder": 2
     },
     {
       "id": 13,
@@ -78,7 +81,8 @@
         "صنع في الكويت"
       ],
       "stock": 1650,
-      "status": "active"
+      "status": "active",
+      "sortOrder": 3
     },
     {
       "id": 15,
@@ -97,7 +101,8 @@
         "صنع في الكويت"
       ],
       "stock": 1750,
-      "status": "active"
+      "status": "active",
+      "sortOrder": 4
     },
     {
       "id": 17,
@@ -116,7 +121,8 @@
         "صنع في الكويت"
       ],
       "stock": 1850,
-      "status": "active"
+      "status": "active",
+      "sortOrder": 5
     },
     {
       "id": 19,
@@ -135,7 +141,8 @@
         "صنع في الكويت"
       ],
       "stock": 1950,
-      "status": "active"
+      "status": "active",
+      "sortOrder": 6
     },
     {
       "id": 21,
@@ -154,7 +161,8 @@
         "صنع في الكويت"
       ],
       "stock": 2050,
-      "status": "active"
+      "status": "active",
+      "sortOrder": 7
     },
     {
       "id": 27,
@@ -173,7 +181,8 @@
         "صنع في الكويت"
       ],
       "stock": 2350,
-      "status": "active"
+      "status": "active",
+      "sortOrder": 8
     },
     {
       "id": 28,
@@ -192,7 +201,8 @@
         "ملمس قطني ناعم"
       ],
       "stock": 2400,
-      "status": "active"
+      "status": "active",
+      "sortOrder": 9
     },
     {
       "id": 36,
@@ -211,7 +221,8 @@
         "جودة ممتازة"
       ],
       "stock": 2800,
-      "status": "active"
+      "status": "active",
+      "sortOrder": 10
     },
     {
       "id": 39,
@@ -230,7 +241,8 @@
         "جودة ممتازة"
       ],
       "stock": 2950,
-      "status": "active"
+      "status": "active",
+      "sortOrder": 11
     }
   ],
   "orders": [
@@ -313,13 +325,13 @@
     {
       "id": 1,
       "heroBadge": "الرائد في صناعة المناديل الورقية بالكويت",
-      "heroTitle": "شركة الجوهرة للمناديل الورقية",
+      "heroTitle": "شركه الجوهرة لإنتج محارم الورق ومشتقاته",
       "heroSubtitle": "جودة استثنائية في كل ورقة — نصنع منتجات ورقية عالية المستوى تخدم الأسر والمؤسسات في الكويت والخليج منذ 1998",
       "ceoName": "بلال محمد غدار",
-      "ceoTitle": "المدير العام — شركة الجوهرة للمناديل الورقية",
+      "ceoTitle": "رئيس مجلس الإدارة",
       "ceoQuote": "في شركة الجوهرة، نؤمن بأن الجودة ليست مجرد معيار بل هي ثقافة راسخة في كل خطوة من خطوات الإنتاج. هدفنا دائماً تقديم أفضل منتج يلامس احتياجات عملائنا ويتجاوز توقعاتهم.",
       "mapEmbedUrl": "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3158.2990702487123!2d48.13169440000001!3d28.9863611!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjjCsDU5JzEwLjkiTiA0OMKwMDcnNTQuMSJF!5e1!3m2!1sen!2seg!4v1782904861991!5m2!1sen!2seg",
-      "aboutStory": "بدأت شركة الجوهرة للمناديل الورقية مسيرتها في الثامن عشر من فبراير 1998 بهدف واحد واضح: توفير منتجات ورقية عالية الجودة تلبي احتياجات السوق الكويتي والخليجي بأسعار تنافسية. انطلقنا من مصنعنا في المنطقة الصناعية بالشعيبة المجهز بأحدث خطوط الإنتاج، وبطاقة إنتاجية تصل إلى 20,000 طن سنوياً على مساحة 4,500 متر مربع.",
+      "aboutStory": "بدأت شركة الجوهرة لإنتج محارم الورق ومشتقاته مسيرتها في الثامن عشر من فبراير 1998 بهدف واحد واضح: توفير منتجات ورقية عالية الجودة تلبي احتياجات السوق الكويتي والخليجي بأسعار تنافسية. انطلقنا من مصنعنا في المنطقة الصناعية بالشعيبة المجهز بأحدث خطوط الإنتاج، وبطاقة إنتاجية تصل إلى 20,000 طن سنوياً على مساحة 4,500 متر مربع.",
       "aboutHeaderImg": "/Photo gallery/PhotoGallery04.jpg",
       "productsHeaderImg": "/Photo gallery/PhotoGallery04.jpg",
       "clientsHeaderImg": "/Photo gallery/PhotoGallery04.jpg",
@@ -328,12 +340,12 @@
       "companyWhatsapp": "(965) 96625306",
       "companyEmail": "info@al-jawhara.com",
       "companyAddress": "المنطقة الصناعية — الشعيبة، الكويت",
-      "workHours": "الأحد – الخميس: 8 ص – 5 م",
+      "workHours": "السبت – الخميس: 8 ص – 4 م",
       "founded": "18/2/1998",
       "factoryArea": "4,500",
       "productionCapacity": "20,000",
       "statsYear": "1998",
-      "statsClients": "+25",
+      "statsClients": "+100",
       "paymentSettings": {
         "cash": {
           "enabled": true
@@ -450,13 +462,55 @@
     }
   ],
   "clientSectors": [
-    { "id": 1, "key": "retail",      "nameAr": "تجزئة",             "nameEn": "Retail",         "sortOrder": 1 },
-    { "id": 2, "key": "coops",       "nameAr": "جمعيات تعاونية",    "nameEn": "Co-ops",         "sortOrder": 2 },
-    { "id": 3, "key": "cafes",       "nameAr": "كافيهات",           "nameEn": "Cafes",          "sortOrder": 3 },
-    { "id": 4, "key": "restaurants", "nameAr": "مطاعم",             "nameEn": "Restaurants",    "sortOrder": 4 },
-    { "id": 5, "key": "delivery",    "nameAr": "توصيل طعام",        "nameEn": "Food Delivery",  "sortOrder": 5 },
-    { "id": 6, "key": "hotels",      "nameAr": "فنادق ونوادي",      "nameEn": "Hotels & Clubs", "sortOrder": 6 },
-    { "id": 7, "key": "hospitals",   "nameAr": "مستشفيات",          "nameEn": "Hospitals",      "sortOrder": 7 }
+    {
+      "id": 1,
+      "key": "retail",
+      "nameAr": "تجزئة",
+      "nameEn": "Retail",
+      "sortOrder": 1
+    },
+    {
+      "id": 2,
+      "key": "coops",
+      "nameAr": "جمعيات تعاونية",
+      "nameEn": "Co-ops",
+      "sortOrder": 2
+    },
+    {
+      "id": 3,
+      "key": "cafes",
+      "nameAr": "كافيهات",
+      "nameEn": "Cafes",
+      "sortOrder": 3
+    },
+    {
+      "id": 4,
+      "key": "restaurants",
+      "nameAr": "مطاعم",
+      "nameEn": "Restaurants",
+      "sortOrder": 4
+    },
+    {
+      "id": 5,
+      "key": "delivery",
+      "nameAr": "توصيل طعام",
+      "nameEn": "Food Delivery",
+      "sortOrder": 5
+    },
+    {
+      "id": 6,
+      "key": "hotels",
+      "nameAr": "فنادق ونوادي",
+      "nameEn": "Hotels & Clubs",
+      "sortOrder": 6
+    },
+    {
+      "id": 7,
+      "key": "hospitals",
+      "nameAr": "مستشفيات",
+      "nameEn": "Hospitals",
+      "sortOrder": 7
+    }
   ],
   "clients": [
     {
@@ -1168,6 +1222,136 @@
       "sectorKey": "hospitals",
       "logo": "/logos/Royal.png",
       "sortOrder": 79,
+      "status": "active"
+    }
+  ],
+  "galleryImages": [
+    {
+      "id": 1,
+      "image": "/gallery-images/01-ceo-desk.jpg",
+      "titleAr": "رئيس مجلس الإدارة",
+      "titleEn": "Chairman",
+      "sortOrder": 0,
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "image": "/gallery-images/02-ceo-portrait.jpg",
+      "titleAr": "رئيس مجلس الإدارة",
+      "titleEn": "Chairman",
+      "sortOrder": 1,
+      "status": "active"
+    },
+    {
+      "id": 3,
+      "image": "/gallery-images/03-ceo-meeting.jpg",
+      "titleAr": "لقاءات العمل",
+      "titleEn": "Business Meetings",
+      "sortOrder": 2,
+      "status": "active"
+    },
+    {
+      "id": 4,
+      "image": "/gallery-images/04-ceo-office-wide.jpg",
+      "titleAr": "لقاءات العمل",
+      "titleEn": "Business Meetings",
+      "sortOrder": 3,
+      "status": "active"
+    },
+    {
+      "id": 5,
+      "image": "/gallery-images/05-team-group.jpg",
+      "titleAr": "فريق العمل",
+      "titleEn": "Our Team",
+      "sortOrder": 4,
+      "status": "active"
+    },
+    {
+      "id": 6,
+      "image": "/gallery-images/06-team-truck.jpg",
+      "titleAr": "فريق العمل والتوزيع",
+      "titleEn": "Team & Distribution",
+      "sortOrder": 5,
+      "status": "active"
+    },
+    {
+      "id": 7,
+      "image": "/gallery-images/07-warehouse.jpg",
+      "titleAr": "المخازن والتجهيز",
+      "titleEn": "Warehouse & Handling",
+      "sortOrder": 6,
+      "status": "active"
+    },
+    {
+      "id": 8,
+      "image": "/gallery-images/08-rolls-line.jpg",
+      "titleAr": "خط إنتاج الرولات",
+      "titleEn": "Paper Roll Line",
+      "sortOrder": 7,
+      "status": "active"
+    },
+    {
+      "id": 9,
+      "image": "/gallery-images/09-rolls-line-2.jpg",
+      "titleAr": "خط إنتاج الرولات",
+      "titleEn": "Paper Roll Line",
+      "sortOrder": 8,
+      "status": "active"
+    },
+    {
+      "id": 10,
+      "image": "/gallery-images/10-rolls-line-3.jpg",
+      "titleAr": "خط إنتاج الرولات",
+      "titleEn": "Paper Roll Line",
+      "sortOrder": 9,
+      "status": "active"
+    },
+    {
+      "id": 11,
+      "image": "/gallery-images/11-printing-line.jpg",
+      "titleAr": "خط الطباعة",
+      "titleEn": "Printing Line",
+      "sortOrder": 10,
+      "status": "active"
+    },
+    {
+      "id": 12,
+      "image": "/gallery-images/12-printing-line-2.jpg",
+      "titleAr": "خط الطباعة",
+      "titleEn": "Printing Line",
+      "sortOrder": 11,
+      "status": "active"
+    },
+    {
+      "id": 13,
+      "image": "/gallery-images/13-folding-line.jpg",
+      "titleAr": "خط الطي والتغليف",
+      "titleEn": "Folding & Wrapping Line",
+      "sortOrder": 12,
+      "status": "active"
+    },
+    {
+      "id": 14,
+      "image": "/gallery-images/14-rewinder-line.jpg",
+      "titleAr": "ماكينة إعادة اللف",
+      "titleEn": "Rewinding Machine",
+      "sortOrder": 13,
+      "status": "active"
+    },
+    {
+      "id": 15,
+      "image": "/gallery-images/15-packing-boxes.jpg",
+      "titleAr": "تعبئة علب المناديل",
+      "titleEn": "Tissue Box Packing",
+      "sortOrder": 14,
+      "status": "active"
+    },
+    {
+      "id": 16,
+      "image": "/gallery-images/16-packing-rolls.jpg",
+      "titleAr": "تعبئة رولات المطبخ",
+      "titleEn": "Kitchen Roll Packing",
+      "sortOrder": 15,
       "status": "active"
     }
   ]

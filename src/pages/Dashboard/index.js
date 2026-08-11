@@ -24,11 +24,12 @@ const ROLE_PERMISSIONS = {
   viewer: { products: false, categories: false, inventory: true,  orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false, media: false, clients: false },
 };
 
-const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '', countryOfOrigin: 'KW', hsCode: '', variants: [] };
+const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '', countryOfOrigin: 'KW', hsCode: '', variants: [], sortOrder: 0 };
 const emptyUser    = { username: '', password: '', name: '', email: '', phone: '', role: 'viewer', status: 'active' };
 const emptyCoupon  = { code: '', type: 'percent', value: '', minOrder: '', maxUses: '', expiry: '', status: 'active', desc: '' };
 const emptyClient  = { name: '', nameAr: '', sectorKey: '', logo: '', sortOrder: 0, status: 'active' };
 const emptyClientSector = { key: '', nameAr: '', nameEn: '' };
+const emptyGalleryImage = { image: '', titleAr: '', titleEn: '', sortOrder: 0, status: 'active' };
 const slugify = (s) => s.toString().trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
 /* ── Translation dictionary ── */
@@ -347,7 +348,7 @@ const getDescendantSlugs = (slug, cats) => {
 
 const Dashboard = () => {
   const {
-    products, orders, users, coupons, categories, clients, clientSectors, siteContent,
+    products, orders, users, coupons, categories, clients, clientSectors, galleryImages, siteContent,
     loading, error, auth,
     addProduct, updateProduct, deleteProduct,
     addUser, updateUser, deleteUser,
@@ -355,6 +356,7 @@ const Dashboard = () => {
     addCategory, updateCategory, deleteCategory,
     addClient, updateClient, deleteClient,
     addClientSector, updateClientSector, deleteClientSector,
+    addGalleryImage, updateGalleryImage, deleteGalleryImage,
     updateOrderStatus,
     saveSiteContent,
   } = useApp();
@@ -899,6 +901,91 @@ const Dashboard = () => {
     try { await deleteClientSector(s.id); } catch { alert('تعذر الحذف.'); }
   };
 
+  /* ── Gallery Images (معرض الصور) ── */
+  const sortedGalleryImages = useMemo(() =>
+    [...galleryImages].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)),
+    [galleryImages]
+  );
+
+  const [galleryImgModal,    setGalleryImgModal]    = useState(null); // null | 'add' | 'edit'
+  const [editGalleryImgRow,  setEditGalleryImgRow]  = useState(null);
+  const [galleryImgForm,     setGalleryImgForm]     = useState(emptyGalleryImage);
+  const [galleryImgSaved,    setGalleryImgSaved]    = useState(false);
+  const [galleryImgErr,      setGalleryImgErr]      = useState('');
+  const [galleryImgPreview,  setGalleryImgPreview]  = useState('');
+  const [uploadingGalleryImg,setUploadingGalleryImg] = useState(false);
+
+  const openAddGalleryImg  = () => { setGalleryImgForm(emptyGalleryImage); setGalleryImgPreview(''); setGalleryImgErr(''); setGalleryImgSaved(false); setGalleryImgModal('add'); };
+  const openEditGalleryImg = (g) => {
+    setGalleryImgForm({ image: g.image || '', titleAr: g.titleAr || '', titleEn: g.titleEn || '', sortOrder: g.sortOrder || 0, status: g.status || 'active' });
+    setGalleryImgPreview(''); setEditGalleryImgRow(g); setGalleryImgErr(''); setGalleryImgSaved(false); setGalleryImgModal('edit');
+  };
+  const closeGalleryImgModal = () => { setGalleryImgModal(null); setEditGalleryImgRow(null); setGalleryImgPreview(''); };
+
+  const handleGalleryImgUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingGalleryImg(true);
+    const url = await uploadFile(file);
+    if (url) { setGalleryImgForm(p => ({ ...p, image: url })); setGalleryImgPreview(url); }
+    setUploadingGalleryImg(false);
+  };
+
+  const handleGalleryImgSave = async (e) => {
+    e.preventDefault(); setGalleryImgErr('');
+    if (!galleryImgForm.image) { setGalleryImgErr('صورة المعرض مطلوبة'); return; }
+    if (!galleryImgForm.titleAr.trim()) { setGalleryImgErr('عنوان الصورة بالعربي مطلوب'); return; }
+    try {
+      if (galleryImgModal === 'add') {
+        const nextOrder = galleryImages.reduce((m, g) => Math.max(m, g.sortOrder || 0), -1) + 1;
+        await addGalleryImage({ ...galleryImgForm, sortOrder: nextOrder });
+      } else {
+        await updateGalleryImage(editGalleryImgRow.id, { ...editGalleryImgRow, ...galleryImgForm });
+      }
+      setGalleryImgSaved(true); setTimeout(closeGalleryImgModal, 900);
+    } catch { setGalleryImgErr('حدث خطأ أثناء الحفظ.'); }
+  };
+
+  const handleDeleteGalleryImg = async (g) => {
+    if (!window.confirm(`هل أنت متأكد من حذف هذه الصورة؟`)) return;
+    try { await deleteGalleryImage(g.id); } catch { alert('تعذر الحذف.'); }
+  };
+
+  const [reorderingGalleryImgs, setReorderingGalleryImgs] = useState(false);
+  const [dragGalleryImgId,      setDragGalleryImgId]      = useState(null);
+  const [dragOverGalleryImgId,  setDragOverGalleryImgId]  = useState(null);
+
+  const handleGalleryImgDragStart = (e, id) => {
+    setDragGalleryImgId(id);
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', String(id)); } catch {}
+  };
+  const handleGalleryImgDragOver = (e, id) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragGalleryImgId != null && id !== dragOverGalleryImgId) setDragOverGalleryImgId(id);
+  };
+  const handleGalleryImgDragEnd = () => { setDragGalleryImgId(null); setDragOverGalleryImgId(null); };
+  const handleGalleryImgDrop = async (e, targetId) => {
+    e.preventDefault();
+    const draggedId = dragGalleryImgId;
+    setDragGalleryImgId(null); setDragOverGalleryImgId(null);
+    if (draggedId == null || String(draggedId) === String(targetId)) return;
+    const sorted = [...galleryImages].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    const fromIdx = sorted.findIndex(x => String(x.id) === String(draggedId));
+    const toIdx   = sorted.findIndex(x => String(x.id) === String(targetId));
+    if (fromIdx === -1 || toIdx === -1) return;
+    const [moved] = sorted.splice(fromIdx, 1);
+    sorted.splice(toIdx, 0, moved);
+    setReorderingGalleryImgs(true);
+    try {
+      for (let i = 0; i < sorted.length; i++) {
+        if ((sorted[i].sortOrder || 0) !== i) await updateGalleryImage(sorted[i].id, { ...sorted[i], sortOrder: i });
+      }
+    } catch { alert('تعذر تحديث الترتيب.'); }
+    setReorderingGalleryImgs(false);
+  };
+
   /* ── Site Content ── */
   const [contentForm,    setContentForm]    = useState(null);
   const [contentSaved,   setContentSaved]   = useState(false);
@@ -1059,7 +1146,7 @@ const Dashboard = () => {
 <body>
 <div class="inv-header">
   <div class="inv-logo">
-    شركة الجوهرة للمناديل الورقية
+    شركة الجوهرة لإنتج محارم الورق ومشتقاته
     <span>${sc.companyAddress || 'المنطقة الصناعية — الشعيبة، الكويت'}</span>
     <span>${sc.companyPhone || '(965) 23263824'} | ${sc.companyEmail || 'info@al-jawhara.com'}</span>
   </div>
@@ -1074,7 +1161,7 @@ const Dashboard = () => {
 <div class="inv-parties">
   <div class="inv-box">
     <h4>صادرة من</h4>
-    <p><strong>شركة الجوهرة للمناديل الورقية</strong></p>
+    <p><strong>شركة الجوهرة لإنتج محارم الورق ومشتقاته</strong></p>
     <p>${sc.companyAddress || 'المنطقة الصناعية — الشعيبة، الكويت'}</p>
     <p>${sc.companyPhone || '(965) 23263824'}</p>
     <p>${sc.companyEmail || 'info@al-jawhara.com'}</p>
@@ -1104,7 +1191,7 @@ const Dashboard = () => {
 
 <div class="inv-footer">
   <div class="inv-stamp">${orderStatusLabels[order.status]?.ar || order.status}</div>
-  <p>شكراً لتعاملكم مع شركة الجوهرة للمناديل الورقية</p>
+  <p>شكراً لتعاملكم مع شركة الجوهرة لإنتج محارم الورق ومشتقاته</p>
   <p>www.al-jawhara.com | ${sc.companyPhone || '(965) 23263824'}</p>
 </div>
 </body></html>`;
@@ -1163,9 +1250,47 @@ const Dashboard = () => {
     return list;
   }, [products, dashSearch, prodCatFilter, prodStatusFilter, prodSort]);
 
-  const prodTotalPages  = Math.max(1, Math.ceil(filteredDashProducts.length / prodPerPage));
-  const prodPageSafe    = Math.min(prodPage, prodTotalPages);
-  const pagedProducts   = filteredDashProducts.slice((prodPageSafe - 1) * prodPerPage, prodPageSafe * prodPerPage);
+  /* "الترتيب" — عرض ترتيب الظهور اليدوي: يعرض كل المنتجات بدون تقسيم صفحات
+     ويفعّل السحب لإعادة الترتيب، بشرط عدم وجود بحث أو فلاتر نشطة. */
+  const isManualProdOrder = prodSort.col === 'sortOrder' && prodSort.dir === 'asc';
+  const canReorderProds   = isManualProdOrder && !dashSearch && prodCatFilter === 'all' && prodStatusFilter === 'all';
+  const prodTotalPages  = isManualProdOrder ? 1 : Math.max(1, Math.ceil(filteredDashProducts.length / prodPerPage));
+  const prodPageSafe    = isManualProdOrder ? 1 : Math.min(prodPage, prodTotalPages);
+  const pagedProducts   = isManualProdOrder ? filteredDashProducts : filteredDashProducts.slice((prodPageSafe - 1) * prodPerPage, prodPageSafe * prodPerPage);
+
+  const [reorderingProds, setReorderingProds] = useState(false);
+  const [dragProdId,      setDragProdId]      = useState(null);
+  const [dragOverProdId,  setDragOverProdId]  = useState(null);
+  const handleProdDragStart = (e, id) => {
+    setDragProdId(id);
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', String(id)); } catch {}
+  };
+  const handleProdDragOver = (e, id) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragProdId != null && id !== dragOverProdId) setDragOverProdId(id);
+  };
+  const handleProdDragEnd = () => { setDragProdId(null); setDragOverProdId(null); };
+  const handleProdDrop = async (e, targetId) => {
+    e.preventDefault();
+    const draggedId = dragProdId;
+    setDragProdId(null); setDragOverProdId(null);
+    if (draggedId == null || String(draggedId) === String(targetId)) return;
+    const sorted = [...products].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    const fromIdx = sorted.findIndex(x => String(x.id) === String(draggedId));
+    const toIdx   = sorted.findIndex(x => String(x.id) === String(targetId));
+    if (fromIdx === -1 || toIdx === -1) return;
+    const [moved] = sorted.splice(fromIdx, 1);
+    sorted.splice(toIdx, 0, moved);
+    setReorderingProds(true);
+    try {
+      for (let i = 0; i < sorted.length; i++) {
+        if ((sorted[i].sortOrder || 0) !== i) await updateProduct(sorted[i].id, { ...sorted[i], sortOrder: i });
+      }
+    } catch { alert('تعذر تحديث الترتيب.'); }
+    setReorderingProds(false);
+  };
 
   const filteredCats = useMemo(() => {
     const q = ns(catSearch);
@@ -1511,11 +1636,23 @@ const Dashboard = () => {
                       {prodTotalPages > 1 && <> · {lang === 'en' ? `Page ${prodPageSafe} of ${prodTotalPages}` : `صفحة ${prodPageSafe} من ${prodTotalPages}`}</>}
                     </div>
                   </div>
-                  {perms.products && (
-                    <button className="btn btn-green btn-sm" onClick={openAddProductForm}>
-                      <i className="fas fa-plus" aria-hidden="true"></i> {dt('products.add')}
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      type="button"
+                      className={`btn btn-sm ${isManualProdOrder ? 'btn-green' : 'btn-outline'}`}
+                      onClick={() => setProdSort(isManualProdOrder ? { col: 'id', dir: 'desc' } : { col: 'sortOrder', dir: 'asc' })}
+                    >
+                      <i className="fas fa-arrows-up-down" aria-hidden="true"></i>
+                      {isManualProdOrder
+                        ? (lang === 'en' ? 'Done Reordering' : 'إنهاء الترتيب')
+                        : (lang === 'en' ? 'Reorder Products' : 'ترتيب عرض المنتجات')}
                     </button>
-                  )}
+                    {perms.products && (
+                      <button className="btn btn-green btn-sm" onClick={openAddProductForm}>
+                        <i className="fas fa-plus" aria-hidden="true"></i> {dt('products.add')}
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Filters bar */}
@@ -1551,6 +1688,15 @@ const Dashboard = () => {
                   )}
                 </div>
 
+                {isManualProdOrder && (
+                  <div className="dash-section-desc" style={{ margin: '0 0 10px', color: 'var(--primary)' }}>
+                    <i className="fas fa-arrows-up-down"></i>{' '}
+                    {canReorderProds
+                      ? (lang === 'en' ? 'Manual order mode — drag rows by the grip icon to change the display order on the site.' : 'وضع الترتيب اليدوي — اسحب الصفوف من أيقونة المقبض لتغيير ترتيب ظهورها في الموقع.')
+                      : (lang === 'en' ? 'Clear the search and filters above to enable drag-reordering.' : 'امسح البحث والفلاتر بالأعلى لتفعيل السحب وإعادة الترتيب.')}
+                  </div>
+                )}
+
                 {/* Table */}
                 <div className="data-table prod-table-wrap">
                   <table className="prod-grid-table">
@@ -1560,6 +1706,9 @@ const Dashboard = () => {
                           <input type="checkbox"
                             checked={selectedProds.size === filteredDashProducts.length && filteredDashProducts.length > 0}
                             onChange={toggleAllProds} />
+                        </th>
+                        <th style={{ width: '34px' }} title={lang === 'en' ? 'Order' : 'الترتيب'}>
+                          <i className="fas fa-arrows-up-down" style={{ opacity: 0.5, fontSize: '11px' }}></i>
                         </th>
                         <th style={{ width: '60px' }}>ID <SortIcon col="id" /></th>
                         <th style={{ width: '60px' }}>{lang === 'en' ? 'Img' : 'صورة'}</th>
@@ -1585,14 +1734,33 @@ const Dashboard = () => {
                     </thead>
                     <tbody>
                       {filteredDashProducts.length === 0 && (
-                        <tr><td colSpan="11" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-light)' }}>
+                        <tr><td colSpan="12" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-light)' }}>
                           {dt('products.noResults')}
                         </td></tr>
                       )}
                       {pagedProducts.map(p => (
-                        <tr key={p.id} className={selectedProds.has(p.id) ? 'prod-row-selected' : ''}>
+                        <tr
+                          key={p.id}
+                          className={`${selectedProds.has(p.id) ? 'prod-row-selected' : ''} ${dragProdId === p.id ? ' client-row-dragging' : ''} ${dragOverProdId === p.id && dragProdId !== p.id ? ' client-row-drag-over' : ''}`}
+                          onDragOver={e => canReorderProds && handleProdDragOver(e, p.id)}
+                          onDrop={e => canReorderProds && handleProdDrop(e, p.id)}
+                        >
                           <td>
                             <input type="checkbox" checked={selectedProds.has(p.id)} onChange={() => toggleProdSelect(p.id)} />
+                          </td>
+                          <td>
+                            <span
+                              className="drag-handle"
+                              draggable={canReorderProds && !reorderingProds}
+                              onDragStart={e => handleProdDragStart(e, p.id)}
+                              onDragEnd={handleProdDragEnd}
+                              style={{ opacity: canReorderProds ? 1 : 0.3, cursor: canReorderProds ? 'grab' : 'not-allowed' }}
+                              title={canReorderProds
+                                ? (lang === 'en' ? 'Drag to reorder' : 'اسحب لإعادة الترتيب')
+                                : (lang === 'en' ? 'Click the order icon in the header (and clear search/filters) to reorder' : 'اضغط أيقونة الترتيب في الأعلى (وامسح البحث/الفلاتر) لإعادة الترتيب')}
+                            >
+                              <i className="fas fa-grip-vertical"></i>
+                            </span>
                           </td>
                           <td className="td-light" style={{ fontSize: '12px' }}>#{p.id}</td>
                           <td>
@@ -2265,7 +2433,7 @@ const Dashboard = () => {
             <div>
               <div className="dash-header-row" style={{ marginBottom: 0 }}>
                 <div className="dashboard-title" style={{ margin: 0 }}>{dt('content.title')}</div>
-                {contentTab !== 'clients' && (
+                {contentTab !== 'clients' && contentTab !== 'gallery' && (
                   <button className="btn btn-green btn-sm" onClick={handleContentSave} disabled={contentLoading}>
                     {contentLoading ? <><i className="fas fa-spinner fa-spin"></i> {dt('common.saving')}</> : <><i className="fas fa-save"></i> {dt('content.saveAll')}</>}
                   </button>
@@ -2282,6 +2450,7 @@ const Dashboard = () => {
                   { id: 'banners', label: dt('content.banners'), icon: 'fa-images' },
                   { id: 'general', label: dt('content.general'), icon: 'fa-gear' },
                   { id: 'clients', label: dt('nav.clients'),     icon: 'fa-handshake' },
+                  { id: 'gallery', label: lang === 'en' ? 'Photo Gallery' : 'معرض الصور', icon: 'fa-photo-film' },
                 ].map(t => (
                   <button key={t.id} className={`content-tab-btn${contentTab === t.id ? ' active' : ''}`} onClick={() => setContentTab(t.id)}>
                     <i className={`fas ${t.icon}`}></i> {t.label}
@@ -2355,7 +2524,7 @@ const Dashboard = () => {
                   <div className="content-section-title"><i className="fas fa-user-tie"></i> المدير العام</div>
                   <div className="content-grid">
                     <div className="form-group"><label className="form-label">الاسم الكامل</label><input className="form-input" value={cf('ceoName')} onChange={e => setCf('ceoName', e.target.value)} placeholder="Bilal Mohammad Ghadar" /></div>
-                    <div className="form-group"><label className="form-label">المسمى الوظيفي</label><input className="form-input" value={cf('ceoTitle')} onChange={e => setCf('ceoTitle', e.target.value)} placeholder="المدير العام" /></div>
+                    <div className="form-group"><label className="form-label">المسمى الوظيفي</label><input className="form-input" value={cf('ceoTitle')} onChange={e => setCf('ceoTitle', e.target.value)} placeholder="رئيس مجلس الإدارة" /></div>
                     <div className="form-group content-span2">
                       <label className="form-label">اقتباس المدير (اتركه فارغاً للإخفاء)</label>
                       <textarea className="form-textarea" value={cf('ceoQuote')} onChange={e => setCf('ceoQuote', e.target.value)} style={{ minHeight: '80px' }} />
@@ -2401,7 +2570,7 @@ const Dashboard = () => {
                     </div>
                     <div className="form-group">
                       <label className="form-label">ساعات العمل (إنجليزي)</label>
-                      <input className="form-input" dir="ltr" value={cf('workHoursEn')} onChange={e => setCf('workHoursEn', e.target.value)} placeholder="Sunday – Thursday: 8 AM – 5 PM" />
+                      <input className="form-input" dir="ltr" value={cf('workHoursEn')} onChange={e => setCf('workHoursEn', e.target.value)} placeholder="Saturday – Thursday: 8 AM – 4 PM" />
                     </div>
                   </div>
 
@@ -2567,7 +2736,58 @@ const Dashboard = () => {
                   </div>
                 </>)}
 
-                {contentTab !== 'clients' && (
+                {/* ═══ GALLERY IMAGES (معرض الصور) ═══ */}
+                {contentTab === 'gallery' && (<>
+                  <div className="content-section-title"><i className="fas fa-photo-film"></i> {lang === 'en' ? 'Photo Gallery' : 'معرض الصور'}</div>
+                  <div className="dash-header-row">
+                    <p className="dash-section-desc" style={{ margin: 0 }}>{lang === 'en' ? 'Manage the photos and their order shown on the Photo Gallery page.' : 'إدارة الصور وترتيب ظهورها في صفحة معرض الصور.'}</p>
+                    {perms.clients && (
+                      <button type="button" className="btn btn-green btn-sm" onClick={openAddGalleryImg}><i className="fas fa-plus"></i> {lang === 'en' ? 'Add Photo' : 'إضافة صورة'}</button>
+                    )}
+                  </div>
+                  <div className="data-table">
+                    <table>
+                      <thead><tr><th>{lang === 'en' ? 'Order' : 'الترتيب'}</th><th>{lang === 'en' ? 'Photo' : 'الصورة'}</th><th>{lang === 'en' ? 'Title (AR)' : 'العنوان بالعربي'}</th><th>{lang === 'en' ? 'Title (EN)' : 'العنوان بالإنجليزي'}</th><th>{dt('common.status')}</th><th>{dt('clients.actions')}</th></tr></thead>
+                      <tbody>
+                        {sortedGalleryImages.map((g) => (
+                          <tr
+                            key={g.id}
+                            className={`${dragGalleryImgId === g.id ? 'client-row-dragging' : ''} ${dragOverGalleryImgId === g.id && dragGalleryImgId !== g.id ? 'client-row-drag-over' : ''}`}
+                            onDragOver={e => handleGalleryImgDragOver(e, g.id)}
+                            onDrop={e => handleGalleryImgDrop(e, g.id)}
+                          >
+                            <td>
+                              <span
+                                className="drag-handle"
+                                draggable={!reorderingGalleryImgs}
+                                onDragStart={e => handleGalleryImgDragStart(e, g.id)}
+                                onDragEnd={handleGalleryImgDragEnd}
+                                title={lang === 'en' ? 'Drag to reorder' : 'اسحب لإعادة الترتيب'}
+                              >
+                                <i className="fas fa-grip-vertical"></i>
+                              </span>
+                            </td>
+                            <td>
+                              {g.image
+                                ? <img src={g.image} alt="" className="prod-thumb" />
+                                : <div className="prod-thumb-empty"><i className="fas fa-image" style={{opacity:0.3}}></i></div>}
+                            </td>
+                            <td className="td-bold">{g.titleAr}</td>
+                            <td className="td-primary" dir="ltr">{g.titleEn}</td>
+                            <td><span className={`status-badge status-${g.status}`}>{g.status === 'active' ? dt('common.active') : dt('common.inactive')}</span></td>
+                            <td>
+                              <button type="button" className="action-btn action-btn-edit" onClick={() => openEditGalleryImg(g)}><i className="fas fa-pen"></i> {dt('common.edit')}</button>
+                              <button type="button" className="action-btn action-btn-delete" onClick={() => handleDeleteGalleryImg(g)}><i className="fas fa-trash"></i> {dt('common.delete')}</button>
+                            </td>
+                          </tr>
+                        ))}
+                        {galleryImages.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px' }}>{lang === 'en' ? 'No photos yet' : 'لا توجد صور بعد'}</td></tr>}
+                      </tbody>
+                    </table>
+                  </div>
+                </>)}
+
+                {contentTab !== 'clients' && contentTab !== 'gallery' && (
                 <div className="content-save-row">
                   <button type="submit" className="btn btn-green" disabled={contentLoading}>
                     {contentLoading ? <><i className="fas fa-spinner fa-spin"></i> {dt('common.saving')}</> : <><i className="fas fa-save"></i> {dt('common.saveDB')}</>}
@@ -3438,6 +3658,46 @@ const Dashboard = () => {
                 <div className="modal-actions">
                   <button type="button" onClick={closeClientModal} className="btn btn-outline">{dt('common.cancel')}</button>
                   <button type="submit" className="btn btn-green" disabled={uploadingClientLogo}><i className="fas fa-save"></i> {dt('common.save')}</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ══ Gallery Image Modal ══ */}
+        {galleryImgModal && (
+          <div className="modal-overlay" onClick={e => e.target === e.currentTarget && closeGalleryImgModal()}>
+            <div className="modal" role="dialog">
+              <div className="modal-header">
+                <h3>{galleryImgModal === 'add' ? (lang === 'en' ? 'Add Photo' : 'إضافة صورة') : (lang === 'en' ? 'Edit Photo' : 'تعديل الصورة')}</h3>
+                <button className="modal-close" onClick={closeGalleryImgModal}><i className="fas fa-xmark"></i></button>
+              </div>
+              {galleryImgSaved && <AlertSuccess msg={dt('common.savedOk')} />}
+              {galleryImgErr   && <AlertError  msg={galleryImgErr} />}
+              <form onSubmit={handleGalleryImgSave}>
+                <div className="form-group">
+                  <label className="form-label">{lang === 'en' ? 'Photo' : 'الصورة'} *</label>
+                  <label className="img-upload-box">
+                    {(galleryImgForm.image || galleryImgPreview)
+                      ? <img src={galleryImgForm.image || galleryImgPreview} alt="" className="img-upload-preview" />
+                      : <div className="img-upload-placeholder"><i className="fas fa-image"></i><span>{lang === 'en' ? 'Choose image' : 'اختر صورة'}</span></div>}
+                    <input type="file" accept="image/*" onChange={handleGalleryImgUpload} style={{display:'none'}} />
+                    {(galleryImgForm.image || galleryImgPreview) && (
+                      <button type="button" className="img-upload-remove" onClick={e => { e.preventDefault(); setGalleryImgForm(p=>({...p,image:''})); setGalleryImgPreview(''); }}>
+                        <i className="fas fa-xmark"></i>
+                      </button>
+                    )}
+                  </label>
+                  {uploadingGalleryImg && <div style={{fontSize:'11px',color:'var(--text-light)',marginTop:'4px'}}><i className="fas fa-spinner fa-spin"></i> {lang === 'en' ? 'Uploading...' : 'جاري الرفع...'}</div>}
+                </div>
+                <div className="modal-grid2">
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Title (Arabic) *' : 'العنوان بالعربي *'}</label><input className="form-input" name="titleAr" value={galleryImgForm.titleAr} onChange={e => setGalleryImgForm(p=>({...p,[e.target.name]:e.target.value}))} required /></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Title (English)' : 'العنوان بالإنجليزي'}</label><input className="form-input" name="titleEn" value={galleryImgForm.titleEn} onChange={e => setGalleryImgForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" /></div>
+                </div>
+                <div className="form-group"><label className="form-label">{dt('common.status')}</label><select className="form-select" name="status" value={galleryImgForm.status} onChange={e => setGalleryImgForm(p=>({...p,[e.target.name]:e.target.value}))}><option value="active">{dt('common.active')}</option><option value="inactive">{dt('common.inactive')}</option></select></div>
+                <div className="modal-actions">
+                  <button type="button" onClick={closeGalleryImgModal} className="btn btn-outline">{dt('common.cancel')}</button>
+                  <button type="submit" className="btn btn-green" disabled={uploadingGalleryImg}><i className="fas fa-save"></i> {dt('common.save')}</button>
                 </div>
               </form>
             </div>

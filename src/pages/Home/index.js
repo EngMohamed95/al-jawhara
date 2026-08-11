@@ -15,7 +15,10 @@ const DEFAULT_HERO_IMAGE = '/Photo gallery/PhotoGallery08.jpg';
 const Home = () => {
   const { groupedProducts, clients, loading, siteContent: sc } = useApp();
   const { t, lang } = useLanguage();
-  const featured = groupedProducts.filter(p => p.status === 'active').slice(0, 8);
+  const featured = groupedProducts
+    .filter(p => p.status === 'active')
+    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+    .slice(0, 8);
   const featuredClients = clients
     .filter(c => c.logo && c.status !== 'inactive')
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
@@ -28,12 +31,13 @@ const Home = () => {
   const heroVideo     = sc?.heroVideoUrl  || DEFAULT_HERO_VIDEO;
 
   const ceoName      = sc?.ceoName  || 'Bilal Mohammad Ghadar';
-  const ceoTitle     = sc?.ceoTitle || (lang === 'ar' ? 'المدير العام' : 'General Manager');
+  /* Job title — use DB value only in Arabic, always use translation in English */
+  const ceoTitle     = lang === 'ar' ? (sc?.ceoTitle || 'رئيس مجلس الإدارة') : 'CEO';
   const ceoQuote     = sc?.ceoQuote || '';
   const statsYear    = sc?.statsYear            || '1998';
   const statsArea    = sc?.factoryArea          || '4,500';
   const statsProd    = sc?.productionCapacity   || '20,000';
-  const statsClients = sc?.statsClients         || '+25';
+  const statsClients = sc?.statsClients         || '+100';
 
   const stats = [
     { icon: 'fa-calendar-check', number: statsYear,    label: t('home.statsYear') },
@@ -46,47 +50,39 @@ const Home = () => {
 
   /* Highlight brand name in hero title */
   const highlightTitle = heroTitle
-    .replace('الجوهرة',    '<span class="hero-title-accent">الجوهرة</span>')
-    .replace('Al-Jawhara', '<span class="hero-title-accent">Al-Jawhara</span>');
+    .replace('الجوهرة',  '<span class="hero-title-accent">الجوهرة</span>')
+    .replace('Al-Jawhra', '<span class="hero-title-accent">Al-Jawhra</span>');
 
   return (
     <>
       <Seo
         title={lang === 'ar' ? 'الصفحة الرئيسية' : 'Home'}
         description={lang === 'ar'
-          ? 'شركة الجوهرة للمناديل الورقية — رائدة في تصنيع المناديل وأوراق التواليت والمناشف في الكويت منذ 1998.'
-          : "Al-Jawhara Tissue Paper Co. — Kuwait's leading tissue paper manufacturer since 1998."}
+          ? 'شركة الجوهرة لإنتج محارم الورق ومشتقاته — رائدة في تصنيع المناديل وأوراق التواليت والمناشف في الكويت منذ 1998.'
+          : "Al-Jawhra Tissue Paper & Derivatives Co. — Kuwait's leading tissue paper manufacturer since 1998."}
         keywords="الجوهرة للمناديل، مناديل الكويت، tissue paper Kuwait"
       />
 
-      {/* ── Hero with video background ── */}
+      {/* ── Hero: full-width video showcase + content below ── */}
       <section className="hero hero-video-section" aria-label="القسم التعريفي">
+        <Reveal direction="up">
+          <div className="hero-video-frame">
+            <video
+              className="hero-video-bg"
+              src={heroVideo}
+              poster={heroImage}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden="true"
+              onError={e => { e.currentTarget.style.display = 'none'; }}
+            />
+          </div>
+        </Reveal>
 
-        {/* Fallback layer — visible while the video loads or if it fails */}
-        <div
-          className="hero-video-fallback"
-          style={{ backgroundImage: `url(${heroImage})` }}
-          aria-hidden="true"
-        />
-
-        {/* Background: video (sits above the fallback image) */}
-        <video
-          className="hero-video-bg"
-          src={heroVideo}
-          poster={heroImage}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          aria-hidden="true"
-          onError={e => { e.currentTarget.style.display = 'none'; }}
-        />
-
-        {/* Dark overlay so text is readable */}
-        <div className="hero-video-overlay" aria-hidden="true"></div>
-
-        <div className="container hero-video-content">
+        <div className="container">
           <div className="hero-content">
             <p className="hero-badge">
               <i className="fas fa-star" aria-hidden="true"></i>

@@ -18,7 +18,7 @@ const t = {
   // ── Home ─────────────────────────────────────────────
   home: {
     heroBadge:    { ar: 'الرائد في صناعة المناديل الورقية بالكويت', en: 'Kuwait\'s Leading Tissue Paper Manufacturer' },
-    heroTitle:    { ar: 'شركة الجوهرة للمناديل الورقية',            en: 'Al-Jawhara Tissue Paper Co.' },
+    heroTitle:    { ar: 'شركه الجوهرة لإنتج محارم الورق ومشتقاته', en: 'Al-Jawhra Tissue Paper & Derivatives Co.' },
     heroSubtitle: { ar: 'جودة استثنائية في كل ورقة — نصنع منتجات ورقية عالية المستوى تخدم الأسر والمؤسسات في الكويت والخليج منذ 1998', en: 'Exceptional quality in every sheet — manufacturing premium paper products serving families and institutions across Kuwait and the Gulf since 1998' },
     browseProducts: { ar: 'تصفح منتجاتنا',    en: 'Browse Products' },
     contactUs:      { ar: 'تواصل معنا',        en: 'Contact Us' },
@@ -51,7 +51,7 @@ const t = {
     subtitle:   { ar: 'تعرف على شركة الجوهرة — قصة نجاح كويتية منذ 1998', en: 'Discover Al-Jawhara — A Kuwaiti success story since 1998' },
     storyBadge: { ar: 'قصتنا',                en: 'Our Story' },
     storyTitle: { ar: 'رحلة الجودة منذ',      en: 'A Journey of Quality Since' },
-    story1:     { ar: 'بدأت شركة الجوهرة للمناديل الورقية مسيرتها في الثامن عشر من فبراير 1998 بهدف واحد واضح: توفير منتجات ورقية عالية الجودة تلبي احتياجات السوق الكويتي والخليجي بأسعار تنافسية.', en: 'Al-Jawhara Tissue Paper Co. began its journey on February 18, 1998, with one clear goal: to provide high-quality paper products that meet the needs of the Kuwaiti and Gulf markets at competitive prices.' },
+    story1:     { ar: 'بدأت شركة الجوهرة لإنتج محارم الورق ومشتقاته مسيرتها في الثامن عشر من فبراير 1998 بهدف واحد واضح: توفير منتجات ورقية عالية الجودة تلبي احتياجات السوق الكويتي والخليجي بأسعار تنافسية.', en: 'Al-Jawhra Tissue Paper & Derivatives Co. began its journey on February 18, 1998, with one clear goal: to provide high-quality paper products that meet the needs of the Kuwaiti and Gulf markets at competitive prices.' },
     story2:     { ar: 'اليوم، نخدم أكثر من 25 عميلاً من كبرى الشركات والمؤسسات، ونواصل مسيرة التطوير والابتكار لتقديم الأفضل دائماً.', en: 'Today, we serve more than 25 clients from major companies and institutions, continuing our journey of development and innovation to always deliver the best.' },
     infoTitle:  { ar: 'بيانات الشركة',        en: 'Company Information' },
     infoSub:    { ar: 'معلومات تفصيلية عن شركة الجوهرة', en: 'Detailed information about Al-Jawhara Co.' },
@@ -64,7 +64,7 @@ const t = {
     ceoWord:    { ar: 'كلمة المدير العام',    en: 'CEO\'s Message' },
     location:   { ar: 'الشعيبة الصناعية',    en: 'Shuaiba Industrial Area' },
     storyFallback: { ar: 'بدأت شركة الجوهرة مسيرتها في 1998...', en: 'Al-Jawhara began its journey in 1998...' },
-    ceoTitleFallback: { ar: 'المدير العام', en: 'General Manager' },
+    ceoTitleFallback: { ar: 'رئيس مجلس الإدارة', en: 'CEO' },
     milestones: [
       { year: '1998', title: { ar: 'التأسيس',              en: 'Foundation'         }, desc: { ar: 'تأسيس الشركة في الشعيبة الصناعية',                    en: 'Company founded in the Shuaiba Industrial Area' } },
       { year: '2003', title: { ar: 'التوسع الأول',          en: 'First Expansion'    }, desc: { ar: 'توسعة خطوط الإنتاج وإضافة منتجات جديدة',               en: 'Production lines expanded and new products added' } },
@@ -73,7 +73,7 @@ const t = {
       { year: '2024', title: { ar: 'قفزة نوعية',            en: 'Qualitative Leap'   }, desc: { ar: 'استثمارات جديدة في خطوط إنتاج حديثة',                  en: 'New investments in modern production lines' }, last: true },
     ],
     infoCards: [
-      { icon: 'fa-calendar-check', title: { ar: 'تاريخ التأسيس',    en: 'Founded'              }, desc: { ar: 'أكثر من 26 عاماً من الخبرة في الصناعة',          en: '26+ years of industry expertise' } },
+      { icon: 'fa-calendar-check', title: { ar: 'تاريخ التأسيس',    en: 'Founded'              }, desc: { ar: 'أكثر من 22 عاماً من الخبرة في الصناعة',          en: '22+ years of industry expertise' } },
       { icon: 'fa-industry',       title: { ar: 'مساحة المصنع',     en: 'Factory Area'         }, desc: { ar: 'منشأة إنتاجية متكاملة بأحدث المعدات',            en: 'Fully integrated production facility with latest equipment' } },
       { icon: 'fa-weight-hanging', title: { ar: 'الطاقة الإنتاجية', en: 'Production Capacity'  }, desc: { ar: 'إنتاج سنوي ضخم يلبي احتياجات السوق',             en: 'High annual production meeting market demands' } },
       { icon: 'fa-location-dot',   title: { ar: 'الموقع',           en: 'Location'             }, desc: { ar: 'المنطقة الصناعية بالشعيبة — الكويت',             en: 'Shuaiba Industrial Area — Kuwait' } },
@@ -81,10 +81,10 @@ const t = {
       { icon: 'fa-envelope',       title: { ar: 'البريد الإلكتروني',en: 'Email'                }, desc: { ar: 'راسلونا وسنرد في أقرب وقت ممكن',                en: 'Email us and we\'ll respond promptly' } },
     ],
     storyStats: [
-      { num: '26+', icon: 'fa-clock',    bg: 'var(--primary-xlight)', label: { ar: 'عاماً من الخبرة', en: 'Years of Experience' } },
+      { num: '22+', icon: 'fa-clock',    bg: 'var(--primary-xlight)', label: { ar: 'عاماً من الخبرة', en: 'Years of Experience' } },
       { num: null,  icon: 'fa-industry', bg: '#fdf0e6',               label: { ar: 'طن/سنة',          en: 'Tons/Year' } },
       { num: null,  icon: 'fa-warehouse',bg: 'var(--primary-xlight)', label: { ar: 'م² مساحة',         en: 'm² Area' } },
-      { num: '25+', icon: 'fa-users',    bg: '#fdf0e6',               label: { ar: 'عميل مميز',        en: 'Trusted Clients' } },
+      { num: '100+', icon: 'fa-users',   bg: '#fdf0e6',               label: { ar: 'عميل مميز',        en: 'Trusted Clients' } },
     ],
   },
 
@@ -126,7 +126,7 @@ const t = {
       { icon: 'fa-users',  num: '70+', label: { ar: 'عميل معتمد',     en: 'Trusted Clients' } },
       { icon: 'fa-store',  num: '7',   label: { ar: 'قطاعات مختلفة',  en: 'Sectors' } },
       { icon: 'fa-globe',  num: '3',   label: { ar: 'دول خليجية',     en: 'Gulf Countries' } },
-      { icon: 'fa-star',   num: '26+', label: { ar: 'عام من الشراكة', en: 'Years of Partnership' } },
+      { icon: 'fa-star',   num: '22+', label: { ar: 'عام من الشراكة', en: 'Years of Partnership' } },
     ],
   },
 
@@ -160,7 +160,7 @@ const t = {
     namePlaceholder:    { ar: 'اسمك الكريم',            en: 'Your full name' },
     companyPlaceholder: { ar: 'اسم شركتك (اختياري)',    en: 'Your company name (optional)' },
     messagePlaceholder: { ar: 'اكتب رسالتك هنا...',    en: 'Write your message here...' },
-    workHoursFallback:  { ar: 'الأحد – الخميس: 8 ص – 5 م', en: 'Sunday – Thursday: 8 AM – 5 PM' },
+    workHoursFallback:  { ar: 'السبت – الخميس: 8 ص – 4 م', en: 'Saturday – Thursday: 8 AM – 4 PM' },
     addressFallback:    { ar: 'المنطقة الصناعية — الشعيبة، الكويت', en: 'Industrial Area — Shuaiba, Kuwait' },
     labels: {
       phone:    { ar: 'الهاتف',            en: 'Phone' },
@@ -250,7 +250,7 @@ const t = {
 
   // ── Footer ───────────────────────────────────────────
   footer: {
-    desc:     { ar: 'شركة الجوهرة للمناديل الورقية — رائدة في تصنيع وتوزيع منتجات الورق عالية الجودة في الكويت منذ عام 1998.', en: 'Al-Jawhara Tissue Paper Co. — Leading manufacturer and distributor of quality paper products in Kuwait since 1998.' },
+    desc:     { ar: 'شركة الجوهرة لإنتج محارم الورق ومشتقاته — رائدة في تصنيع وتوزيع منتجات الورق عالية الجودة في الكويت منذ عام 1998.', en: 'Al-Jawhra Tissue Paper & Derivatives Co. — Leading manufacturer and distributor of quality paper products in Kuwait since 1998.' },
     links:    { ar: 'روابط سريعة',  en: 'Quick Links' },
     ourProds: { ar: 'منتجاتنا',     en: 'Our Products' },
     reach:    { ar: 'تواصل معنا',   en: 'Reach Us' },

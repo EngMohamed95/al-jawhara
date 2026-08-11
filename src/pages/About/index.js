@@ -13,7 +13,8 @@ const About = () => {
   const story       = lang === 'ar' ? (sc?.aboutStory  || t('about.storyFallback')) : t('about.story1');
   const story2      = sc?.aboutStory2 || '';
   const ceoName     = sc?.ceoName    || 'Bilal Mohammad Ghadar';
-  const ceoTitle    = sc?.ceoTitle   || t('about.ceoTitleFallback');
+  /* Job title — use DB value only in Arabic, always use translation in English */
+  const ceoTitle    = lang === 'ar' ? (sc?.ceoTitle || t('about.ceoTitleFallback')) : t('about.ceoTitleFallback');
   const ceoQuote    = sc?.ceoQuote   || '';
   const ceoImage    = sc?.ceoImage   || '';
   const aboutStoryImg   = sc?.aboutStoryImg   || '';
@@ -42,8 +43,8 @@ const About = () => {
       <Seo
         title={t('about.title')}
         description={lang === 'ar'
-          ? `شركة الجوهرة للمناديل الورقية — تأسست ${founded}. مصنع في الشعيبة، طاقة إنتاجية ${prod} طن/سنة.`
-          : `Al-Jawhara Tissue Paper Co. — Founded ${founded}. Factory in Shuaiba, ${prod} tons/year capacity.`}
+          ? `شركة الجوهرة لإنتج محارم الورق ومشتقاته — تأسست ${founded}. مصنع في الشعيبة، طاقة إنتاجية ${prod} طن/سنة.`
+          : `Al-Jawhra Tissue Paper & Derivatives Co. — Founded ${founded}. Factory in Shuaiba, ${prod} tons/year capacity.`}
         keywords="عن الجوهرة، تأسيس 1998، مصنع الكويت، مناديل ورقية الشعيبة"
       />
 
@@ -57,6 +58,28 @@ const About = () => {
           </div>
         </div>
       </header>
+
+      {/* Mission & Vision */}
+      <section className="section about-mv-section" aria-label={`${t('about.mission')} & ${t('about.vision')}`}>
+        <div className="container">
+          <div className="mv-grid">
+            <Reveal direction="right">
+              <div className="mv-card mv-card-green">
+                <span className="mv-icon" aria-hidden="true"><i className="fas fa-bullseye"></i></span>
+                <h3 className="mv-title mv-title-green">{t('about.mission')}</h3>
+                <p className="mv-text">{missionText}</p>
+              </div>
+            </Reveal>
+            <Reveal direction="left" delay={100}>
+              <div className="mv-card mv-card-orange">
+                <span className="mv-icon" aria-hidden="true"><i className="fas fa-eye"></i></span>
+                <h3 className="mv-title mv-title-orange">{t('about.vision')}</h3>
+                <p className="mv-text">{visionText}</p>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
 
       {/* Story */}
       <section className="section about-story-section" aria-label={t('about.storyBadge')}>
@@ -116,28 +139,6 @@ const About = () => {
                 </div>
               </Reveal>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Mission & Vision */}
-      <section className="section about-mv-section" aria-label={`${t('about.mission')} & ${t('about.vision')}`}>
-        <div className="container">
-          <div className="mv-grid">
-            <Reveal direction="right">
-              <div className="mv-card mv-card-green">
-                <span className="mv-icon" aria-hidden="true"><i className="fas fa-bullseye"></i></span>
-                <h3 className="mv-title mv-title-green">{t('about.mission')}</h3>
-                <p className="mv-text">{missionText}</p>
-              </div>
-            </Reveal>
-            <Reveal direction="left" delay={100}>
-              <div className="mv-card mv-card-orange">
-                <span className="mv-icon" aria-hidden="true"><i className="fas fa-eye"></i></span>
-                <h3 className="mv-title mv-title-orange">{t('about.vision')}</h3>
-                <p className="mv-text">{visionText}</p>
-              </div>
-            </Reveal>
           </div>
         </div>
       </section>

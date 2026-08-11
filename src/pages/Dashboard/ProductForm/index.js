@@ -16,7 +16,7 @@ const emptyProduct = {
   name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '',
   status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '',
   isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '',
-  countryOfOrigin: 'KW', hsCode: '', variants: [], icon: 'fa-box',
+  countryOfOrigin: 'KW', hsCode: '', variants: [], icon: 'fa-box', sortOrder: 0,
 };
 
 const productStatusLabels = {
@@ -143,6 +143,7 @@ export default function ProductForm({ mode, productId, onBack }) {
       hsCode:          p.hsCode          || '',
       variants:        p.variants        || [],
       icon:            p.icon            || 'fa-box',
+      sortOrder:       p.sortOrder       ?? 0,
     });
   }, [isEdit, productId, products]);
 
@@ -216,6 +217,32 @@ export default function ProductForm({ mode, productId, onBack }) {
 
   const removeGallery = (idx) =>
     setForm(p => ({ ...p, gallery: p.gallery.filter((_, i) => i !== idx) }));
+
+  /* Set a gallery photo as the main/cover image (swaps with current main) */
+  const setAsCoverImage = (idx) =>
+    setForm(p => {
+      const gallery = [...(p.gallery || [])];
+      const newCover = gallery[idx];
+      if (p.image) gallery[idx] = p.image; else gallery.splice(idx, 1);
+      return { ...p, image: newCover, gallery };
+    });
+
+  /* Gallery photo order — drag & drop (same lightweight pattern as sections) */
+  const [dragGalleryIdx,     setDragGalleryIdx]     = useState(null);
+  const [dragOverGalleryIdx, setDragOverGalleryIdx] = useState(null);
+  const onGalleryDragStart = (idx) => setDragGalleryIdx(idx);
+  const onGalleryDragOver  = (idx) => { if (idx !== dragGalleryIdx) setDragOverGalleryIdx(idx); };
+  const onGalleryDrop = (idx) => {
+    if (dragGalleryIdx === null || dragGalleryIdx === idx) { setDragGalleryIdx(null); setDragOverGalleryIdx(null); return; }
+    setForm(p => {
+      const gallery = [...(p.gallery || [])];
+      const [moved] = gallery.splice(dragGalleryIdx, 1);
+      gallery.splice(idx, 0, moved);
+      return { ...p, gallery };
+    });
+    setDragGalleryIdx(null); setDragOverGalleryIdx(null);
+  };
+  const onGalleryDragEnd = () => { setDragGalleryIdx(null); setDragOverGalleryIdx(null); };
 
   /* Variant helpers */
   const setVariant = (vi, field, val) =>
@@ -364,12 +391,26 @@ export default function ProductForm({ mode, productId, onBack }) {
             <div>
               <div className="pf-field-label">
                 {ar('معرض الصور', 'Gallery')}
-                <span className="pf-field-hint"> ({(form.gallery || []).length}/6)</span>
+                <span className="pf-field-hint"> ({(form.gallery || []).length}/6) — {ar('اسحب لإعادة الترتيب', 'drag to reorder')}</span>
               </div>
               <div className="pf-gallery-grid">
                 {(form.gallery || []).map((url, idx) => (
-                  <div key={idx} className="pf-gallery-thumb">
+                  <div
+                    key={idx}
+                    className={`pf-gallery-thumb${dragGalleryIdx === idx ? ' pf-gallery-dragging' : ''}${dragOverGalleryIdx === idx && dragGalleryIdx !== idx ? ' pf-gallery-drag-over' : ''}`}
+                    draggable
+                    onDragStart={() => onGalleryDragStart(idx)}
+                    onDragOver={e => { e.preventDefault(); onGalleryDragOver(idx); }}
+                    onDrop={e => { e.preventDefault(); onGalleryDrop(idx); }}
+                    onDragEnd={onGalleryDragEnd}
+                  >
+                    <span className="pf-gallery-grip" title={ar('اسحب لإعادة الترتيب', 'Drag to reorder')}>
+                      <i className="fas fa-grip-vertical"></i>
+                    </span>
                     <img src={url} alt="" />
+                    <button type="button" className="pf-gallery-set-cover" onClick={() => setAsCoverImage(idx)} title={ar('اجعلها الصورة الرئيسية', 'Set as main image')}>
+                      <i className="fas fa-star"></i>
+                    </button>
                     <button type="button" className="pf-img-remove" onClick={() => removeGallery(idx)}>
                       <i className="fas fa-xmark"></i>
                     </button>
