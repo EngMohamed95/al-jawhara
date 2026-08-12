@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
+import { PRODUCTS_PAGE_HEADER } from '../../siteImages';
 import './index.css';
 
 const Cart = () => {
@@ -13,7 +14,7 @@ const Cart = () => {
     return (
       <>
         <Seo title={t('cart.title')} noIndex />
-        <header className="page-header">
+        <header className="page-header" style={{ backgroundImage: `url(${PRODUCTS_PAGE_HEADER})` }}>
           <div className="container">
             <div className="page-header-content">
               <div className="page-header-icon" aria-hidden="true"><i className="fas fa-shopping-cart"></i></div>
@@ -43,7 +44,7 @@ const Cart = () => {
     <>
       <Seo title={t('cart.title')} noIndex />
 
-      <header className="page-header">
+      <header className="page-header" style={{ backgroundImage: `url(${PRODUCTS_PAGE_HEADER})` }}>
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-shopping-cart"></i></div>

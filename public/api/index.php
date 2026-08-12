@@ -77,6 +77,12 @@ function postProcessRow($resource, $row) {
     if ($resource === 'products' && isset($row['specs'])) {
         $row['specs'] = json_decode($row['specs'], true) ?: [];
     }
+    if ($resource === 'products' && isset($row['gallery'])) {
+        $row['gallery'] = json_decode($row['gallery'], true) ?: [];
+    }
+    if ($resource === 'products' && isset($row['variants'])) {
+        $row['variants'] = json_decode($row['variants'], true) ?: [];
+    }
     if (($resource === 'siteContent' || $resource === 'site_content')) {
         if (isset($row['paymentSettings'])) {
             $row['paymentSettings'] = json_decode($row['paymentSettings'], true) ?: new stdClass();
@@ -93,7 +99,7 @@ function postProcessRow($resource, $row) {
 
 // Pre-processes row fields before inserting/updating MySQL
 function preProcessField($resource, $key, $value) {
-    if ($resource === 'products' && $key === 'specs') {
+    if ($resource === 'products' && in_array($key, ['specs', 'gallery', 'variants'])) {
         return json_encode($value, JSON_UNESCAPED_UNICODE);
     }
     if (($resource === 'siteContent' || $resource === 'site_content') && 
