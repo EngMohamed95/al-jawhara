@@ -43,7 +43,7 @@ const About = () => {
       <Seo
         title={t('about.title')}
         description={lang === 'ar'
-          ? `شركة الجوهرة لإنتج محارم الورق ومشتقاته — تأسست ${founded}. مصنع في الشعيبة، طاقة إنتاجية ${prod} طن/سنة.`
+          ? `شركة الجوهرة لإنتاج محارم الورق ومشتقاته — تأسست ${founded}. مصنع في الشعيبة، طاقة إنتاجية ${prod} طن/سنة.`
           : `Al-Jawhra Tissue Paper & Derivatives Co. — Founded ${founded}. Factory in Shuaiba, ${prod} tons/year capacity.`}
         keywords="عن الجوهرة، تأسيس 1998، مصنع الكويت، مناديل ورقية الشعيبة"
       />

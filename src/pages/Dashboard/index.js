@@ -1146,7 +1146,7 @@ const Dashboard = () => {
 <body>
 <div class="inv-header">
   <div class="inv-logo">
-    شركة الجوهرة لإنتج محارم الورق ومشتقاته
+    شركة الجوهرة لإنتاج محارم الورق ومشتقاته
     <span>${sc.companyAddress || 'المنطقة الصناعية — الشعيبة، الكويت'}</span>
     <span>${sc.companyPhone || '(965) 23263824'} | ${sc.companyEmail || 'info@al-jawhara.com'}</span>
   </div>
@@ -1161,7 +1161,7 @@ const Dashboard = () => {
 <div class="inv-parties">
   <div class="inv-box">
     <h4>صادرة من</h4>
-    <p><strong>شركة الجوهرة لإنتج محارم الورق ومشتقاته</strong></p>
+    <p><strong>شركة الجوهرة لإنتاج محارم الورق ومشتقاته</strong></p>
     <p>${sc.companyAddress || 'المنطقة الصناعية — الشعيبة، الكويت'}</p>
     <p>${sc.companyPhone || '(965) 23263824'}</p>
     <p>${sc.companyEmail || 'info@al-jawhara.com'}</p>
@@ -1191,7 +1191,7 @@ const Dashboard = () => {
 
 <div class="inv-footer">
   <div class="inv-stamp">${orderStatusLabels[order.status]?.ar || order.status}</div>
-  <p>شكراً لتعاملكم مع شركة الجوهرة لإنتج محارم الورق ومشتقاته</p>
+  <p>شكراً لتعاملكم مع شركة الجوهرة لإنتاج محارم الورق ومشتقاته</p>
   <p>www.al-jawhara.com | ${sc.companyPhone || '(965) 23263824'}</p>
 </div>
 </body></html>`;

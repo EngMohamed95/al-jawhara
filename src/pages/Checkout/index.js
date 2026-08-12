@@ -317,7 +317,9 @@ const Checkout = () => {
               <div className="checkout-items">
                 {cart.map(item => (
                   <div key={item.id} className="checkout-item">
-                    <span className="checkout-item-icon" aria-hidden="true">{item.icon}</span>
+                    <span className="checkout-item-icon" aria-hidden="true">
+                      {item.image ? <img src={item.image} alt="" /> : item.icon}
+                    </span>
                     <div className="checkout-item-info">
                       <div className="checkout-item-name">{item.name}</div>
                       <div className="checkout-item-meta">× {item.qty}</div>

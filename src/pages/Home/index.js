@@ -7,10 +7,7 @@ import Reveal from '../../components/Reveal';
 import ProductImageSlider from '../../components/ProductImageSlider';
 import './index.css';
 
-/* خلفية الهيرو فيديو، والصورة تعمل كـ poster وكـ fallback
-   في حال فشل تشغيل الفيديو أو على الأجهزة التي توفّر الداتا. */
 const DEFAULT_HERO_VIDEO = '/videos/herosection.mp4';
-const DEFAULT_HERO_IMAGE = '/Photo gallery/PhotoGallery08.jpg';
 
 const Home = () => {
   const { groupedProducts, clients, loading, siteContent: sc } = useApp();
@@ -27,7 +24,6 @@ const Home = () => {
   const heroBadge   = lang === 'ar' ? (sc?.heroBadge    || t('home.heroBadge'))    : t('home.heroBadge');
   const heroTitle   = lang === 'ar' ? (sc?.heroTitle    || t('home.heroTitle'))    : t('home.heroTitle');
   const heroSub     = lang === 'ar' ? (sc?.heroSubtitle || t('home.heroSubtitle')) : t('home.heroSubtitle');
-  const heroImage     = sc?.heroImage     || DEFAULT_HERO_IMAGE;
   const heroVideo     = sc?.heroVideoUrl  || DEFAULT_HERO_VIDEO;
 
   const ceoName      = sc?.ceoName  || 'Bilal Mohammad Ghadar';
@@ -58,7 +54,7 @@ const Home = () => {
       <Seo
         title={lang === 'ar' ? 'الصفحة الرئيسية' : 'Home'}
         description={lang === 'ar'
-          ? 'شركة الجوهرة لإنتج محارم الورق ومشتقاته — رائدة في تصنيع المناديل وأوراق التواليت والمناشف في الكويت منذ 1998.'
+          ? 'شركة الجوهرة لإنتاج محارم الورق ومشتقاته — رائدة في تصنيع المناديل وأوراق التواليت والمناشف في الكويت منذ 1998.'
           : "Al-Jawhra Tissue Paper & Derivatives Co. — Kuwait's leading tissue paper manufacturer since 1998."}
         keywords="الجوهرة للمناديل، مناديل الكويت، tissue paper Kuwait"
       />
@@ -70,12 +66,11 @@ const Home = () => {
             <video
               className="hero-video-bg"
               src={heroVideo}
-              poster={heroImage}
               autoPlay
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="auto"
               aria-hidden="true"
               onError={e => { e.currentTarget.style.display = 'none'; }}
             />

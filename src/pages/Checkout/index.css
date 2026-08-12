@@ -108,7 +108,13 @@
 /* ── Summary Panel ── */
 .checkout-items { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
 .checkout-item  { display: flex; align-items: center; gap: 12px; }
-.checkout-item-icon  { font-size: 1.8rem; flex-shrink: 0; }
+.checkout-item-icon {
+  width: 42px; height: 42px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--primary-xlight); border-radius: 8px; overflow: hidden;
+  font-size: 1.8rem;
+}
+.checkout-item-icon img { width: 100%; height: 100%; object-fit: cover; }
 .checkout-item-info  { flex: 1; }
 .checkout-item-name  { font-weight: 600; font-size: 0.9rem; }
 .checkout-item-meta  { font-size: 0.8rem; color: var(--text-light); }

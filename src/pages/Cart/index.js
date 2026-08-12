@@ -74,7 +74,9 @@ const Cart = () => {
                 const cartKey = item._cartKey || item.id;
                 return (
                 <div key={cartKey} className="cart-row">
-                  <div className="cart-row-icon" aria-hidden="true">{item.icon}</div>
+                  <div className="cart-row-icon" aria-hidden="true">
+                    {item.image ? <img src={item.image} alt="" /> : item.icon}
+                  </div>
                   <div className="cart-row-info">
                     <div className="cart-row-name">{item.name}</div>
                     <div className="cart-row-unit">

@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 
 const SITE = 'الجوهرة لإنتاج محارم الورق ومشتقاته';
-const DEFAULT_DESC = 'شركة الجوهرة لإنتج محارم الورق ومشتقاته — منتجات ورقية عالية الجودة من الكويت منذ 1998. مناديل وجه، رولات، مناشف، محارم جيب.';
+const DEFAULT_DESC = 'شركة الجوهرة لإنتاج محارم الورق ومشتقاته — منتجات ورقية عالية الجودة من الكويت منذ 1998. مناديل وجه، رولات، مناشف، محارم جيب.';
 const DEFAULT_KW   = 'مناديل ورقية الكويت، الجوهرة للمناديل، مناديل وجه، رولات مطبخ، مناشف ورق، tissue paper Kuwait';
 
 const Seo = ({ title, description, keywords, noIndex = false }) => {
@@ -14,7 +14,7 @@ const Seo = ({ title, description, keywords, noIndex = false }) => {
       <title>{fullTitle}</title>
       <meta name="description"  content={description || DEFAULT_DESC} />
       <meta name="keywords"     content={keywords    || DEFAULT_KW} />
-      <meta name="author"       content="شركة الجوهرة لإنتج محارم الورق ومشتقاته" />
+      <meta name="author"       content="شركة الجوهرة لإنتاج محارم الورق ومشتقاته" />
       <meta name="robots"       content={noIndex ? 'noindex,nofollow' : 'index,follow'} />
       <link rel="canonical"     href={typeof window !== 'undefined' ? window.location.href : '/'} />
 
@@ -34,7 +34,7 @@ const Seo = ({ title, description, keywords, noIndex = false }) => {
       <script type="application/ld+json">{JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "شركة الجوهرة لإنتج محارم الورق ومشتقاته",
+        "name": "شركة الجوهرة لإنتاج محارم الورق ومشتقاته",
         "url": "https://al-jawhara.com",
         "logo": "https://al-jawhara.com/logo.png",
         "foundingDate": "1998",

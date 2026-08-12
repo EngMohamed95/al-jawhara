@@ -66,7 +66,7 @@ const Contact = () => {
       <Seo
         title={t('contact.title')}
         description={lang === 'ar'
-          ? `تواصل مع شركة الجوهرة لإنتج محارم الورق ومشتقاته — ${phone} — ${address}`
+          ? `تواصل مع شركة الجوهرة لإنتاج محارم الورق ومشتقاته — ${phone} — ${address}`
           : `Contact Al-Jawhra Tissue Paper & Derivatives Co. — ${phone} — ${address}`}
         keywords="تواصل الجوهرة، هاتف الجوهرة، عنوان الشعيبة، طلب عرض سعر"
       />
