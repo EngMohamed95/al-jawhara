@@ -10,7 +10,7 @@ const About = () => {
   const { t, lang } = useLanguage();
 
   const story       = lang === 'ar' ? (sc?.aboutStory  || t('about.storyFallback')) : (sc?.aboutStoryEn  || t('about.story1'));
-  const story2      = lang === 'ar' ? (sc?.aboutStory2 || '') : (sc?.aboutStory2En || '');
+  const story2      = lang === 'ar' ? (sc?.aboutStory2 || '') : (sc?.aboutStory2En || sc?.aboutStory2 || '');
   const ceoName     = sc?.ceoName    || 'Bilal Mohammad Ghadar';
   /* Job title — DB value in the matching language, translation as fallback */
   const ceoTitle    = lang === 'ar' ? (sc?.ceoTitle || t('about.ceoTitleFallback')) : (sc?.ceoTitleEn || t('about.ceoTitleFallback'));

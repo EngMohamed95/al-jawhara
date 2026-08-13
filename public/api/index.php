@@ -169,6 +169,18 @@ if ($table === 'site_content') {
         $stmt->execute();
         $existing = $stmt->fetch() ?: [];
 
+        // $existing comes straight from the DB, so its JSON-blob columns are
+        // still encoded strings. Decode them before merging with $body (which
+        // holds decoded values from the frontend) so a partial update — one
+        // that doesn't include these fields — can't re-encode an
+        // already-encoded string and corrupt it with an extra layer.
+        foreach (['paymentSettings', 'shippingZones', 'whatsappNumbers'] as $jsonField) {
+            if (isset($existing[$jsonField]) && is_string($existing[$jsonField])) {
+                $decoded = json_decode($existing[$jsonField], true);
+                if ($decoded !== null) $existing[$jsonField] = $decoded;
+            }
+        }
+
         $merged = array_merge($existing, $body);
         $merged['id'] = 1;
 

@@ -31,7 +31,7 @@ const Home = () => {
   const ceoName      = sc?.ceoName  || 'Bilal Mohammad Ghadar';
   /* Job title — DB value in the matching language, translation as fallback */
   const ceoTitle     = lang === 'ar' ? (sc?.ceoTitle || 'رئيس مجلس الإدارة') : (sc?.ceoTitleEn || 'CEO');
-  const ceoQuote     = lang === 'ar' ? (sc?.ceoQuote || '') : (sc?.ceoQuoteEn || '');
+  const ceoQuote     = lang === 'ar' ? (sc?.ceoQuote || '') : (sc?.ceoQuoteEn || sc?.ceoQuote || '');
   const whyTitle     = lang === 'ar' ? (sc?.whyTitle || t('home.whyTitle')) : (sc?.whyTitleEn || t('home.whyTitle'));
   const whySub       = lang === 'ar' ? (sc?.whySub   || t('home.whySub'))   : (sc?.whySubEn   || t('home.whySub'));
   const statsYear    = sc?.statsYear            || '1998';
