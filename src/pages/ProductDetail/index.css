@@ -69,7 +69,7 @@
 .pd-img-main img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .pd-thumbnails {
@@ -107,7 +107,7 @@
   cursor: pointer;
   transition: border-color 0.2s;
   padding: 0;
-  background: none;
+  background: var(--bg);
 }
 
 .pd-thumb.active {
@@ -117,7 +117,7 @@
 .pd-thumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .pd-emoji-large {
@@ -240,12 +240,13 @@
   border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
+  background: var(--bg);
 }
 
 .pd-option-card-img img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .pd-option-card-name {
@@ -483,7 +484,7 @@
 .pd-related-img img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .pd-related-emoji {

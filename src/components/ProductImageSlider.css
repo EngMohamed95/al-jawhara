@@ -21,7 +21,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   opacity: 0;
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
   pointer-events: none;
@@ -35,7 +35,7 @@
 .prod-slider-single-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
