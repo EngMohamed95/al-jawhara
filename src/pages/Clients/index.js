@@ -4,7 +4,6 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useApp } from '../../context/AppContext';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
-import { CLIENTS_PAGE_HEADER } from '../../siteImages';
 import './index.css';
 
 const getInitials = (name) => name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
@@ -70,7 +69,7 @@ const Clients = () => {
         keywords="عملاء الجوهرة، كارفور الكويت، سلطان سنتر، جمعيات تعاونية، مطاعم الكويت"
       />
 
-      <header className="page-header clients-header" style={{ backgroundImage: `url(${CLIENTS_PAGE_HEADER})` }}>
+      <header className="page-header clients-header">
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-handshake"></i></div>

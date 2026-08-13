@@ -3,7 +3,6 @@ import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../translations';
 import Seo from '../../components/Seo';
 import Reveal from '../../components/Reveal';
-import { ABOUT_PAGE_HEADER } from '../../siteImages';
 import './index.css';
 
 const About = () => {
@@ -49,7 +48,7 @@ const About = () => {
       />
 
       {/* Header */}
-      <header className="page-header about-header" style={{ backgroundImage: `url(${ABOUT_PAGE_HEADER})` }}>
+      <header className="page-header about-header">
         <div className="container">
           <div className="page-header-content">
             <div className="page-header-icon" aria-hidden="true"><i className="fas fa-circle-info"></i></div>
