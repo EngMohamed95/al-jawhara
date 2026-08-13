@@ -5,7 +5,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import Seo from '../../components/Seo';
 import './index.css';
 
-const LOGO_URL = '/logo.png';
+const DEFAULT_LOGO_URL = '/logo.png';
 
 const Login = () => {
   const [form, setForm]         = useState({ username: '', password: '' });
@@ -13,9 +13,10 @@ const Login = () => {
   const [loading, setLoading]   = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
-  const { login, auth: authState } = useApp();
+  const { login, auth: authState, siteContent } = useApp();
   const { t, lang }             = useLanguage();
   const navigate                = useNavigate();
+  const LOGO_URL = siteContent?.siteLogoUrl || DEFAULT_LOGO_URL;
 
   const destFor = (user) => user?.role === 'customer' ? '/my-account' : '/dashboard';
 

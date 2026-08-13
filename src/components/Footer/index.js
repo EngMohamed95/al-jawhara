@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 
-const LOGO_URL = '/logo.png';
+const DEFAULT_LOGO_URL = '/logo.png';
 
 const Footer = () => {
   const { siteContent: sc } = useApp();
   const { t, lang } = useLanguage();
   const [logoFailed, setLogoFailed] = useState(false);
 
+  const LOGO_URL = sc?.siteLogoUrl || DEFAULT_LOGO_URL;
   const phone    = sc?.companyPhone    || '(965) 23263824';
   const whatsapp = sc?.companyWhatsapp || '(965) 96625306';
   const email    = sc?.companyEmail    || 'info@al-jawhara.com';

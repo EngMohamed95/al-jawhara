@@ -6,7 +6,7 @@ import Seo from '../../components/Seo';
 import '../Login/index.css';
 import './index.css';
 
-const LOGO_URL = '/logo.png';
+const DEFAULT_LOGO_URL = '/logo.png';
 
 const Register = () => {
   const [form, setForm]       = useState({ name: '', username: '', phone: '', email: '', password: '', confirm: '' });
@@ -16,9 +16,10 @@ const Register = () => {
   const [loading, setLoading]     = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
 
-  const { registerCustomer, auth: authState } = useApp();
+  const { registerCustomer, auth: authState, siteContent } = useApp();
   const { lang }     = useLanguage();
   const navigate     = useNavigate();
+  const LOGO_URL = siteContent?.siteLogoUrl || DEFAULT_LOGO_URL;
 
   const destFor = (u) => u?.role === 'customer' ? '/my-account' : '/dashboard';
 

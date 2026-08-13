@@ -4,15 +4,16 @@ import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import './index.css';
 
-const LOGO_URL = '/logo.png';
+const DEFAULT_LOGO_URL = '/logo.png';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
   const location  = useLocation();
   const navigate  = useNavigate();
-  const { auth, logout, cartTotalQty } = useApp();
+  const { auth, logout, cartTotalQty, siteContent } = useApp();
   const { lang, setLang, t } = useLanguage();
+  const LOGO_URL = siteContent?.siteLogoUrl || DEFAULT_LOGO_URL;
 
   const navLinks = [
     { path: '/',         label: t('nav.home'),     icon: 'fa-house' },
