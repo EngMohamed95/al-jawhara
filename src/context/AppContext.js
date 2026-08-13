@@ -54,28 +54,35 @@ export const AppProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
+      // Each call fails independently — one endpoint erroring (e.g. an expired
+      // admin auth token on getOrders/getUsers) must not block the rest of the
+      // page's public data (siteContent, products, ...) from updating and leave
+      // it stuck showing a stale localStorage snapshot.
+      const NONE = Symbol('fetch-failed');
       const [prods, ords, usrs, content, coups, cats, clis, clisec, galimgs] = await Promise.all([
-        api.getProducts(),
-        api.getOrders(),
-        api.getUsers(),
-        api.getSiteContent(),
-        api.getCoupons(),
-        api.getCategories(),
-        api.getClients(),
-        api.getClientSectors(),
+        api.getProducts().catch(() => NONE),
+        api.getOrders().catch(() => NONE),
+        api.getUsers().catch(() => NONE),
+        api.getSiteContent().catch(() => NONE),
+        api.getCoupons().catch(() => NONE),
+        api.getCategories().catch(() => NONE),
+        api.getClients().catch(() => NONE),
+        api.getClientSectors().catch(() => NONE),
         // Fails soft: on prod this table only exists after migrate.php has been run,
         // and a missing gallery table shouldn't take the whole site down.
         api.getGalleryImages().catch(() => []),
       ]);
-      setProducts(prods);
-      setOrders(ords);
-      setUsers(usrs);
-      setSiteContent(content);
-      try { localStorage.setItem('jawhara_site_content', JSON.stringify(content)); } catch {}
-      setCoupons(coups);
-      setCategories(cats);
-      setClients(clis);
-      setClientSectors(clisec);
+      if (prods !== NONE) setProducts(prods);
+      if (ords !== NONE) setOrders(ords);
+      if (usrs !== NONE) setUsers(usrs);
+      if (content !== NONE) {
+        setSiteContent(content);
+        try { localStorage.setItem('jawhara_site_content', JSON.stringify(content)); } catch {}
+      }
+      if (coups !== NONE) setCoupons(coups);
+      if (cats !== NONE) setCategories(cats);
+      if (clis !== NONE) setClients(clis);
+      if (clisec !== NONE) setClientSectors(clisec);
       setGalleryImages(galimgs);
     } catch {
       setError('تعذر الاتصال بالخادم. تأكد من تشغيل قاعدة البيانات (npm start).');
