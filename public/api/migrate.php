@@ -47,6 +47,29 @@ try {
         $pdo->exec("ALTER TABLE products ADD COLUMN sortOrder INT DEFAULT 0;");
     } catch (Exception $e) {}
 
+    // Ensure newer product-form columns exist (gallery photos, variants, shipping
+    // details) — added to the admin form after the initial table was created, so
+    // saves were silently dropping these fields on deployments made before this.
+    $productsExtraColumns = [
+        'sku'             => 'VARCHAR(100)',
+        'gallery'         => 'TEXT', // JSON array string
+        'variants'        => 'TEXT', // JSON array string
+        'isPhysical'      => 'TINYINT(1) DEFAULT 1',
+        'weight'          => 'DECIMAL(10,3)',
+        'dimLength'       => 'DECIMAL(10,2)',
+        'dimWidth'        => 'DECIMAL(10,2)',
+        'dimHeight'       => 'DECIMAL(10,2)',
+        'countryOfOrigin' => 'VARCHAR(10)',
+        'hsCode'          => 'VARCHAR(50)',
+    ];
+    foreach ($productsExtraColumns as $colName => $colType) {
+        try {
+            $pdo->exec("ALTER TABLE products ADD COLUMN `$colName` $colType NULL;");
+        } catch (Exception $e) {
+            // Column already exists or other error
+        }
+    }
+
     // Orders Table
     $pdo->exec("CREATE TABLE IF NOT EXISTS orders (
         id INT AUTO_INCREMENT PRIMARY KEY,
