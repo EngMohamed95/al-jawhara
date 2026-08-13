@@ -14,7 +14,11 @@ const Footer = () => {
   const phone    = sc?.companyPhone    || '(965) 23263824';
   const whatsapp = sc?.companyWhatsapp || '(965) 96625306';
   const email    = sc?.companyEmail    || 'info@al-jawhara.com';
-  const address  = sc?.companyAddress  || (lang === 'ar' ? 'المنطقة الصناعية — الشعيبة، الكويت' : 'Industrial Area — Shuaiba, Kuwait');
+  const address  = lang === 'ar'
+    ? (sc?.companyAddress   || 'المنطقة الصناعية — الشعيبة، الكويت')
+    : (sc?.companyAddressEn || 'Industrial Area — Shuaiba, Kuwait');
+  const footerTagline   = lang === 'ar' ? (sc?.footerTagline || t('footer.desc')) : (sc?.footerTaglineEn || t('footer.desc'));
+  const footerCopyright = lang === 'ar' ? sc?.footerCopyright : sc?.footerCopyrightEn;
 
   const chevron = lang === 'ar' ? 'fa-chevron-left' : 'fa-chevron-right';
 
@@ -32,7 +36,7 @@ const Footer = () => {
                 <span style={{ fontWeight: '800', fontSize: '24px', color: '#fff', fontFamily: 'Tajawal, sans-serif' }}>الجوهرة</span>
               )}
             </div>
-            <p className="footer-desc">{t('footer.desc')}</p>
+            <p className="footer-desc">{footerTagline}</p>
             <div className="social-links" aria-label="وسائل التواصل الاجتماعي">
               <a href="https://instagram.com" className="social-link" aria-label="Instagram" target="_blank" rel="noreferrer"><i className="fab fa-instagram" aria-hidden="true"></i></a>
               <a href="https://x.com" className="social-link" aria-label="X (Twitter)" target="_blank" rel="noreferrer"><i className="fab fa-x-twitter" aria-hidden="true"></i></a>
@@ -91,7 +95,9 @@ const Footer = () => {
 
       <div className="footer-bottom">
         <div className="container">
-          <p>© {new Date().getFullYear()} <span>{t('nav.brand')}</span> {t('nav.brandSub')} — {t('footer.rights')} | {t('footer.founded')} <span>18/2/1998</span></p>
+          <p>
+            {footerCopyright || (<>© {new Date().getFullYear()} <span>{t('nav.brand')}</span> {t('nav.brandSub')} — {t('footer.rights')} | {t('footer.founded')} <span>18/2/1998</span></>)}
+          </p>
         </div>
       </div>
     </footer>

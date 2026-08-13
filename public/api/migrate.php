@@ -205,6 +205,36 @@ try {
         }
     }
 
+    // English counterparts of the Arabic content fields, so the admin can
+    // control the English site text instead of the frontend showing fixed
+    // translations.js strings. aboutStory2 itself was never added as a base
+    // column despite being editable in the dashboard, so it's included here too.
+    $siteContentEnColumns = [
+        'aboutStory2'        => 'TEXT',
+        'heroBadgeEn'        => 'VARCHAR(255)',
+        'heroTitleEn'        => 'VARCHAR(255)',
+        'heroSubtitleEn'     => 'TEXT',
+        'heroBtnProductsEn'  => 'VARCHAR(255)',
+        'heroBtnContactEn'   => 'VARCHAR(255)',
+        'whyTitleEn'         => 'VARCHAR(255)',
+        'whySubEn'           => 'TEXT',
+        'aboutStoryEn'       => 'TEXT',
+        'aboutStory2En'      => 'TEXT',
+        'ceoTitleEn'         => 'VARCHAR(255)',
+        'ceoQuoteEn'         => 'TEXT',
+        'missionTextEn'      => 'TEXT',
+        'visionTextEn'       => 'TEXT',
+        'footerTaglineEn'    => 'TEXT',
+        'footerCopyrightEn'  => 'TEXT',
+    ];
+    foreach ($siteContentEnColumns as $colName => $colType) {
+        try {
+            $pdo->exec("ALTER TABLE site_content ADD COLUMN `$colName` $colType NULL;");
+        } catch (Exception $e) {
+            // Column already exists or other error
+        }
+    }
+
     echo "Tables checked/created successfully.\n";
 
     // 2. Import Data from data.json if empty

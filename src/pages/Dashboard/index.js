@@ -2479,10 +2479,15 @@ const Dashboard = () => {
                   <div className="content-section-title"><i className="fas fa-heading"></i> نصوص الهيرو</div>
                   <div className="content-grid">
                     <div className="form-group"><label className="form-label">شارة الهيرو</label><input className="form-input" value={cf('heroBadge')} onChange={e => setCf('heroBadge', e.target.value)} placeholder="رائدة في صناعة المناديل..." /></div>
+                    <div className="form-group"><label className="form-label">شارة الهيرو (إنجليزي)</label><input className="form-input" dir="ltr" value={cf('heroBadgeEn')} onChange={e => setCf('heroBadgeEn', e.target.value)} placeholder="Leading tissue paper maker..." /></div>
                     <div className="form-group"><label className="form-label">عنوان الهيرو الرئيسي</label><input className="form-input" value={cf('heroTitle')} onChange={e => setCf('heroTitle', e.target.value)} placeholder="جودة الجوهرة في كل لمسة" /></div>
+                    <div className="form-group"><label className="form-label">عنوان الهيرو الرئيسي (إنجليزي)</label><input className="form-input" dir="ltr" value={cf('heroTitleEn')} onChange={e => setCf('heroTitleEn', e.target.value)} placeholder="Al-Jawhara quality in every touch" /></div>
                     <div className="form-group content-span2"><label className="form-label">وصف الهيرو</label><textarea className="form-textarea" value={cf('heroSubtitle')} onChange={e => setCf('heroSubtitle', e.target.value)} style={{ minHeight: '70px' }} placeholder="شركة الجوهرة للمناديل..." /></div>
+                    <div className="form-group content-span2"><label className="form-label">وصف الهيرو (إنجليزي)</label><textarea className="form-textarea" dir="ltr" value={cf('heroSubtitleEn')} onChange={e => setCf('heroSubtitleEn', e.target.value)} style={{ minHeight: '70px' }} placeholder="Al-Jawhara Tissue Paper Co..." /></div>
                     <div className="form-group"><label className="form-label">نص زر المنتجات</label><input className="form-input" value={cf('heroBtnProducts')} onChange={e => setCf('heroBtnProducts', e.target.value)} placeholder="تصفح منتجاتنا" /></div>
+                    <div className="form-group"><label className="form-label">نص زر المنتجات (إنجليزي)</label><input className="form-input" dir="ltr" value={cf('heroBtnProductsEn')} onChange={e => setCf('heroBtnProductsEn', e.target.value)} placeholder="Browse Products" /></div>
                     <div className="form-group"><label className="form-label">نص زر التواصل</label><input className="form-input" value={cf('heroBtnContact')} onChange={e => setCf('heroBtnContact', e.target.value)} placeholder="تواصل معنا" /></div>
+                    <div className="form-group"><label className="form-label">نص زر التواصل (إنجليزي)</label><input className="form-input" dir="ltr" value={cf('heroBtnContactEn')} onChange={e => setCf('heroBtnContactEn', e.target.value)} placeholder="Contact Us" /></div>
                   </div>
 
                   <div className="content-section-title"><i className="fas fa-chart-bar"></i> أرقام وإحصائيات</div>
@@ -2504,7 +2509,9 @@ const Dashboard = () => {
                   <div className="content-section-title"><i className="fas fa-star"></i> قسم "لماذا الجوهرة"</div>
                   <div className="content-grid">
                     <div className="form-group"><label className="form-label">عنوان القسم</label><input className="form-input" value={cf('whyTitle')} onChange={e => setCf('whyTitle', e.target.value)} placeholder="لماذا تختار الجوهرة؟" /></div>
+                    <div className="form-group"><label className="form-label">عنوان القسم (إنجليزي)</label><input className="form-input" dir="ltr" value={cf('whyTitleEn')} onChange={e => setCf('whyTitleEn', e.target.value)} placeholder="Why Choose Al-Jawhara?" /></div>
                     <div className="form-group"><label className="form-label">وصف القسم</label><input className="form-input" value={cf('whySub')} onChange={e => setCf('whySub', e.target.value)} placeholder="..." /></div>
+                    <div className="form-group"><label className="form-label">وصف القسم (إنجليزي)</label><input className="form-input" dir="ltr" value={cf('whySubEn')} onChange={e => setCf('whySubEn', e.target.value)} placeholder="..." /></div>
                   </div>
                 </>)}
 
@@ -2516,8 +2523,16 @@ const Dashboard = () => {
                     <textarea className="form-textarea" value={cf('aboutStory')} onChange={e => setCf('aboutStory', e.target.value)} style={{ minHeight: '130px' }} placeholder="تأسست الشركة عام 1998..." />
                   </div>
                   <div className="form-group">
+                    <label className="form-label">النص الأول (إنجليزي)</label>
+                    <textarea className="form-textarea" dir="ltr" value={cf('aboutStoryEn')} onChange={e => setCf('aboutStoryEn', e.target.value)} style={{ minHeight: '130px' }} placeholder="Founded in 1998..." />
+                  </div>
+                  <div className="form-group">
                     <label className="form-label">النص الثاني (إضافي)</label>
                     <textarea className="form-textarea" value={cf('aboutStory2')} onChange={e => setCf('aboutStory2', e.target.value)} style={{ minHeight: '100px' }} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">النص الثاني (إنجليزي)</label>
+                    <textarea className="form-textarea" dir="ltr" value={cf('aboutStory2En')} onChange={e => setCf('aboutStory2En', e.target.value)} style={{ minHeight: '100px' }} />
                   </div>
                   <ContentImgField label="صورة قصة الشركة" field="aboutStoryImg" hint="تظهر بجانب النص في صفحة عن الشركة" />
 
@@ -2525,9 +2540,14 @@ const Dashboard = () => {
                   <div className="content-grid">
                     <div className="form-group"><label className="form-label">الاسم الكامل</label><input className="form-input" value={cf('ceoName')} onChange={e => setCf('ceoName', e.target.value)} placeholder="Bilal Mohammad Ghadar" /></div>
                     <div className="form-group"><label className="form-label">المسمى الوظيفي</label><input className="form-input" value={cf('ceoTitle')} onChange={e => setCf('ceoTitle', e.target.value)} placeholder="رئيس مجلس الإدارة" /></div>
+                    <div className="form-group"><label className="form-label">المسمى الوظيفي (إنجليزي)</label><input className="form-input" dir="ltr" value={cf('ceoTitleEn')} onChange={e => setCf('ceoTitleEn', e.target.value)} placeholder="Chairman" /></div>
                     <div className="form-group content-span2">
                       <label className="form-label">اقتباس المدير (اتركه فارغاً للإخفاء)</label>
                       <textarea className="form-textarea" value={cf('ceoQuote')} onChange={e => setCf('ceoQuote', e.target.value)} style={{ minHeight: '80px' }} />
+                    </div>
+                    <div className="form-group content-span2">
+                      <label className="form-label">اقتباس المدير (إنجليزي)</label>
+                      <textarea className="form-textarea" dir="ltr" value={cf('ceoQuoteEn')} onChange={e => setCf('ceoQuoteEn', e.target.value)} style={{ minHeight: '80px' }} />
                     </div>
                     <ContentImgField label="صورة المدير العام" field="ceoImage" hint="صورة شخصية تظهر في الرئيسية وصفحة عن الشركة" />
                   </div>
@@ -2539,8 +2559,16 @@ const Dashboard = () => {
                       <textarea className="form-textarea" value={cf('missionText')} onChange={e => setCf('missionText', e.target.value)} style={{ minHeight: '100px' }} placeholder="توفير منتجات ورقية عالية الجودة..." />
                     </div>
                     <div className="form-group">
+                      <label className="form-label">نص الرسالة (إنجليزي)</label>
+                      <textarea className="form-textarea" dir="ltr" value={cf('missionTextEn')} onChange={e => setCf('missionTextEn', e.target.value)} style={{ minHeight: '100px' }} placeholder="Providing high quality tissue products..." />
+                    </div>
+                    <div className="form-group">
                       <label className="form-label">نص الرؤية</label>
                       <textarea className="form-textarea" value={cf('visionText')} onChange={e => setCf('visionText', e.target.value)} style={{ minHeight: '100px' }} placeholder="أن نكون الخيار الأول..." />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">نص الرؤية (إنجليزي)</label>
+                      <textarea className="form-textarea" dir="ltr" value={cf('visionTextEn')} onChange={e => setCf('visionTextEn', e.target.value)} style={{ minHeight: '100px' }} placeholder="To be the first choice..." />
                     </div>
                   </div>
                 </>)}
@@ -2641,7 +2669,9 @@ const Dashboard = () => {
                   <div className="content-section-title"><i className="fas fa-copyright"></i> الفوتر</div>
                   <div className="content-grid">
                     <div className="form-group"><label className="form-label">نص الفوتر السفلي</label><input className="form-input" value={cf('footerTagline')} onChange={e => setCf('footerTagline', e.target.value)} placeholder="جودة تثق بها..." /></div>
+                    <div className="form-group"><label className="form-label">نص الفوتر السفلي (إنجليزي)</label><input className="form-input" dir="ltr" value={cf('footerTaglineEn')} onChange={e => setCf('footerTaglineEn', e.target.value)} placeholder="Quality you can trust..." /></div>
                     <div className="form-group"><label className="form-label">نص حقوق الملكية</label><input className="form-input" value={cf('footerCopyright')} onChange={e => setCf('footerCopyright', e.target.value)} placeholder="© 2025 شركة الجوهرة. جميع الحقوق محفوظة." /></div>
+                    <div className="form-group"><label className="form-label">نص حقوق الملكية (إنجليزي)</label><input className="form-input" dir="ltr" value={cf('footerCopyrightEn')} onChange={e => setCf('footerCopyrightEn', e.target.value)} placeholder="© 2025 Al-Jawhara Co. All rights reserved." /></div>
                   </div>
 
                   <div className="content-section-title"><i className="fas fa-palette"></i> ألوان الموقع</div>

@@ -10,16 +10,16 @@ const About = () => {
   const { siteContent: sc } = useApp();
   const { t, lang } = useLanguage();
 
-  const story       = lang === 'ar' ? (sc?.aboutStory  || t('about.storyFallback')) : t('about.story1');
-  const story2      = sc?.aboutStory2 || '';
+  const story       = lang === 'ar' ? (sc?.aboutStory  || t('about.storyFallback')) : (sc?.aboutStoryEn  || t('about.story1'));
+  const story2      = lang === 'ar' ? (sc?.aboutStory2 || '') : (sc?.aboutStory2En || '');
   const ceoName     = sc?.ceoName    || 'Bilal Mohammad Ghadar';
-  /* Job title — use DB value only in Arabic, always use translation in English */
-  const ceoTitle    = lang === 'ar' ? (sc?.ceoTitle || t('about.ceoTitleFallback')) : t('about.ceoTitleFallback');
-  const ceoQuote    = sc?.ceoQuote   || '';
+  /* Job title — DB value in the matching language, translation as fallback */
+  const ceoTitle    = lang === 'ar' ? (sc?.ceoTitle || t('about.ceoTitleFallback')) : (sc?.ceoTitleEn || t('about.ceoTitleFallback'));
+  const ceoQuote    = lang === 'ar' ? (sc?.ceoQuote || '') : (sc?.ceoQuoteEn || '');
   const ceoImage    = sc?.ceoImage   || '';
   const aboutStoryImg   = sc?.aboutStoryImg   || '';
-  const missionText = sc?.missionText || t('about.missionText');
-  const visionText  = sc?.visionText  || t('about.visionText');
+  const missionText = lang === 'ar' ? (sc?.missionText || t('about.missionText')) : (sc?.missionTextEn || t('about.missionText'));
+  const visionText  = lang === 'ar' ? (sc?.visionText  || t('about.visionText'))  : (sc?.visionTextEn  || t('about.visionText'));
   const area     = sc?.factoryArea           || '4,500';
   const prod     = sc?.productionCapacity    || '20,000';
   const founded  = sc?.founded               || '18/2/1998';

@@ -20,16 +20,20 @@ const Home = () => {
     .filter(c => c.logo && c.status !== 'inactive')
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
-  /* Hero content — use DB value only in Arabic, always use translation in English */
-  const heroBadge   = lang === 'ar' ? (sc?.heroBadge    || t('home.heroBadge'))    : t('home.heroBadge');
-  const heroTitle   = lang === 'ar' ? (sc?.heroTitle    || t('home.heroTitle'))    : t('home.heroTitle');
-  const heroSub     = lang === 'ar' ? (sc?.heroSubtitle || t('home.heroSubtitle')) : t('home.heroSubtitle');
+  /* Hero content — DB value in the matching language, translation as fallback */
+  const heroBadge   = lang === 'ar' ? (sc?.heroBadge    || t('home.heroBadge'))    : (sc?.heroBadgeEn    || t('home.heroBadge'));
+  const heroTitle   = lang === 'ar' ? (sc?.heroTitle    || t('home.heroTitle'))    : (sc?.heroTitleEn    || t('home.heroTitle'));
+  const heroSub     = lang === 'ar' ? (sc?.heroSubtitle || t('home.heroSubtitle')) : (sc?.heroSubtitleEn || t('home.heroSubtitle'));
+  const heroBtnProducts = lang === 'ar' ? (sc?.heroBtnProducts || t('home.browseProducts')) : (sc?.heroBtnProductsEn || t('home.browseProducts'));
+  const heroBtnContact  = lang === 'ar' ? (sc?.heroBtnContact  || t('home.contactUs'))      : (sc?.heroBtnContactEn  || t('home.contactUs'));
   const heroVideo     = sc?.heroVideoUrl  || DEFAULT_HERO_VIDEO;
 
   const ceoName      = sc?.ceoName  || 'Bilal Mohammad Ghadar';
-  /* Job title — use DB value only in Arabic, always use translation in English */
-  const ceoTitle     = lang === 'ar' ? (sc?.ceoTitle || 'رئيس مجلس الإدارة') : 'CEO';
-  const ceoQuote     = sc?.ceoQuote || '';
+  /* Job title — DB value in the matching language, translation as fallback */
+  const ceoTitle     = lang === 'ar' ? (sc?.ceoTitle || 'رئيس مجلس الإدارة') : (sc?.ceoTitleEn || 'CEO');
+  const ceoQuote     = lang === 'ar' ? (sc?.ceoQuote || '') : (sc?.ceoQuoteEn || '');
+  const whyTitle     = lang === 'ar' ? (sc?.whyTitle || t('home.whyTitle')) : (sc?.whyTitleEn || t('home.whyTitle'));
+  const whySub       = lang === 'ar' ? (sc?.whySub   || t('home.whySub'))   : (sc?.whySubEn   || t('home.whySub'));
   const statsYear    = sc?.statsYear            || '1998';
   const statsArea    = sc?.factoryArea          || '4,500';
   const statsProd    = sc?.productionCapacity   || '20,000';
@@ -91,11 +95,11 @@ const Home = () => {
             <div className="hero-actions">
               <Link to="/products" className="btn btn-primary">
                 <i className="fas fa-box-open" aria-hidden="true"></i>
-                {t('home.browseProducts')}
+                {heroBtnProducts}
               </Link>
               <Link to="/contact" className="btn btn-outline">
                 <i className="fas fa-envelope" aria-hidden="true"></i>
-                {t('home.contactUs')}
+                {heroBtnContact}
               </Link>
             </div>
           </div>
@@ -193,8 +197,8 @@ const Home = () => {
         <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <Reveal direction="up">
             <div className="section-header">
-              <h2 className="section-title">{t('home.whyTitle')}</h2>
-              <p className="section-subtitle">{t('home.whySub')}</p>
+              <h2 className="section-title">{whyTitle}</h2>
+              <p className="section-subtitle">{whySub}</p>
             </div>
           </Reveal>
           <div className="home-why-grid">
