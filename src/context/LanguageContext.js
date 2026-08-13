@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useLayoutEffect } from 'react';
 import translations from '../translations';
 
 const LanguageContext = createContext(null);
@@ -6,7 +6,10 @@ const LanguageContext = createContext(null);
 export const LanguageProvider = ({ children }) => {
   const [lang, setLangState] = useState(() => localStorage.getItem('jawhara_lang') || 'ar');
 
-  useEffect(() => {
+  // useLayoutEffect (not useEffect) so dir/lang update before the browser
+  // paints the new text — otherwise English strings briefly render inside
+  // an RTL document, which flips trailing punctuation like "?" to the front.
+  useLayoutEffect(() => {
     document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
     document.documentElement.setAttribute('lang', lang);
   }, [lang]);
