@@ -82,7 +82,7 @@ const Home = () => {
         </Reveal>
 
         <div className="container">
-          <div className="hero-content">
+          <div className="hero-content" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
             <p className="hero-badge">
               <i className="fas fa-star" aria-hidden="true"></i>
               {heroBadge}
@@ -196,7 +196,7 @@ const Home = () => {
 
         <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <Reveal direction="up">
-            <div className="section-header">
+            <div className="section-header" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
               <h2 className="section-title">{whyTitle}</h2>
               <p className="section-subtitle">{whySub}</p>
             </div>
@@ -251,7 +251,7 @@ const Home = () => {
           <section className="quote-section" aria-label="كلمة المدير العام">
             <div className="container">
               <div className="quote-icon" aria-hidden="true"><i className="fas fa-quote-right"></i></div>
-              <blockquote className="quote-text">"{ceoQuote}"</blockquote>
+              <blockquote className="quote-text" dir={lang === 'ar' ? 'rtl' : 'ltr'}>"{ceoQuote}"</blockquote>
               <div className="quote-ceo-wrap">
                 <img src="/ceo.jpg" alt={ceoName} className="quote-ceo-img" />
                 <div className="quote-ceo-info">

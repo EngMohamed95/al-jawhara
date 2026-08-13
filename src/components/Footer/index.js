@@ -36,7 +36,7 @@ const Footer = () => {
                 <span style={{ fontWeight: '800', fontSize: '24px', color: '#fff', fontFamily: 'Tajawal, sans-serif' }}>الجوهرة</span>
               )}
             </div>
-            <p className="footer-desc">{footerTagline}</p>
+            <p className="footer-desc" dir={lang === 'ar' ? 'rtl' : 'ltr'}>{footerTagline}</p>
             <div className="social-links" aria-label="وسائل التواصل الاجتماعي">
               <a href="https://instagram.com" className="social-link" aria-label="Instagram" target="_blank" rel="noreferrer"><i className="fab fa-instagram" aria-hidden="true"></i></a>
               <a href="https://x.com" className="social-link" aria-label="X (Twitter)" target="_blank" rel="noreferrer"><i className="fab fa-x-twitter" aria-hidden="true"></i></a>
@@ -95,7 +95,7 @@ const Footer = () => {
 
       <div className="footer-bottom">
         <div className="container">
-          <p>
+          <p dir={lang === 'ar' ? 'rtl' : 'ltr'}>
             {footerCopyright || (<>© {new Date().getFullYear()} <span>{t('nav.brand')}</span> {t('nav.brandSub')} — {t('footer.rights')} | {t('footer.founded')} <span>18/2/1998</span></>)}
           </p>
         </div>

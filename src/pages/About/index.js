@@ -67,14 +67,14 @@ const About = () => {
               <div className="mv-card mv-card-green">
                 <span className="mv-icon" aria-hidden="true"><i className="fas fa-bullseye"></i></span>
                 <h3 className="mv-title mv-title-green">{t('about.mission')}</h3>
-                <p className="mv-text">{missionText}</p>
+                <p className="mv-text" dir={lang === 'ar' ? 'rtl' : 'ltr'}>{missionText}</p>
               </div>
             </Reveal>
             <Reveal direction="left" delay={100}>
               <div className="mv-card mv-card-orange">
                 <span className="mv-icon" aria-hidden="true"><i className="fas fa-eye"></i></span>
                 <h3 className="mv-title mv-title-orange">{t('about.vision')}</h3>
-                <p className="mv-text">{visionText}</p>
+                <p className="mv-text" dir={lang === 'ar' ? 'rtl' : 'ltr'}>{visionText}</p>
               </div>
             </Reveal>
           </div>
@@ -91,8 +91,8 @@ const About = () => {
                   <i className="fas fa-star" aria-hidden="true"></i> {t('about.storyBadge')}
                 </span>
                 <h2 className="story-title">{t('about.storyTitle')} <span>{founded.split('/')[2] || '1998'}</span></h2>
-                <p className="story-text">{story}</p>
-                {story2 && <p className="story-text">{story2}</p>}
+                <p className="story-text" dir={lang === 'ar' ? 'rtl' : 'ltr'}>{story}</p>
+                {story2 && <p className="story-text" dir={lang === 'ar' ? 'rtl' : 'ltr'}>{story2}</p>}
                 {!story2 && <p className="story-text">{t('about.story2')}</p>}
               </div>
             </Reveal>
@@ -187,7 +187,7 @@ const About = () => {
                   <div aria-hidden="true" style={{ fontSize: '2.5rem', opacity: 0.25, lineHeight: 1, marginBottom: '-8px' }}>
                     <i className="fas fa-quote-right"></i>
                   </div>
-                  <blockquote className="ceo-quote">"{ceoQuote}"</blockquote>
+                  <blockquote className="ceo-quote" dir={lang === 'ar' ? 'rtl' : 'ltr'}>"{ceoQuote}"</blockquote>
                   <cite className="ceo-name">{ceoName}</cite>
                   <p className="ceo-role">{ceoTitle}</p>
                 </div>
