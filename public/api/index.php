@@ -168,19 +168,28 @@ if ($table === 'site_content') {
         $stmt = $pdo->prepare("SELECT * FROM site_content WHERE id = 1");
         $stmt->execute();
         $existing = $stmt->fetch() ?: [];
-        
+
         $merged = array_merge($existing, $body);
         $merged['id'] = 1;
+
+        $columns = [];
+        try {
+            $columns = $pdo->query("DESCRIBE site_content")->fetchAll(PDO::FETCH_COLUMN);
+        } catch (\PDOException $e) {
+        }
 
         // Construct update query
         $fields = [];
         $params = [];
         foreach ($merged as $k => $v) {
             if ($k === 'id') continue;
+            // Only write columns that actually exist, so a field added on the
+            // frontend before the DB is migrated can't fatal the whole save.
+            if (!empty($columns) && !in_array($k, $columns)) continue;
             $fields[] = "`$k` = :$k";
             $params[$k] = preProcessField($resource, $k, $v);
         }
-        
+
         if (!empty($fields)) {
             $sql = "UPDATE site_content SET " . implode(', ', $fields) . " WHERE id = 1";
             $stmt = $pdo->prepare($sql);

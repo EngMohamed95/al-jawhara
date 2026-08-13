@@ -168,6 +168,43 @@ try {
         $pdo->exec("ALTER TABLE site_content ADD COLUMN heroImage TEXT NULL;");
     } catch (Exception $e) {}
 
+    // Ensure newer site-identity / footer / social / mission-vision / extra columns exist
+    // (added to the admin form after the initial table was created on some deployments)
+    $siteContentExtraColumns = [
+        'siteName'          => 'VARCHAR(255)',
+        'siteDesc'          => 'TEXT',
+        'siteLogoUrl'       => 'TEXT',
+        'faviconUrl'        => 'TEXT',
+        'footerTagline'     => 'TEXT',
+        'footerCopyright'   => 'TEXT',
+        'colorPrimary'      => 'VARCHAR(20)',
+        'colorSecondary'    => 'VARCHAR(20)',
+        'colorAccent'       => 'VARCHAR(20)',
+        'heroBtnProducts'   => 'VARCHAR(255)',
+        'heroBtnContact'    => 'VARCHAR(255)',
+        'whyTitle'          => 'VARCHAR(255)',
+        'whySub'            => 'TEXT',
+        'aboutStoryImg'     => 'TEXT',
+        'ceoImage'          => 'TEXT',
+        'missionText'       => 'TEXT',
+        'visionText'        => 'TEXT',
+        'companyAddressEn'  => 'TEXT',
+        'workHoursEn'       => 'VARCHAR(255)',
+        'instagramUrl'      => 'VARCHAR(500)',
+        'twitterUrl'        => 'VARCHAR(500)',
+        'linkedinUrl'       => 'VARCHAR(500)',
+        'facebookUrl'       => 'VARCHAR(500)',
+        'tiktokUrl'         => 'VARCHAR(500)',
+        'youtubeUrl'        => 'VARCHAR(500)',
+    ];
+    foreach ($siteContentExtraColumns as $colName => $colType) {
+        try {
+            $pdo->exec("ALTER TABLE site_content ADD COLUMN `$colName` $colType NULL;");
+        } catch (Exception $e) {
+            // Column already exists or other error
+        }
+    }
+
     echo "Tables checked/created successfully.\n";
 
     // 2. Import Data from data.json if empty

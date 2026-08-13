@@ -632,7 +632,8 @@
           "enabled": true
         }
       ],
-      "whatsappNumbers": []
+      "whatsappNumbers": [],
+      "siteLogoUrl": "blob:http://localhost:3000/be493120-bdf0-489e-a405-5f7cdb56a329"
     }
   ],
   "coupons": [
