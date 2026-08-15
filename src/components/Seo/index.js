@@ -1,16 +1,18 @@
 import { Helmet } from 'react-helmet-async';
+import { useLanguage } from '../../context/LanguageContext';
 
 const SITE = 'الجوهرة لإنتاج محارم الورق ومشتقاته';
 const DEFAULT_DESC = 'شركة الجوهرة لإنتاج محارم الورق ومشتقاته — منتجات ورقية عالية الجودة من الكويت منذ 1998. مناديل وجه، رولات، مناشف، محارم جيب.';
 const DEFAULT_KW   = 'مناديل ورقية الكويت، الجوهرة للمناديل، مناديل وجه، رولات مطبخ، مناشف ورق، tissue paper Kuwait';
 
 const Seo = ({ title, description, keywords, noIndex = false }) => {
+  const { lang } = useLanguage();
   const fullTitle = title ? `${title} | ${SITE}` : SITE;
 
   return (
     <Helmet>
       {/* Primary */}
-      <html lang="ar" dir="rtl" />
+      <html lang={lang} dir={lang === 'ar' ? 'rtl' : 'ltr'} />
       <title>{fullTitle}</title>
       <meta name="description"  content={description || DEFAULT_DESC} />
       <meta name="keywords"     content={keywords    || DEFAULT_KW} />
