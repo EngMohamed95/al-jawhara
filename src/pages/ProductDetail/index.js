@@ -139,7 +139,7 @@ const ProductDetail = () => {
 
           {/* Right: Product info */}
           <div className="pd-info">
-            {p.badge && <span className="pd-badge">{p.badge}</span>}
+            {p.badge && <span className="pd-badge" style={p.badgeColor ? { background: p.badgeColor } : undefined}>{p.badge}</span>}
             <h1 className="pd-name">{name}</h1>
             {desc && <p className="pd-short-desc">{desc}</p>}
 
@@ -154,9 +154,16 @@ const ProductDetail = () => {
             <hr className="pd-divider" />
 
             {/* Price */}
-            <div className="pd-price">
-              {Number(price).toFixed(3)}
-              <span> {lang === 'ar' ? 'د.ك' : 'KWD'}</span>
+            <div className="pd-price-row">
+              {p.oldPrice > price && (
+                <span className="pd-old-price">
+                  {Number(p.oldPrice).toFixed(3)} {lang === 'ar' ? 'د.ك' : 'KWD'}
+                </span>
+              )}
+              <div className="pd-price">
+                {Number(price).toFixed(3)}
+                <span> {lang === 'ar' ? 'د.ك' : 'KWD'}</span>
+              </div>
             </div>
 
             {/* SKU */}
@@ -237,6 +244,11 @@ const ProductDetail = () => {
                       </div>
                       <div className="pd-related-body">
                         <p className="pd-related-name">{rpName}</p>
+                        {rp.oldPrice > rpPrice && (
+                          <p className="pd-related-old-price">
+                            {Number(rp.oldPrice).toFixed(3)} <span style={{ fontSize: '0.7rem', fontWeight: 600 }}>{lang === 'ar' ? 'د.ك' : 'KWD'}</span>
+                          </p>
+                        )}
                         <p className="pd-related-price">
                           {Number(rpPrice).toFixed(3)} <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{lang === 'ar' ? 'د.ك' : 'KWD'}</span>
                         </p>

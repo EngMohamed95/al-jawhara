@@ -24,7 +24,7 @@ const ROLE_PERMISSIONS = {
   viewer: { products: false, categories: false, inventory: true,  orders: true,  invoices: true,  users: false, content: false, reports: true,  shipping: false, payments: false, coupons: false, media: false, clients: false },
 };
 
-const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '', countryOfOrigin: 'KW', hsCode: '', variants: [], sortOrder: 0 };
+const emptyProduct = { name: '', nameEn: '', sku: '', category: 'facial', price: '', oldPrice: '', stock: '', status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', badgeColor: '', isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '', countryOfOrigin: 'KW', hsCode: '', variants: [], sortOrder: 0 };
 const emptyUser    = { username: '', password: '', name: '', email: '', phone: '', role: 'viewer', status: 'active' };
 const emptyCoupon  = { code: '', type: 'percent', value: '', minOrder: '', maxUses: '', expiry: '', status: 'active', desc: '' };
 const emptyClient  = { name: '', nameAr: '', sectorKey: '', logo: '', sortOrder: 0, status: 'active' };
@@ -595,7 +595,7 @@ const Dashboard = () => {
 
   const openAddProduct  = () => { setProductForm(emptyProduct); setProductErr(''); setProductSaved(false); setProductModal('add'); };
   const openEditProduct = (p) => {
-    setProductForm({ name: p.name, nameEn: p.nameEn || '', sku: p.sku || '', category: p.category, price: p.price, stock: p.stock, status: p.status, image: p.image || '', gallery: p.gallery || [], desc: p.desc || '', descEn: p.descEn || '', badge: p.badge || '', isPhysical: p.isPhysical !== false, weight: p.weight || '', dimLength: p.dimLength || '', dimWidth: p.dimWidth || '', dimHeight: p.dimHeight || '', countryOfOrigin: p.countryOfOrigin || 'KW', hsCode: p.hsCode || '', variants: p.variants || [] });
+    setProductForm({ name: p.name, nameEn: p.nameEn || '', sku: p.sku || '', category: p.category, price: p.price, oldPrice: p.oldPrice || '', stock: p.stock, status: p.status, image: p.image || '', gallery: p.gallery || [], desc: p.desc || '', descEn: p.descEn || '', badge: p.badge || '', badgeColor: p.badgeColor || '', isPhysical: p.isPhysical !== false, weight: p.weight || '', dimLength: p.dimLength || '', dimWidth: p.dimWidth || '', dimHeight: p.dimHeight || '', countryOfOrigin: p.countryOfOrigin || 'KW', hsCode: p.hsCode || '', variants: p.variants || [] });
     setEditProduct(p); setProductErr(''); setProductSaved(false); setProductModal('edit');
   };
   const closeProductModal = () => { setProductModal(null); setEditProduct(null); setProductImagePreview(''); setProductGalleryPreviews([]); };
@@ -684,7 +684,7 @@ const Dashboard = () => {
 
   const handleProductSave = async (e) => {
     e.preventDefault(); setProductErr('');
-    const data = { ...productForm, price: parseFloat(productForm.price), stock: parseInt(productForm.stock), specs: [], badge: productForm.badge || null, weight: productForm.weight ? parseFloat(productForm.weight) : null, dimLength: productForm.dimLength ? parseFloat(productForm.dimLength) : null, dimWidth: productForm.dimWidth ? parseFloat(productForm.dimWidth) : null, dimHeight: productForm.dimHeight ? parseFloat(productForm.dimHeight) : null };
+    const data = { ...productForm, price: parseFloat(productForm.price), oldPrice: productForm.oldPrice ? parseFloat(productForm.oldPrice) : null, stock: parseInt(productForm.stock), specs: [], badge: productForm.badge || null, badgeColor: productForm.badgeColor || null, weight: productForm.weight ? parseFloat(productForm.weight) : null, dimLength: productForm.dimLength ? parseFloat(productForm.dimLength) : null, dimWidth: productForm.dimWidth ? parseFloat(productForm.dimWidth) : null, dimHeight: productForm.dimHeight ? parseFloat(productForm.dimHeight) : null };
     try {
       if (productModal === 'add') await addProduct(data);
       else await updateProduct(editProduct.id, { ...editProduct, ...data });
@@ -3401,7 +3401,15 @@ const Dashboard = () => {
                 <div className="product-lang-divider"><i className="fas fa-cog"></i> {lang === 'en' ? 'Product Data' : 'بيانات المنتج'}</div>
                 <div className="modal-grid2">
                   <div className="form-group"><label className="form-label">SKU ({lang === 'en' ? 'Product Code' : 'رمز المنتج'})</label><input className="form-input" name="sku" value={productForm.sku} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" placeholder="e.g. JAW-FAC-001" /></div>
-                  <div className="form-group"><label className="form-label">{dt('products.badge')} ({lang === 'en' ? 'optional' : 'اختياري'})</label><input className="form-input" name="badge" value={productForm.badge} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} /></div>
+                  <div className="form-group">
+                    <label className="form-label">{dt('products.badge')} ({lang === 'en' ? 'optional' : 'اختياري'})</label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input className="form-input" name="badge" value={productForm.badge} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} style={{ flex: 1 }} />
+                      <input type="color" name="badgeColor" value={productForm.badgeColor || '#c9a227'} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))}
+                        style={{ width: '44px', padding: '2px', borderRadius: '8px', border: '1px solid var(--border)', cursor: 'pointer' }}
+                        title={lang === 'en' ? 'Badge background color' : 'لون خلفية الشارة'} />
+                    </div>
+                  </div>
                 </div>
                 <div className="modal-grid2">
                   <div className="form-group"><label className="form-label">{dt('products.category')}</label><select className="form-select" name="category" value={productForm.category} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))}>{flattenTree(buildCatTree(categories)).map(c => (<option key={c.slug} value={c.slug}>{'　'.repeat(c.depth)}{c.depth > 0 ? '└ ' : ''}{c.nameAr}</option>))}</select></div>
@@ -3409,6 +3417,9 @@ const Dashboard = () => {
                 </div>
                 <div className="modal-grid2">
                   <div className="form-group"><label className="form-label">{dt('products.price')} *</label><input className="form-input" type="number" step="0.001" min="0" name="price" value={productForm.price} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
+                  <div className="form-group"><label className="form-label">{lang === 'en' ? 'Price before discount (optional)' : 'السعر قبل الخصم (اختياري)'}</label><input className="form-input" type="number" step="0.001" min="0" name="oldPrice" value={productForm.oldPrice} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} dir="ltr" /></div>
+                </div>
+                <div className="modal-grid2">
                   <div className="form-group"><label className="form-label">{dt('products.stock')} *</label><input className="form-input" type="number" min="0" name="stock" value={productForm.stock} onChange={e => setProductForm(p=>({...p,[e.target.name]:e.target.value}))} required dir="ltr" /></div>
                 </div>
                 {/* ── Shipping ── */}

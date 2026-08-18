@@ -150,7 +150,7 @@ const Home = () => {
                 return (
                   <Reveal key={p.id} delay={(i % 4) * 80} direction="up">
                     <Link to={`/products/${p.id}`} className="home-product-card" style={{ textDecoration: 'none' }}>
-                      {p.badge && <span className="home-prod-badge">{p.badge}</span>}
+                      {p.badge && <span className="home-prod-badge" style={p.badgeColor ? { background: p.badgeColor } : undefined}>{p.badge}</span>}
                       <div className="home-prod-img-wrap">
                         <ProductImageSlider images={productImages} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} />
                       </div>

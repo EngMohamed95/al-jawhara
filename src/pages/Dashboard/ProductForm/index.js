@@ -13,8 +13,8 @@ const flattenTree = (nodes, depth = 0) =>
 
 const emptyVariant = () => ({ nameAr: '', nameEn: '', price: '', stock: '', sku: '', image: '' });
 const emptyProduct = {
-  name: '', nameEn: '', sku: '', category: 'facial', price: '', stock: '',
-  status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '',
+  name: '', nameEn: '', sku: '', category: 'facial', price: '', oldPrice: '', stock: '',
+  status: 'active', image: '', gallery: [], desc: '', descEn: '', badge: '', badgeColor: '',
   isPhysical: true, weight: '', dimLength: '', dimWidth: '', dimHeight: '',
   countryOfOrigin: 'KW', hsCode: '', variants: [], icon: 'fa-box', sortOrder: 0,
 };
@@ -127,6 +127,7 @@ export default function ProductForm({ mode, productId, onBack }) {
       sku:             p.sku             || '',
       category:        p.category        || 'facial',
       price:           p.price           ?? '',
+      oldPrice:        p.oldPrice        ?? '',
       stock:           p.stock           ?? '',
       status:          p.status          || 'active',
       image:           p.image           || '',
@@ -134,6 +135,7 @@ export default function ProductForm({ mode, productId, onBack }) {
       desc:            p.desc            || '',
       descEn:          p.descEn          || '',
       badge:           p.badge           || '',
+      badgeColor:      p.badgeColor      || '',
       isPhysical:      p.isPhysical      !== false,
       weight:          p.weight          ?? '',
       dimLength:       p.dimLength       ?? '',
@@ -278,11 +280,17 @@ export default function ProductForm({ mode, productId, onBack }) {
     setErr('');
     if (!form.name.trim()) { setErr(ar('اسم المنتج مطلوب', 'Product name is required')); return; }
     if (!form.price)        { setErr(ar('السعر مطلوب', 'Price is required')); return; }
+    if (form.oldPrice && parseFloat(form.oldPrice) <= parseFloat(form.price)) {
+      setErr(ar('السعر قبل الخصم يجب أن يكون أكبر من السعر الحالي', 'Price before discount must be greater than the current price'));
+      return;
+    }
 
     setSaving(true);
     const data = {
       ...form,
-      price:     parseFloat(form.price),
+      price:      parseFloat(form.price),
+      oldPrice:   form.oldPrice ? parseFloat(form.oldPrice) : null,
+      badgeColor: form.badgeColor || null,
       stock:     parseInt(form.stock) || 0,
       badge:     form.badge || null,
       weight:    form.weight    ? parseFloat(form.weight)    : null,
@@ -472,8 +480,21 @@ export default function ProductForm({ mode, productId, onBack }) {
             </div>
             <div className="pf-field">
               <label className="pf-label">{ar('الشارة (اختياري)', 'Badge (optional)')}</label>
-              <input className="form-input" name="badge" value={form.badge} onChange={onInput}
-                placeholder={ar('مثال: الأكثر مبيعاً', 'e.g. Best Seller')} />
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
+                <input className="form-input" name="badge" value={form.badge} onChange={onInput}
+                  placeholder={ar('مثال: الأكثر مبيعاً', 'e.g. Best Seller')} style={{ flex: 1 }} />
+                <input type="color" className="pf-badge-color" name="badgeColor"
+                  value={form.badgeColor || '#c9a227'} onChange={onInput}
+                  title={ar('لون خلفية الشارة', 'Badge background color')} />
+                {form.badgeColor && (
+                  <button type="button" className="pf-badge-color-reset"
+                    onClick={() => set('badgeColor', '')}
+                    title={ar('إعادة تعيين اللون الافتراضي', 'Reset to default color')}>
+                    <i className="fas fa-rotate-left"></i>
+                  </button>
+                )}
+              </div>
+              <span className="pf-field-hint">{ar('اختر لون خلفية الشارة كما تظهر للعميل', "Choose the badge's background color as shown to customers")}</span>
             </div>
             <div className="pf-field">
               <label className="pf-label">{ar('الحالة', 'Status')}</label>
@@ -500,6 +521,12 @@ export default function ProductForm({ mode, productId, onBack }) {
               <input className="form-input" type="number" step="0.001" min="0" name="price"
                 value={form.price} onChange={onInput} dir="ltr" placeholder="0.000" required />
               <span className="pf-field-hint">{ar('يُستخدم إن لم تكن هناك خيارات', 'Used if no options')}</span>
+            </div>
+            <div className="pf-field">
+              <label className="pf-label">{ar('السعر قبل الخصم (د.ك)', 'Price before discount (KD)')}</label>
+              <input className="form-input" type="number" step="0.001" min="0" name="oldPrice"
+                value={form.oldPrice} onChange={onInput} dir="ltr" placeholder="0.000" />
+              <span className="pf-field-hint">{ar('اختياري — يظهر مشطوباً باللون الأحمر قبل السعر الحالي', 'Optional — shown struck-through in red before the current price')}</span>
             </div>
             <div className="pf-field">
               <label className="pf-label">{ar('المخزون *', 'Stock *')}</label>

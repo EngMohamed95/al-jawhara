@@ -61,6 +61,8 @@ try {
         'dimHeight'       => 'DECIMAL(10,2)',
         'countryOfOrigin' => 'VARCHAR(10)',
         'hsCode'          => 'VARCHAR(50)',
+        'oldPrice'        => 'DECIMAL(10,3)', // price before discount, shown struck-through
+        'badgeColor'      => 'VARCHAR(20)', // hex color for the product badge background
     ];
     foreach ($productsExtraColumns as $colName => $colType) {
         try {

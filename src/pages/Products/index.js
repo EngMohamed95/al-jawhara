@@ -167,7 +167,7 @@ const Products = () => {
                     <Reveal key={p.id} delay={(i % 4) * 70} direction="up">
                       <Link to={`/products/${p.id}`} className="product-card" role="listitem" style={{ textDecoration: 'none' }}>
                         <div className="product-card-img">
-                          {p.badge && <span className="product-badge">{p.badge}</span>}
+                          {p.badge && <span className="product-badge" style={p.badgeColor ? { background: p.badgeColor } : undefined}>{p.badge}</span>}
                           <ProductImageSlider images={productImages} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} />
                         </div>
                         <div className="product-card-body">
