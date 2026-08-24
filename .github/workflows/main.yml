@@ -25,8 +25,7 @@ jobs:
             npm install
             npm run build
             cp -rf build/* /www/wwwroot/al-jawhara.com/
-            php public/api/sync_products.php
-            
+
             # Configure Nginx rewrite rule for React SPA in aaPanel
             REWRITE_CONF="/www/server/panel/vhost/rewrite/al-jawhara.com.conf"
             if [ -d "/www/server/panel/vhost/rewrite" ]; then
