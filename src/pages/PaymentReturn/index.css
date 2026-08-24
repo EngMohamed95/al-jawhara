@@ -1,0 +1,23 @@
+.pr-card {
+  max-width: 560px; margin: 0 auto; text-align: center;
+  background: white; border-radius: var(--radius-lg);
+  padding: 50px 40px; box-shadow: var(--shadow-xl);
+}
+.pr-icon-wrap {
+  width: 90px; height: 90px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 24px;
+}
+.pr-icon { font-size: 3rem; }
+
+.pr-title { font-size: 1.7rem; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+.pr-sub   { color: var(--text-light); line-height: 1.7; margin-bottom: 30px; font-size: 0.95rem; }
+
+.pr-ref-row {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--bg); border-radius: var(--radius);
+  padding: 14px 20px; margin-bottom: 30px; font-size: 0.9rem;
+}
+.pr-ref-val { font-weight: 700; color: var(--primary); font-family: monospace; }
+
+.pr-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }

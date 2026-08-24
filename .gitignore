@@ -25,6 +25,9 @@ Thumbs.db
 # Email credentials (sensitive)
 public/api/email-config.php
 
+# Tap Payments secret keys (sensitive)
+public/api/tap-config.php
+
 # RAW Images
 *.ARW
 

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -10,8 +11,17 @@ import './index.css';
 const DEFAULT_HERO_VIDEO = '/videos/herosection.mp4';
 
 const Home = () => {
-  const { groupedProducts, clients, loading, siteContent: sc } = useApp();
+  const { groupedProducts, clients, loading, siteContent: sc, addToCart } = useApp();
   const { t, lang } = useLanguage();
+  const [addedId, setAddedId] = useState(null);
+
+  const handleAddToCart = (e, product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart({ ...product, _cartKey: String(product.id) }, 1);
+    setAddedId(product.id);
+    setTimeout(() => setAddedId(prev => (prev === product.id ? null : prev)), 1200);
+  };
   const featured = groupedProducts
     .filter(p => p.status === 'active')
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
@@ -150,17 +160,30 @@ const Home = () => {
                 return (
                   <Reveal key={p.id} delay={(i % 4) * 80} direction="up">
                     <Link to={`/products/${p.id}`} className="home-product-card" style={{ textDecoration: 'none' }}>
-                      {p.badge && <span className="home-prod-badge" style={p.badgeColor ? { background: p.badgeColor } : undefined}>{p.badge}</span>}
                       <div className="home-prod-img-wrap">
+                        {p.badge && <span className="home-prod-badge" style={p.badgeColor ? { background: p.badgeColor } : undefined}>{p.badge}</span>}
                         <ProductImageSlider images={productImages} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} />
+                        <button
+                          type="button"
+                          className={`home-prod-add-btn${addedId === p.id ? ' added' : ''}`}
+                          onClick={(e) => handleAddToCart(e, p)}
+                          disabled={p.stock === 0}
+                          aria-label={lang === 'ar' ? 'أضف للسلة' : 'Add to cart'}
+                        >
+                          <i className={`fas ${addedId === p.id ? 'fa-check' : 'fa-plus'}`} aria-hidden="true"></i>
+                        </button>
                       </div>
                       <div className="home-prod-body">
                         <span className="home-prod-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</span>
                         <p className="home-prod-desc">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
-                        <span className="home-prod-view-btn">
-                          <i className="fas fa-eye"></i>
-                          {lang === 'ar' ? 'عرض المنتج' : 'View Product'}
-                        </span>
+                        <div className="home-prod-footer">
+                          {p.oldPrice > p.price && (
+                            <span className="home-prod-old-price">{Number(p.oldPrice).toFixed(3)} {lang === 'ar' ? 'د.ك' : 'KWD'}</span>
+                          )}
+                          <span className="home-prod-price">
+                            {Number(p.price).toFixed(3)} <span>{lang === 'ar' ? 'د.ك' : 'KWD'}</span>
+                          </span>
+                        </div>
                       </div>
                     </Link>
                   </Reveal>

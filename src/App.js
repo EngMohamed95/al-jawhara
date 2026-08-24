@@ -17,6 +17,7 @@ import Login        from './pages/Login';
 import Cart         from './pages/Cart';
 import Checkout     from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
+import PaymentReturn from './pages/PaymentReturn';
 import ProductDetail from './pages/ProductDetail';
 import NotFound    from './pages/NotFound';
 import MyAccount   from './pages/MyAccount';
@@ -55,6 +56,7 @@ const AppContent = () => {
           <Route path="/cart"          element={<Cart />} />
           <Route path="/checkout"      element={<Checkout />} />
           <Route path="/order-success" element={<OrderSuccess />} />
+          <Route path="/payment/return" element={<PaymentReturn />} />
           <Route path="/dashboard"     element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/my-account"    element={<MyAccount />} />
           <Route path="/register"      element={<Register />} />

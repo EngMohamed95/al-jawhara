@@ -1079,7 +1079,7 @@ const Dashboard = () => {
 
   const openPaymentsTab = () => {
     if (!paySettings) {
-      const defaults = { cash: { enabled: true }, transfer: { enabled: true, bankName: '', iban: '' }, knet: { enabled: true, apiKey: '', testMode: true }, myfatoorah: { enabled: false, apiKey: '', testMode: true }, tap: { enabled: false, apiKey: '', testMode: true }, stcpay: { enabled: false }, zaincash: { enabled: false }, benefitpay: { enabled: false } };
+      const defaults = { cash: { enabled: true }, transfer: { enabled: true, bankName: '', iban: '' }, myfatoorah: { enabled: false, apiKey: '', testMode: true }, tap: { enabled: false, testMode: true }, stcpay: { enabled: false }, zaincash: { enabled: false }, benefitpay: { enabled: false } };
       setPaySettings(siteContent?.paymentSettings ? JSON.parse(JSON.stringify(siteContent.paymentSettings)) : defaults);
     }
     setView('payments');
@@ -2956,20 +2956,6 @@ const Dashboard = () => {
                   )}
                 </div>
 
-                {/* KNET */}
-                <div className="gateway-card">
-                  <div className="gateway-header">
-                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#e0e7ff' }}><i className="fas fa-credit-card" style={{ color: '#003087' }}></i></div><div><div className="gateway-name">K-NET</div><div className="gateway-sub">{lang === 'en' ? 'Kuwait Network' : 'الشبكة الكويتية'}</div></div></div>
-                    <label className="toggle-switch"><input type="checkbox" checked={paySettings.knet?.enabled} onChange={() => toggleGateway('knet')} /><span className="toggle-slider"></span></label>
-                  </div>
-                  {paySettings.knet?.enabled && (
-                    <div className="gateway-fields">
-                      <div className="form-group"><label className="form-label">API Key</label><input className="form-input" dir="ltr" value={paySettings.knet?.apiKey || ''} onChange={e => setGatewayField('knet', 'apiKey', e.target.value)} placeholder="sk_..." /></div>
-                      <label className="gateway-test-toggle"><input type="checkbox" checked={paySettings.knet?.testMode} onChange={() => setGatewayField('knet', 'testMode', !paySettings.knet?.testMode)} /> {lang === 'en' ? 'Test Mode' : 'وضع الاختبار (Test Mode)'}</label>
-                    </div>
-                  )}
-                </div>
-
                 {/* MyFatoorah */}
                 <div className="gateway-card">
                   <div className="gateway-header">
@@ -2984,15 +2970,17 @@ const Dashboard = () => {
                   )}
                 </div>
 
-                {/* Tap */}
+                {/* Tap — covers Card + K-NET through one gateway */}
                 <div className="gateway-card">
                   <div className="gateway-header">
-                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#f0fdf4' }}><i className="fas fa-mobile-screen" style={{ color: '#000' }}></i></div><div><div className="gateway-name">Tap Payments</div><div className="gateway-sub">{lang === 'en' ? 'Tap Payments' : 'تاب للمدفوعات'}</div></div></div>
+                    <div className="gateway-info"><div className="gateway-icon" style={{ background: '#f0fdf4' }}><i className="fas fa-credit-card" style={{ color: '#000' }}></i></div><div><div className="gateway-name">Tap Payments</div><div className="gateway-sub">{lang === 'en' ? 'Card / K-NET' : 'بطاقة بنكية / K-NET'}</div></div></div>
                     <label className="toggle-switch"><input type="checkbox" checked={paySettings.tap?.enabled} onChange={() => toggleGateway('tap')} /><span className="toggle-slider"></span></label>
                   </div>
                   {paySettings.tap?.enabled && (
                     <div className="gateway-fields">
-                      <div className="form-group"><label className="form-label">Secret Key</label><input className="form-input" dir="ltr" value={paySettings.tap?.apiKey || ''} onChange={e => setGatewayField('tap', 'apiKey', e.target.value)} placeholder="sk_test_..." /></div>
+                      <p className="gateway-coming-soon"><i className="fas fa-shield-halved"></i> {lang === 'en'
+                        ? 'For security, the Tap secret key is set on the server (tap-config.php), not here.'
+                        : 'لأسباب أمان، المفتاح السري لـ Tap يُضبط من على السيرفر (ملف tap-config.php) مش من هنا.'}</p>
                       <label className="gateway-test-toggle"><input type="checkbox" checked={paySettings.tap?.testMode} onChange={() => setGatewayField('tap', 'testMode', !paySettings.tap?.testMode)} /> {lang === 'en' ? 'Test Mode' : 'وضع الاختبار'}</label>
                     </div>
                   )}

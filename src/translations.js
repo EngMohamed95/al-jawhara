@@ -210,7 +210,7 @@ const t = {
     transfer:     { ar: 'تحويل بنكي',            en: 'Bank Transfer' },
     knet:         { ar: 'K-NET الشبكة الكويتية', en: 'K-NET Kuwait Network' },
     myfatoorah:   { ar: 'MyFatoorah',            en: 'MyFatoorah' },
-    tap:          { ar: 'Tap Payments',          en: 'Tap Payments' },
+    tap:          { ar: 'بطاقة بنكية / K-NET',   en: 'Card / K-NET' },
     stcpay:       { ar: 'STC Pay',               en: 'STC Pay' },
     zaincash:     { ar: 'Zain Cash',             en: 'Zain Cash' },
     benefitpay:   { ar: 'Benefit Pay',           en: 'Benefit Pay' },

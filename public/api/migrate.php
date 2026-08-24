@@ -84,6 +84,34 @@ try {
         status VARCHAR(50) DEFAULT 'pending'
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
+    // Checkout sends these fields for every order (phone, address, payment
+    // method, ...) but the table above never had columns for them, so
+    // index.php's column-filtered INSERT was silently dropping them on every
+    // live order. Also adds the columns needed to track Tap Payments charges.
+    $ordersExtraColumns = [
+        'company'        => 'VARCHAR(255)',
+        'phone'          => 'VARCHAR(50)',
+        'email'          => 'VARCHAR(255)',
+        'governorate'    => 'VARCHAR(100)',
+        'block'          => 'VARCHAR(50)',
+        'address'        => 'TEXT',
+        'notes'          => 'TEXT',
+        'payment'        => 'VARCHAR(50)',
+        'deliveryFee'    => 'DECIMAL(10,3) DEFAULT 0.000',
+        'grandTotal'     => 'DECIMAL(10,3) DEFAULT 0.000',
+        'lang'           => 'VARCHAR(10)',
+        'paymentStatus'  => "VARCHAR(50) DEFAULT 'unpaid'", // unpaid | pending | paid | failed
+        'tapChargeId'    => 'VARCHAR(100)',
+        'tapPaymentRef'  => 'VARCHAR(100)',
+    ];
+    foreach ($ordersExtraColumns as $colName => $colType) {
+        try {
+            $pdo->exec("ALTER TABLE orders ADD COLUMN `$colName` $colType NULL;");
+        } catch (Exception $e) {
+            // Column already exists or other error
+        }
+    }
+
     // Users Table
     $pdo->exec("CREATE TABLE IF NOT EXISTS users (
         id BIGINT PRIMARY KEY,

@@ -38,6 +38,7 @@ const OrderSuccess = () => {
                     {order.payment === 'cash'     && t('success.cash')}
                     {order.payment === 'transfer' && t('success.transfer')}
                     {order.payment === 'knet'     && t('success.knet')}
+                    {order.payment === 'tap'      && t('checkout.tap')}
                   </span>
                 </div>
                 <div className="success-order-row">

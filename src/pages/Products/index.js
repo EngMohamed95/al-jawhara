@@ -14,10 +14,19 @@ const normalizeQ = (s = '') =>
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
 
 const Products = () => {
-  const { groupedProducts, loading, error, cartTotalQty, categories } = useApp();
+  const { groupedProducts, loading, error, cartTotalQty, categories, addToCart } = useApp();
   const { t, lang } = useLanguage();
   const [activeCat,   setActiveCat]   = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [addedId,     setAddedId]     = useState(null);
+
+  const handleAddToCart = (e, product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart({ ...product, _cartKey: String(product.id) }, 1);
+    setAddedId(product.id);
+    setTimeout(() => setAddedId(prev => (prev === product.id ? null : prev)), 1200);
+  };
 
   const getDescendantSlugs = (slug) => {
     const cat = (categories || []).find(c => c.slug === slug);
@@ -169,14 +178,27 @@ const Products = () => {
                         <div className="product-card-img">
                           {p.badge && <span className="product-badge" style={p.badgeColor ? { background: p.badgeColor } : undefined}>{p.badge}</span>}
                           <ProductImageSlider images={productImages} alt={lang === 'en' && p.nameEn ? p.nameEn : p.name} />
+                          <button
+                            type="button"
+                            className={`product-add-btn${addedId === p.id ? ' added' : ''}`}
+                            onClick={(e) => handleAddToCart(e, p)}
+                            disabled={p.stock === 0}
+                            aria-label={lang === 'ar' ? 'أضف للسلة' : 'Add to cart'}
+                          >
+                            <i className={`fas ${addedId === p.id ? 'fa-check' : 'fa-plus'}`} aria-hidden="true"></i>
+                          </button>
                         </div>
                         <div className="product-card-body">
                           <span className="product-name">{lang === 'en' && p.nameEn ? p.nameEn : p.name}</span>
                           <p className="product-description">{lang === 'en' && p.descEn ? p.descEn : p.desc}</p>
-                          <span className="product-view-btn">
-                            <i className="fas fa-eye" aria-hidden="true"></i>
-                            {lang === 'ar' ? 'عرض المنتج' : 'View Product'}
-                          </span>
+                          <div className="product-footer">
+                            {p.oldPrice > p.price && (
+                              <span className="product-old-price">{Number(p.oldPrice).toFixed(3)} {lang === 'ar' ? 'د.ك' : 'KWD'}</span>
+                            )}
+                            <span className="product-price">
+                              {Number(p.price).toFixed(3)}<span> {lang === 'ar' ? 'د.ك' : 'KWD'}</span>
+                            </span>
+                          </div>
                         </div>
                       </Link>
                     </Reveal>

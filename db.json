@@ -18,7 +18,23 @@
       ],
       "stock": 1050,
       "status": "active",
-      "sortOrder": 0
+      "sortOrder": 0,
+      "sku": "",
+      "gallery": [
+        "blob:http://localhost:3000/7fa0d715-9ca5-4820-b0d2-234649827941",
+        "blob:http://localhost:3000/641629cc-9dae-4a03-92e4-c0ccc2275da9",
+        "blob:http://localhost:3000/67f6c336-62f4-4937-a63e-6a5d857109b4",
+        "blob:http://localhost:3000/9205652e-0b4e-47b1-82c0-a59aaf7f8ded",
+        "blob:http://localhost:3000/848ed714-b8a0-47cb-836d-e627680de9d8"
+      ],
+      "isPhysical": true,
+      "weight": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "countryOfOrigin": "KW",
+      "hsCode": "",
+      "variants": []
     },
     {
       "id": 8,
@@ -264,7 +280,7 @@
       "price": 1.5,
       "desc": "باقة عائلية اقتصادية تحتوي على مجموعة متنوعة من علب المناديل الفاخرة.",
       "descEn": "An economy family bundle containing a variety of premium tissue boxes.",
-      "badge": null,
+      "badge": "الأكثر مبيعاً",
       "specs": [
         "باقة التوفير",
         "ألوان متعددة",
@@ -282,7 +298,9 @@
       "countryOfOrigin": "KW",
       "hsCode": "",
       "variants": [],
-      "sortOrder": 11
+      "sortOrder": 11,
+      "oldPrice": 2,
+      "badgeColor": "#c9264f"
     }
   ],
   "orders": [

@@ -5,6 +5,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import translations from '../../translations';
 import Seo from '../../components/Seo';
 import { PRODUCTS_PAGE_HEADER } from '../../siteImages';
+import { createTapCharge } from '../../services/tapService';
 import './index.css';
 
 const emptyForm = {
@@ -14,24 +15,22 @@ const emptyForm = {
   payment: 'cash',
 };
 
-/* ── Kuwait payment wallets ── */
-const WALLETS = [
-  { val: 'cash',       icon: 'fa-money-bills',     color: '#16a34a', label: 'checkout.cash',       badge: null },
-  { val: 'transfer',   icon: 'fa-building-columns', color: '#1d4ed8', label: 'checkout.transfer',   badge: null },
-  { val: 'knet',       icon: 'fa-credit-card',      color: '#003087', label: 'checkout.knet',       badge: 'KNET',        badgeColor: '#003087' },
-  { val: 'myfatoorah', icon: 'fa-wallet',           color: '#e67e22', label: 'checkout.myfatoorah', badge: 'MyFatoorah',  badgeColor: '#e67e22' },
-  { val: 'tap',        icon: 'fa-mobile-screen',    color: '#000',    label: 'checkout.tap',        badge: 'tap',         badgeColor: '#000' },
-  { val: 'benefitpay', icon: 'fa-mobile-screen',    color: '#00843d', label: 'checkout.benefitpay', badge: 'Benefit',     badgeColor: '#00843d' },
-];
-
 const Checkout = () => {
-  const { cart, cartTotal, submitOrder, auth, updateUser, users } = useApp();
+  const { cart, cartTotal, submitOrder, auth, updateUser, users, siteContent } = useApp();
   const { t, lang } = useLanguage();
   const navigate  = useNavigate();
 
   const [form,    setForm]    = useState(emptyForm);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
+
+  /* ── Payment wallets — shown/hidden per the Dashboard → Payments toggles ── */
+  const pay = siteContent?.paymentSettings || {};
+  const WALLETS = [
+    { val: 'cash',     icon: 'fa-money-bills',      color: '#16a34a', label: 'checkout.cash',     badge: null,  enabled: pay.cash?.enabled !== false },
+    { val: 'transfer', icon: 'fa-building-columns',  color: '#1d4ed8', label: 'checkout.transfer', badge: null,  enabled: pay.transfer?.enabled !== false },
+    { val: 'tap',      icon: 'fa-credit-card',       color: '#000',    label: 'checkout.tap',      badge: 'Tap', badgeColor: '#000', enabled: !!pay.tap?.enabled },
+  ].filter(w => w.enabled);
 
   /* Pre-fill from logged-in account — runs once on mount */
   useEffect(() => {
@@ -134,6 +133,21 @@ const Checkout = () => {
           }
         } catch {}
       }
+
+      if (form.payment === 'tap') {
+        try {
+          const { url } = await createTapCharge(order.id);
+          window.location.href = url; // leave the SPA for Tap's hosted payment page
+          return;
+        } catch (err) {
+          setError(err.message || (lang === 'ar'
+            ? 'تعذر بدء عملية الدفع الإلكتروني. طلبك محفوظ برقم ' + order.ref + '، جرّب طريقة دفع أخرى أو تواصل معنا.'
+            : 'Could not start online payment. Your order was saved as ' + order.ref + ' — try another payment method or contact us.'));
+          setLoading(false);
+          return;
+        }
+      }
+
       navigate('/order-success', { state: { order } });
     } catch {
       setError(t('products.error'));
