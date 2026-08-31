@@ -256,6 +256,9 @@ const t = {
     reach:    { ar: 'تواصل معنا',   en: 'Reach Us' },
     rights:   { ar: 'جميع الحقوق محفوظة', en: 'All Rights Reserved' },
     founded:  { ar: 'تأسست',        en: 'Founded' },
+    legal:    { ar: 'السياسات',     en: 'Legal' },
+    refundPolicy:    { ar: 'سياسة الاسترجاع', en: 'Refund Policy' },
+    termsConditions: { ar: 'الشروط والأحكام', en: 'Terms & Conditions' },
   },
 
   // ── Login ────────────────────────────────────────────

@@ -67,7 +67,7 @@ body {
   overflow-x: hidden;
 }
 main { flex: 1; }
-a { text-decoration: none; color: inherit; }
+a { text-decoration: none; color: inherit; -webkit-tap-highlight-color: transparent; }
 img { max-width: 100%; height: auto; }
 button { cursor: pointer; font-family: 'Tajawal', sans-serif; }
 h1,h2,h3,h4,h5,h6 { font-weight: 700; line-height: 1.3; }
@@ -620,6 +620,10 @@ tr.client-row-drag-over { box-shadow: inset 0 2px 0 var(--primary), inset 0 -2px
   color: rgba(255,255,255,0.7); transition: all 0.2s; text-decoration: none;
 }
 .social-link:hover { background: white; color: var(--primary); }
+.footer-legal-links { display: flex; align-items: center; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+.footer-legal-links a { font-size: 0.8rem; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
+.footer-legal-links a:hover { color: white; }
+.footer-legal-sep { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.3); }
 .footer-heading {
   font-size: 0.92rem; font-weight: 700; margin-bottom: 18px; color: white;
   padding-bottom: 10px; position: relative;
@@ -631,7 +635,7 @@ tr.client-row-drag-over { box-shadow: inset 0 2px 0 var(--primary), inset 0 -2px
 .footer-links { list-style: none; }
 .footer-links li { margin-bottom: 9px; }
 .footer-links a { font-size: 0.86rem; color: rgba(255,255,255,0.58); text-decoration: none; transition: color 0.2s; display: flex; align-items: center; gap: 8px; }
-.footer-links a:hover { color: var(--secondary); }
+.footer-links a:hover { color: white; }
 .footer-links a i { font-size: 10px; }
 .footer-contact-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 13px; }
 .footer-contact-icon { color: white; margin-top: 3px; font-size: 13px; flex-shrink: 0; }

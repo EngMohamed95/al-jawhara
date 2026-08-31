@@ -22,6 +22,8 @@ import ProductDetail from './pages/ProductDetail';
 import NotFound    from './pages/NotFound';
 import MyAccount   from './pages/MyAccount';
 import Register    from './pages/Register';
+import RefundPolicy    from './pages/RefundPolicy';
+import TermsConditions from './pages/TermsConditions';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -60,6 +62,8 @@ const AppContent = () => {
           <Route path="/dashboard"     element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/my-account"    element={<MyAccount />} />
           <Route path="/register"      element={<Register />} />
+          <Route path="/refund-policy"      element={<RefundPolicy />} />
+          <Route path="/terms-conditions"   element={<TermsConditions />} />
           <Route path="*"              element={<NotFound />} />
         </Routes>
       </main>

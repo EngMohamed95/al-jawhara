@@ -45,6 +45,11 @@ const Footer = () => {
                 <i className="fab fa-whatsapp" aria-hidden="true"></i>
               </a>
             </div>
+            <nav className="footer-legal-links" aria-label={t('footer.legal')}>
+              <Link to="/refund-policy">{t('footer.refundPolicy')}</Link>
+              <span className="footer-legal-sep" aria-hidden="true"></span>
+              <Link to="/terms-conditions">{t('footer.termsConditions')}</Link>
+            </nav>
           </div>
 
           {/* Quick Links */}
