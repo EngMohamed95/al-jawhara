@@ -19,64 +19,7 @@ if (!file_exists($configFile)) {
     exit;
 }
 require_once $configFile;
-
-// ── SMTP Sender ───────────────────────────────────────────
-function sendSmtp($toEmail, $toName, $subject, $htmlBody) {
-    $sock = fsockopen(SMTP_HOST, SMTP_PORT, $errno, $errstr, 15);
-    if (!$sock) throw new Exception("Cannot connect to SMTP: $errstr ($errno)");
-
-    $read = function() use ($sock) {
-        $out = '';
-        while ($line = fgets($sock, 1024)) {
-            $out .= $line;
-            if ($line[3] === ' ') break;
-        }
-        return $out;
-    };
-
-    $cmd = function($line) use ($sock, $read) {
-        fwrite($sock, $line . "\r\n");
-        return $read();
-    };
-
-    $read();
-    $cmd('EHLO smtp.gmail.com');
-    $r = $cmd('STARTTLS');
-    if (strpos($r, '220') === false) throw new Exception("STARTTLS failed: $r");
-
-    stream_socket_enable_crypto($sock, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
-
-    $cmd('EHLO smtp.gmail.com');
-    $cmd('AUTH LOGIN');
-    $cmd(base64_encode(SMTP_USER));
-    $r = $cmd(base64_encode(SMTP_PASS));
-    if (strpos($r, '235') === false) throw new Exception("Auth failed: $r");
-
-    $cmd('MAIL FROM:<' . SMTP_FROM . '>');
-    $r = $cmd('RCPT TO:<' . $toEmail . '>');
-    if (strpos($r, '250') === false) throw new Exception("RCPT failed: $r");
-
-    $cmd('DATA');
-
-    $encodedFrom = '=?UTF-8?B?' . base64_encode(SMTP_FROM_NAME) . '?=';
-    $encodedTo   = '=?UTF-8?B?' . base64_encode($toName) . '?=';
-
-    $msg  = "From: {$encodedFrom} <" . SMTP_FROM . ">\r\n";
-    $msg .= "To: {$encodedTo} <{$toEmail}>\r\n";
-    $msg .= "Subject: {$subject}\r\n";
-    $msg .= "MIME-Version: 1.0\r\n";
-    $msg .= "Content-Type: text/html; charset=UTF-8\r\n";
-    $msg .= "\r\n";
-    $msg .= $htmlBody;
-    $msg .= "\r\n.";
-
-    $r = $cmd($msg);
-    if (strpos($r, '250') === false) throw new Exception("DATA failed: $r");
-
-    $cmd('QUIT');
-    fclose($sock);
-    return true;
-}
+require_once __DIR__ . '/mailer-common.php';
 
 // ── قراءة بيانات الطلب ───────────────────────────────────
 $body = json_decode(file_get_contents('php://input'), true);
@@ -100,9 +43,7 @@ $governorate = htmlspecialchars($body['governorate'] ?? '', ENT_QUOTES, 'UTF-8')
 $block       = htmlspecialchars($body['block']       ?? '', ENT_QUOTES, 'UTF-8');
 $notes       = htmlspecialchars($body['notes']       ?? '', ENT_QUOTES, 'UTF-8');
 $payment     = $body['payment'] ?? 'cash';
-$deliveryFee = number_format((float)($body['deliveryFee'] ?? 0), 3);
 $grandTotal  = number_format((float)($body['grandTotal']  ?? $body['total'] ?? 0), 3);
-$subtotal    = number_format((float)($body['total']       ?? 0), 3);
 $items       = $body['items'] ?? [];
 $currency    = $isAr ? 'د.ك' : 'KWD';
 
@@ -120,8 +61,6 @@ $t = $isAr ? [
     'product'      => 'المنتج',
     'qty'          => 'الكمية',
     'price'        => 'السعر',
-    'subtotal'     => 'المجموع الفرعي',
-    'delivery'     => 'رسوم التوصيل',
     'total'        => 'الإجمالي',
     'notes'        => 'ملاحظات',
     'footer'       => 'شركة الجوهرة للورق والمناديل',
@@ -148,8 +87,6 @@ $t = $isAr ? [
     'product'      => 'Product',
     'qty'          => 'Qty',
     'price'        => 'Price',
-    'subtotal'     => 'Subtotal',
-    'delivery'     => 'Delivery Fee',
     'total'        => 'Total',
     'notes'        => 'Notes',
     'footer'       => 'Al-Jawhara Paper & Tissues Co.',
@@ -265,16 +202,8 @@ $html = <<<HTML
   <tr><td style="padding:0 40px 32px;">
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
-        <td style="padding:6px 0;color:#6b7280;font-size:14px;">{$t['subtotal']}</td>
-        <td style="padding:6px 0;text-align:left;color:#374151;font-size:14px;">{$subtotal} {$currency}</td>
-      </tr>
-      <tr>
-        <td style="padding:6px 0;color:#6b7280;font-size:14px;">{$t['delivery']}</td>
-        <td style="padding:6px 0;text-align:left;color:#374151;font-size:14px;">{$deliveryFee} {$currency}</td>
-      </tr>
-      <tr>
-        <td style="padding:12px 0 0;border-top:2px solid #e5e7eb;color:#111827;font-size:16px;font-weight:700;">{$t['total']}</td>
-        <td style="padding:12px 0 0;border-top:2px solid #e5e7eb;text-align:left;color:#1d4ed8;font-size:18px;font-weight:700;">{$grandTotal} {$currency}</td>
+        <td style="padding:6px 0;color:#111827;font-size:16px;font-weight:700;">{$t['total']}</td>
+        <td style="padding:6px 0;text-align:left;color:#1d4ed8;font-size:18px;font-weight:700;">{$grandTotal} {$currency}</td>
       </tr>
     </table>
   </td></tr>
@@ -298,7 +227,7 @@ HTML;
 $subject = '=?UTF-8?B?' . base64_encode($t['subject']) . '?=';
 
 try {
-    sendSmtp($toEmail, $toName, $subject, $html);
+    sendSmtp([['email' => $toEmail, 'name' => $toName]], $subject, $html);
     echo json_encode(['success' => true, 'message' => 'Email sent']);
 } catch (Exception $e) {
     http_response_code(500);

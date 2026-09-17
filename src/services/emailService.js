@@ -10,3 +10,13 @@ export const sendOrderConfirmationEmail = async (order) => {
     body:    JSON.stringify(order),
   });
 };
+
+export const notifyTeamOfNewOrder = async (order) => {
+  if (!IS_PROD) return;
+
+  await fetch('/api/notify-order.php', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(order),
+  });
+};

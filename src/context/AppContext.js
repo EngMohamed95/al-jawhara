@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
-import { sendOrderConfirmationEmail } from '../services/emailService';
+import { sendOrderConfirmationEmail, notifyTeamOfNewOrder } from '../services/emailService';
 
 const AppContext = createContext(null);
 
@@ -226,6 +226,8 @@ export const AppProvider = ({ children }) => {
     /* ── Send confirmation email to customer ── */
     try { await sendOrderConfirmationEmail(saved); } catch (e) { console.warn('Email not sent:', e); }
 
+    /* ── Notify Al-Jawhara team of the new order ── */
+    try { await notifyTeamOfNewOrder(saved); } catch (e) { console.warn('Team notification not sent:', e); }
 
     /* ── Auto-create customer account if new phone ── */
     try {
