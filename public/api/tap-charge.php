@@ -135,6 +135,13 @@ $chargeBody = [
     ],
 ];
 
+// Optional: routes the charge to a specific Merchant Account ID from the Tap
+// dashboard. Leave TAP_MERCHANT_ID unset/empty to use the account tied to
+// the secret key (the default for a single-merchant integration).
+if (defined('TAP_MERCHANT_ID') && TAP_MERCHANT_ID !== '') {
+    $chargeBody['merchant'] = ['id' => TAP_MERCHANT_ID];
+}
+
 $langCode = ($order['lang'] ?? '') === 'ar' ? 'ar' : 'en';
 $result = tapApiRequest('POST', 'charges/', $secretKey, $chargeBody, ['lang_code: ' . $langCode]);
 

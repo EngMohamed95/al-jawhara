@@ -17,3 +17,8 @@ define('TAP_SECRET_KEY_LIVE', 'REPLACE_WITH_YOUR_TAP_LIVE_SECRET_KEY');
 
 // Full site URL with no trailing slash, used to build the redirect/webhook URLs
 define('TAP_SITE_URL', 'https://al-jawhara.com');
+
+// Optional — Merchant Account ID from the Tap dashboard. Only needed to route
+// charges to a specific merchant account; leave unset to use the account tied
+// to the secret key above (the default, correct for a single-merchant setup).
+// define('TAP_MERCHANT_ID', '');
