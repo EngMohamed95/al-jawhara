@@ -23,6 +23,7 @@ const Checkout = () => {
   const [form,    setForm]    = useState(emptyForm);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
+  const [govKey,  setGovKey]  = useState('');
 
   /* ── Payment wallets — shown/hidden per the Dashboard → Payments toggles ── */
   const pay = siteContent?.paymentSettings || {};
@@ -58,7 +59,23 @@ const Checkout = () => {
     else groups.push({ gov: z.gov, govEn: z.govEn, areas: [z] });
     return groups;
   }, []);
+  const areasInGov = zoneGroups.find(g => g.gov === govKey)?.areas || [];
   const grandTotal = cartTotal;
+
+  // Keep the governorate dropdown in sync with a pre-filled/saved area
+  // (e.g. from the logged-in account) without overriding a manual pick.
+  useEffect(() => {
+    if (form.governorate && !govKey) {
+      const z = zones.find(zn => zn.id === form.governorate);
+      if (z) setGovKey(z.gov);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.governorate]);
+
+  const handleGovGroupChange = (e) => {
+    setGovKey(e.target.value);
+    setForm(prev => ({ ...prev, governorate: '' }));
+  };
 
   if (cart.length === 0) {
     return (
@@ -244,27 +261,34 @@ const Checkout = () => {
 
                 <div className="form-row">
                   <div className="form-group">
-                    <label className="form-label">{t('checkout.governorate')} <span style={{color:'#dc2626'}}>*</span></label>
-                    <select className="form-select" name="governorate" value={form.governorate} onChange={handleChange} required>
-                      <option value="">{t('checkout.selectGov')}</option>
+                    <label className="form-label">{t('checkout.govGroup')} <span style={{color:'#dc2626'}}>*</span></label>
+                    <select className="form-select" name="govGroup" value={govKey} onChange={handleGovGroupChange} required>
+                      <option value="">{t('checkout.selectGovGroup')}</option>
                       {zoneGroups.map(g => (
-                        <optgroup key={g.gov} label={lang === 'ar' ? g.gov : g.govEn}>
-                          {g.areas.map(z => (
-                            <option key={z.id} value={z.id}>
-                              {lang === 'ar' ? z.ar : z.en}
-                            </option>
-                          ))}
-                        </optgroup>
+                        <option key={g.gov} value={g.gov}>
+                          {lang === 'ar' ? g.gov : g.govEn}
+                        </option>
                       ))}
                     </select>
                   </div>
                   <div className="form-group">
-                    <label className="form-label">{lang === 'ar' ? 'القطعة' : 'Block'} <span style={{color:'#dc2626'}}>*</span></label>
-                    <input className="form-input" name="block" value={form.block} onChange={handleChange} placeholder={lang === 'ar' ? 'مثال: 5' : 'e.g. 5'} />
+                    <label className="form-label">{t('checkout.governorate')} <span style={{color:'#dc2626'}}>*</span></label>
+                    <select className="form-select" name="governorate" value={form.governorate} onChange={handleChange} disabled={!govKey} required>
+                      <option value="">{t('checkout.selectGov')}</option>
+                      {areasInGov.map(z => (
+                        <option key={z.id} value={z.id}>
+                          {lang === 'ar' ? z.ar : z.en}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
                 <div className="checkout-addr-grid">
+                  <div className="form-group">
+                    <label className="form-label">{lang === 'ar' ? 'القطعة' : 'Block'} <span style={{color:'#dc2626'}}>*</span></label>
+                    <input className="form-input" name="block" value={form.block} onChange={handleChange} placeholder={lang === 'ar' ? 'مثال: 5' : 'e.g. 5'} />
+                  </div>
                   <div className="form-group">
                     <label className="form-label">{lang === 'ar' ? 'الشارع' : 'Street'} <span style={{color:'#dc2626'}}>*</span></label>
                     <input className="form-input" name="street" value={form.street} onChange={handleChange} placeholder={lang === 'ar' ? 'مثال: 12' : 'e.g. 12'} />

@@ -199,6 +199,8 @@ const t = {
     address:      { ar: 'العنوان التفصيلي *',    en: 'Detailed Address *' },
     notes:        { ar: 'ملاحظات إضافية',        en: 'Additional Notes' },
     delivery:     { ar: 'منطقة التوصيل',         en: 'Delivery Area' },
+    govGroup:     { ar: 'المحافظة *',            en: 'Governorate *' },
+    selectGovGroup: { ar: 'اختر المحافظة',       en: 'Select Governorate' },
     governorate:  { ar: 'المنطقة *',             en: 'Area *' },
     block:        { ar: 'المنطقة / القطعة',      en: 'Area / Block' },
     selectGov:    { ar: 'اختر المنطقة',          en: 'Select Area' },
