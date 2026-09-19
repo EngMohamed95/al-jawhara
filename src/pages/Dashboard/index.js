@@ -13,7 +13,35 @@ const categoryLabels = {
   facial: { ar: 'مناديل وجه', en: 'Facial Tissues' },
   rolls:  { ar: 'رولات',      en: 'Rolls' },
 };
-const orderStatusLabels  = { active: { ar: 'نشط', en: 'Active' }, pending: { ar: 'قيد المراجعة', en: 'Pending' }, inactive: { ar: 'متوقف', en: 'Inactive' }, shipped: { ar: 'تم الشحن', en: 'Shipped' }, cancelled: { ar: 'ملغي', en: 'Cancelled' } };
+const orderStatusLabels  = {
+  pending:    { ar: 'قيد الانتظار', en: 'Pending' },
+  confirmed:  { ar: 'مؤكد', en: 'Confirmed' },
+  processing: { ar: 'قيد التجهيز', en: 'Processing' },
+  shipped:    { ar: 'تم الشحن', en: 'Shipped' },
+  delivered:  { ar: 'تم التسليم', en: 'Delivered' },
+  cancelled:  { ar: 'ملغي', en: 'Cancelled' },
+};
+const paymentStatusLabels = {
+  unpaid:     { ar: 'غير مدفوع', en: 'Unpaid', color: '#64748b' },
+  initiating: { ar: 'جاري بدء الدفع', en: 'Starting', color: '#2563eb' },
+  pending:    { ar: 'جاري التحقق', en: 'Processing', color: '#d97706' },
+  paid:       { ar: 'مدفوع', en: 'Paid', color: '#059669' },
+  failed:     { ar: 'فشل الدفع', en: 'Failed', color: '#dc2626' },
+};
+const PaymentCell = ({ order, lang }) => {
+  const paymentState = paymentStatusLabels[order.paymentStatus] || paymentStatusLabels.unpaid;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+      <span className="badge-pay">{order.payment || '—'}</span>
+      <span
+        className="status-badge"
+        style={{ background: `${paymentState.color}18`, color: paymentState.color }}
+      >
+        {paymentState[lang] || paymentState.ar}
+      </span>
+    </div>
+  );
+};
 const productStatusLabels= { active: { ar: 'نشط', en: 'Active' }, pending: { ar: 'قيد المراجعة', en: 'Pending' }, inactive: { ar: 'متوقف', en: 'Inactive' } };
 const roleLabels         = { admin: { ar: 'مدير', en: 'Admin' }, editor: { ar: 'محرر', en: 'Editor' }, viewer: { ar: 'مشاهد', en: 'Viewer' }, customer: { ar: 'عميل', en: 'Customer' } };
 const userStatusLabels   = { active: { ar: 'نشط', en: 'Active' }, suspended: { ar: 'موقوف', en: 'Suspended' }, pending: { ar: 'قيد المراجعة', en: 'Pending' }, locked: { ar: 'مقفل', en: 'Locked' } };
@@ -1060,7 +1088,6 @@ const Dashboard = () => {
     setView('shipping');
   };
 
-  const updateZoneFee     = (id, fee)     => setShippingZones(z => z.map(x => x.id === id ? { ...x, fee: parseFloat(fee) || 0 } : x));
   const toggleZone        = (id)          => setShippingZones(z => z.map(x => x.id === id ? { ...x, enabled: !x.enabled } : x));
 
   const toggleShipCompany   = (key)       => setShipCompanies(p => ({ ...p, [key]: { ...p[key], enabled: !p[key].enabled } }));
@@ -1184,7 +1211,6 @@ const Dashboard = () => {
 
 <table class="inv-totals">
   <tbody>
-    ${order.deliveryFee ? `<tr><td>رسوم التوصيل</td><td style="text-align:center">${Number(order.deliveryFee).toFixed(3)} د.ك</td></tr>` : ''}
     <tr class="grand"><td>الإجمالي الكلي</td><td style="text-align:center">${Number(order.grandTotal || order.total).toFixed(3)} د.ك</td></tr>
   </tbody>
 </table>
@@ -1601,7 +1627,7 @@ const Dashboard = () => {
                         <td className="td-bold">{o.client}</td>
                         <td className="td-light">{o.governorate || '—'}</td>
                         <td className="td-bold">{o.grandTotal || o.total} د.ك</td>
-                        <td><span className="badge-pay">{o.payment || '—'}</span></td>
+                        <td><PaymentCell order={o} lang={lang} /></td>
                         <td><span className={`status-badge status-${o.status}`}>{orderStatusLabels[o.status]?.[lang] || orderStatusLabels[o.status]?.ar || o.status}</span></td>
                       </tr>
                     ))}
@@ -2297,7 +2323,7 @@ const Dashboard = () => {
                         <td className="td-light">{o.governorate || '—'}</td>
                         <td className="td-light">{o.product}</td>
                         <td className="td-bold">{o.grandTotal || o.total} د.ك</td>
-                        <td><span className="badge-pay">{o.payment || '—'}</span></td>
+                        <td><PaymentCell order={o} lang={lang} /></td>
                         <td className="td-light" dir="ltr">{o.date}</td>
                         <td>
                           <select
@@ -2362,7 +2388,7 @@ const Dashboard = () => {
                         <td className="td-light" dir="ltr">{o.phone || '—'}</td>
                         <td className="td-light">{o.governorate ? `${o.governorate}${o.block ? ` — ${o.block}` : ''}` : '—'}</td>
                         <td className="td-light">{o.product}</td>
-                        <td><span className="badge-pay">{o.payment || '—'}</span></td>
+                        <td><PaymentCell order={o} lang={lang} /></td>
                         <td className="td-light" dir="ltr">{o.date}</td>
                         <td className="td-bold">{Number(o.grandTotal || o.total || 0).toFixed(3)} د.ك</td>
                         <td><span className={`status-badge status-${o.status}`}>{orderStatusLabels[o.status]?.[lang] || orderStatusLabels[o.status]?.ar || o.status}</span></td>
@@ -2850,7 +2876,7 @@ const Dashboard = () => {
               {/* ── Zones ── */}
               {shippingTab === 'zones' && (
                 <>
-                  <p className="dash-section-desc">{lang === 'en' ? 'Control delivery zones and fees within Kuwait.' : 'تحكم في مناطق التوصيل ورسومها داخل الكويت.'}</p>
+                  <p className="dash-section-desc">{lang === 'en' ? 'Control delivery areas within Kuwait.' : 'تحكم في مناطق التوصيل داخل الكويت.'}</p>
                   <div className="shipping-zones-grid">
                     {shippingZones.map(zone => (
                       <div key={zone.id} className={`shipping-zone-card${zone.enabled ? '' : ' disabled-zone'}`}>
@@ -2862,10 +2888,6 @@ const Dashboard = () => {
                           </label>
                         </div>
                         <div className="zone-name-en">{zone.en}</div>
-                        <div className="zone-fee-row">
-                          <label className="form-label" style={{ marginBottom: 0 }}>{lang === 'en' ? 'Delivery Fee (KD)' : 'رسوم التوصيل (د.ك)'}</label>
-                          <input className="form-input zone-fee-input" type="number" step="0.250" min="0" value={zone.fee} onChange={e => updateZoneFee(zone.id, e.target.value)} dir="ltr" disabled={!zone.enabled} />
-                        </div>
                       </div>
                     ))}
                   </div>

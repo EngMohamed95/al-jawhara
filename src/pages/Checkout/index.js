@@ -52,8 +52,13 @@ const Checkout = () => {
 
   const zones = translations.kuwaitZones;
   const selectedZone = zones.find(z => z.id === form.governorate);
-  const deliveryFee  = selectedZone ? selectedZone.fee : 0;
-  const grandTotal   = cartTotal + deliveryFee;
+  const zoneGroups = zones.reduce((groups, z) => {
+    const group = groups.find(g => g.gov === z.gov);
+    if (group) group.areas.push(z);
+    else groups.push({ gov: z.gov, govEn: z.govEn, areas: [z] });
+    return groups;
+  }, []);
+  const grandTotal = cartTotal;
 
   if (cart.length === 0) {
     return (
@@ -104,12 +109,11 @@ const Checkout = () => {
         ].filter(Boolean).join('، '),
         notes:        form.notes,
         payment:      form.payment,
-        deliveryFee:  deliveryFee.toFixed(3),
         product:      cart.map(i => i.name).join('، '),
         qty:          cart.reduce((s, i) => s + i.qty, 0),
         grandTotal:   grandTotal.toFixed(3),
         lang:         lang,
-      });
+      }, { preserveCart: form.payment === 'tap' });
       /* save address back to customer profile for next time */
       if (auth?.role === 'customer') {
         try {
@@ -136,7 +140,8 @@ const Checkout = () => {
 
       if (form.payment === 'tap') {
         try {
-          const { url } = await createTapCharge(order.id);
+          const { url } = await createTapCharge(order.id, order.tapPaymentToken);
+          sessionStorage.setItem(`tap_payment_token:${order.ref}`, order.tapPaymentToken);
           window.location.href = url; // leave the SPA for Tap's hosted payment page
           return;
         } catch (err) {
@@ -242,10 +247,14 @@ const Checkout = () => {
                     <label className="form-label">{t('checkout.governorate')} <span style={{color:'#dc2626'}}>*</span></label>
                     <select className="form-select" name="governorate" value={form.governorate} onChange={handleChange} required>
                       <option value="">{t('checkout.selectGov')}</option>
-                      {zones.map(z => (
-                        <option key={z.id} value={z.id}>
-                          {lang === 'ar' ? z.ar : z.en} — {z.fee.toFixed(3)} {t('products.currency')}
-                        </option>
+                      {zoneGroups.map(g => (
+                        <optgroup key={g.gov} label={lang === 'ar' ? g.gov : g.govEn}>
+                          {g.areas.map(z => (
+                            <option key={z.id} value={z.id}>
+                              {lang === 'ar' ? z.ar : z.en}
+                            </option>
+                          ))}
+                        </optgroup>
                       ))}
                     </select>
                   </div>
@@ -352,18 +361,10 @@ const Checkout = () => {
                   <span>{t('checkout.subtotal')}</span>
                   <span>{cartTotal.toFixed(3)} {t('products.currency')}</span>
                 </div>
-                <div className="checkout-total-row">
-                  <span>{t('checkout.deliveryFee')}</span>
-                  <span className={deliveryFee === 0 ? 'text-muted' : ''}>
-                    {form.governorate
-                      ? `${deliveryFee.toFixed(3)} ${t('products.currency')}`
-                      : '—'}
-                  </span>
-                </div>
                 <div className="checkout-summary-total grand-total">
                   <span>{t('checkout.grandTotal')}</span>
                   <span className="checkout-total-val">
-                    {form.governorate ? `${grandTotal.toFixed(3)} ${t('products.currency')}` : `${cartTotal.toFixed(3)} ${t('products.currency')}`}
+                    {grandTotal.toFixed(3)} {t('products.currency')}
                   </span>
                 </div>
               </div>

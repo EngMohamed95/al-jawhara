@@ -35,8 +35,8 @@ const Register = () => {
     if (!/^[a-z0-9_]{3,20}$/i.test(form.username))
       return lang === 'ar' ? 'اسم المستخدم: أحرف وأرقام فقط، 3-20 حرف' : 'Username: 3-20 letters/numbers/underscore';
     if (!form.password)        return lang === 'ar' ? 'الرجاء إدخال كلمة المرور'        : 'Please enter a password';
-    if (form.password.length < 6)
-      return lang === 'ar' ? 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' : 'Password must be at least 6 characters';
+    if (form.password.length < 8)
+      return lang === 'ar' ? 'كلمة المرور يجب أن تكون 8 أحرف على الأقل' : 'Password must be at least 8 characters';
     if (form.password !== form.confirm)
       return lang === 'ar' ? 'كلمتا المرور غير متطابقتين'                 : 'Passwords do not match';
     if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))

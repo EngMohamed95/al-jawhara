@@ -2,7 +2,18 @@
 /**
  * Database Migration Script
  * Automatically creates tables and migrates data from data.json
+ *
+ * Security: migrations are intentionally CLI-only. Leaving schema-changing
+ * scripts callable over HTTP would let an unauthenticated visitor trigger
+ * database writes.
  */
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['error' => 'Not found']);
+    exit;
+}
+
 require_once __DIR__ . '/db.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -103,6 +114,8 @@ try {
         'paymentStatus'  => "VARCHAR(50) DEFAULT 'unpaid'", // unpaid | pending | paid | failed
         'tapChargeId'    => 'VARCHAR(100)',
         'tapPaymentRef'  => 'VARCHAR(100)',
+        'tapPaymentTokenHash' => 'CHAR(64)',
+        'tapTestMode'    => 'TINYINT(1)',
     ];
     foreach ($ordersExtraColumns as $colName => $colType) {
         try {

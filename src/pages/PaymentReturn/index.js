@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import { useApp } from '../../context/AppContext';
 import Seo from '../../components/Seo';
 import { checkTapStatus } from '../../services/tapService';
 import './index.css';
@@ -12,23 +13,33 @@ const POLL_DELAYS = [0, 2000, 3000, 4000, 5000];
 const PaymentReturn = () => {
   const [params] = useSearchParams();
   const { lang } = useLanguage();
+  const { clearCart } = useApp();
+  const clearCartRef = useRef(clearCart);
   const ref = params.get('ref') || '';
+  const tokenStorageKey = ref ? `tap_payment_token:${ref}` : '';
+  const [paymentToken] = useState(() => (
+    params.get('token') || (tokenStorageKey ? sessionStorage.getItem(tokenStorageKey) : '') || ''
+  ));
   const [status, setStatus] = useState('checking'); // checking | paid | pending | failed | error
   const cancelled = useRef(false);
 
+  useEffect(() => { clearCartRef.current = clearCart; }, [clearCart]);
+
   useEffect(() => {
     cancelled.current = false;
-    if (!ref) { setStatus('error'); return; }
+    if (!ref || !paymentToken) { setStatus('error'); return; }
 
     (async () => {
       for (const delay of POLL_DELAYS) {
         if (delay) await new Promise(r => setTimeout(r, delay));
         if (cancelled.current) return;
         try {
-          const res = await checkTapStatus(ref);
+          const res = await checkTapStatus(ref, paymentToken);
           if (cancelled.current) return;
           if (res.status === 'paid' || res.status === 'failed') {
             setStatus(res.status);
+            if (tokenStorageKey) sessionStorage.removeItem(tokenStorageKey);
+            if (res.status === 'paid') clearCartRef.current();
             return;
           }
         } catch {
@@ -40,7 +51,7 @@ const PaymentReturn = () => {
     })();
 
     return () => { cancelled.current = true; };
-  }, [ref]);
+  }, [ref, paymentToken, tokenStorageKey]);
 
   const content = {
     checking: {

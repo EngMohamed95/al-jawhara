@@ -1,0 +1,6 @@
+<?php
+define('DB_HOST', '127.0.0.1');
+define('DB_NAME', 'REPLACE_WITH_DATABASE_NAME');
+define('DB_USER', 'REPLACE_WITH_DATABASE_USER');
+define('DB_PASS', 'REPLACE_WITH_DATABASE_PASSWORD');
+define('DB_CHARSET', 'utf8mb4');

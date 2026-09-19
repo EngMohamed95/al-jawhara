@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/auth-common.php';
 
 // Resource to Table Mapping
 $tableMapping = [
@@ -40,6 +41,15 @@ function respond($data, $code = 200) {
 // Post-processes rows from MySQL to match expected client JSON structure
 function postProcessRow($resource, $row) {
     if (!$row) return $row;
+
+    // The hash authorizes the browser to start/check payment and must never be
+    // exposed by the generic orders API.
+    if ($resource === 'orders') {
+        unset($row['tapPaymentTokenHash']);
+    }
+    if ($resource === 'users') {
+        unset($row['password']);
+    }
     
     // Cast numeric fields appropriately
     if (isset($row['id'])) {
@@ -109,6 +119,53 @@ function preProcessField($resource, $key, $value) {
     return $value;
 }
 
+function calculateTapOrderTotals($pdo, $body) {
+    $items = $body['items'] ?? null;
+    if (!is_array($items) || count($items) === 0 || count($items) > 100) {
+        respond(['error' => 'A Tap order must contain valid items'], 400);
+    }
+
+    $subtotal = 0.0;
+    $totalQty = 0;
+    $productNames = [];
+    $productStmt = $pdo->prepare("SELECT id, name, nameEn, price, stock, status FROM products WHERE id = :id LIMIT 1");
+
+    foreach ($items as $item) {
+        $productId = isset($item['id']) ? (int)$item['id'] : 0;
+        $qty = isset($item['qty']) ? (int)$item['qty'] : 0;
+        if ($productId <= 0 || $qty <= 0 || $qty > 1000) {
+            respond(['error' => 'Invalid product or quantity'], 400);
+        }
+
+        $productStmt->execute(['id' => $productId]);
+        $product = $productStmt->fetch();
+        if (!$product || ($product['status'] ?? '') !== 'active') {
+            respond(['error' => 'A product in this order is unavailable'], 409);
+        }
+        if (isset($product['stock']) && (int)$product['stock'] < $qty) {
+            respond(['error' => 'A product in this order is out of stock'], 409);
+        }
+
+        $subtotal += (float)$product['price'] * $qty;
+        $totalQty += $qty;
+        $productNames[] = (($body['lang'] ?? '') === 'en' && !empty($product['nameEn']))
+            ? $product['nameEn']
+            : $product['name'];
+    }
+
+    $governorate = trim((string)($body['governorate'] ?? ''));
+    if ($governorate === '') {
+        respond(['error' => 'Delivery area is required'], 400);
+    }
+
+    return [
+        'total'       => number_format($subtotal, 3, '.', ''),
+        'grandTotal'  => number_format($subtotal, 3, '.', ''),
+        'qty'         => $totalQty,
+        'product'     => implode('، ', $productNames),
+    ];
+}
+
 // ── Parse request ────────────────────────────────────────
 $rawQuery = $_SERVER['QUERY_STRING'] ?? '';
 $rawPath = '';
@@ -151,6 +208,29 @@ if (!isset($tableMapping[$resource])) {
 }
 
 $table = $tableMapping[$resource];
+$currentUser = authUser();
+
+// Public reads are limited to storefront content. Personal/business data and
+// every administrative mutation require a server-authenticated session.
+if ($method === 'GET' && in_array($table, ['orders', 'users', 'coupons'], true) && !$currentUser) {
+    authDeny();
+}
+if ($method === 'GET' && $table === 'users' && !authIsStaff($currentUser)) {
+    $requestedUsername = $query['username'] ?? null;
+    if (($id === null && $requestedUsername === null)
+        || ($id !== null && (int)$id !== (int)($currentUser['id'] ?? 0))
+        || ($requestedUsername !== null && $requestedUsername !== ($currentUser['username'] ?? null))) {
+        authDeny();
+    }
+}
+$isSelfUserUpdate = $table === 'users' && $method === 'PUT' && $currentUser
+    && (int)$id === (int)($currentUser['id'] ?? 0);
+if ($method !== 'GET'
+    && !($table === 'orders' && $method === 'POST')
+    && !($table === 'users' && $method === 'POST')
+    && !$isSelfUserUpdate) {
+    if (!authCanWrite($table, $currentUser)) authDeny();
+}
 
 // ── Singleton: siteContent ───────────────────────────────
 if ($table === 'site_content') {
@@ -164,6 +244,11 @@ if ($table === 'site_content') {
         respond(postProcessRow($resource, $row));
     }
     if ($method === 'PUT') {
+        if (($currentUser['role'] ?? '') !== 'admin') {
+            // Editors can update page copy but cannot alter payment mode or
+            // delivery pricing used by the server-side order calculation.
+            unset($body['paymentSettings'], $body['shippingZones']);
+        }
         // Find existing record to merge
         $stmt = $pdo->prepare("SELECT * FROM site_content WHERE id = 1");
         $stmt->execute();
@@ -221,6 +306,10 @@ if ($method === 'GET' && $id === null) {
     $sql = "SELECT * FROM `$table`";
     $where = [];
     $params = [];
+
+    if ($table === 'orders' && !authIsStaff($currentUser)) {
+        $query['phone'] = $currentUser['phone'] ?? '__no_phone__';
+    }
     
     $columns = [];
     try {
@@ -262,6 +351,10 @@ if ($method === 'GET' && $id !== null) {
     $stmt->execute(['id' => $id]);
     $row = $stmt->fetch();
     if (!$row) respond(['error' => 'Not found'], 404);
+    if ($table === 'orders' && !authIsStaff($currentUser)
+        && ($row['phone'] ?? '') !== ($currentUser['phone'] ?? null)) {
+        authDeny();
+    }
     respond(postProcessRow($resource, $row));
 }
 
@@ -270,6 +363,29 @@ if ($method === 'POST') {
     // For users, generate timestamp ID if not provided
     if ($table === 'users' && !isset($body['id'])) {
         $body['id'] = (int)round(microtime(true) * 1000);
+    }
+    if ($table === 'users') {
+        if (($currentUser['role'] ?? '') !== 'admin') $body['role'] = 'customer';
+        $body['status'] = $body['status'] ?? 'active';
+        if (empty($body['password']) || strlen((string)$body['password']) < 8) {
+            respond(['error' => 'Password must be at least 8 characters'], 400);
+        }
+        $body['password'] = password_hash((string)$body['password'], PASSWORD_DEFAULT);
+    }
+
+    $tapPaymentToken = null;
+    if ($table === 'orders') {
+        // Payment state and Tap identifiers are server-owned fields.
+        unset($body['tapChargeId'], $body['tapPaymentRef'], $body['tapPaymentTokenHash'], $body['tapTestMode']);
+        $body['paymentStatus'] = 'unpaid';
+        $body['status'] = 'pending';
+        $body['ref'] = 'ORD-' . gmdate('YmdHis') . '-' . strtoupper(bin2hex(random_bytes(3)));
+
+        if (($body['payment'] ?? '') === 'tap') {
+            $body = array_merge($body, calculateTapOrderTotals($pdo, $body));
+            $tapPaymentToken = bin2hex(random_bytes(32));
+            $body['tapPaymentTokenHash'] = hash('sha256', $tapPaymentToken);
+        }
     }
     
     $keys = [];
@@ -297,13 +413,22 @@ if ($method === 'POST') {
     
     $sql = "INSERT INTO `$table` (" . implode(', ', $keys) . ") VALUES (" . implode(', ', $placeholders) . ")";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
+    try {
+        $stmt->execute($params);
+    } catch (\PDOException $e) {
+        if ((string)$e->getCode() === '23000') respond(['error' => 'Username or email already exists'], 409);
+        throw $e;
+    }
     
     $newId = ($table === 'users') ? $body['id'] : $pdo->lastInsertId();
     
     $stmt = $pdo->prepare("SELECT * FROM `$table` WHERE id = :id");
     $stmt->execute(['id' => $newId]);
-    respond(postProcessRow($resource, $stmt->fetch()), 201);
+    $created = postProcessRow($resource, $stmt->fetch());
+    if ($tapPaymentToken !== null) {
+        $created['tapPaymentToken'] = $tapPaymentToken;
+    }
+    respond($created, 201);
 }
 
 // PUT
@@ -313,6 +438,29 @@ if ($method === 'PUT' && $id !== null) {
     $stmt->execute(['id' => $id]);
     $existing = $stmt->fetch();
     if (!$existing) respond(['error' => 'Not found'], 404);
+
+    if ($table === 'users' && !authIsStaff($currentUser) && (int)($currentUser['id'] ?? 0) !== (int)$id) {
+        authDeny();
+    }
+    if ($table === 'users') {
+        if (($currentUser['role'] ?? '') !== 'admin') unset($body['role'], $body['status']);
+        if (isset($body['password'])) {
+            if (strlen((string)$body['password']) < 8) respond(['error' => 'Password must be at least 8 characters'], 400);
+            $body['password'] = password_hash((string)$body['password'], PASSWORD_DEFAULT);
+        }
+    }
+
+    if ($table === 'orders') {
+        // These fields are changed only by the signed Tap flow, never through
+        // the public generic CRUD endpoint.
+        unset(
+            $body['paymentStatus'],
+            $body['tapChargeId'],
+            $body['tapPaymentRef'],
+            $body['tapPaymentTokenHash'],
+            $body['tapTestMode']
+        );
+    }
     
     $fields = [];
     $params = ['_id' => $id];
@@ -351,4 +499,3 @@ if ($method === 'DELETE' && $id !== null) {
 }
 
 respond(['error' => 'Bad request'], 400);
-

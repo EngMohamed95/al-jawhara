@@ -95,16 +95,15 @@ export const AppProvider = ({ children }) => {
 
   /* ── Auth ── */
   const login = async (username, password) => {
-    const matches = await api.findUser(username);
-    const user = matches.find(u => u.username === username && u.password === password);
-    if (!user) throw new Error('اسم المستخدم أو كلمة المرور غير صحيحة');
-    const { password: _, ...safe } = user;
-    setAuth(safe);
-    localStorage.setItem('jawhara_auth', JSON.stringify(safe));
-    return safe;
+    const user = await api.login(username, password);
+    setAuth(user);
+    localStorage.setItem('jawhara_auth', JSON.stringify(user));
+    await fetchAll();
+    return user;
   };
 
   const logout = () => {
+    api.logout().catch(() => {});
     localStorage.removeItem(getCartKey(auth));
     setAuth(null);
     localStorage.removeItem('jawhara_auth');
@@ -113,12 +112,6 @@ export const AppProvider = ({ children }) => {
 
   /* ── Register new customer ── */
   const registerCustomer = async ({ name, username, password, phone, email }) => {
-    const allUsers = await api.getUsers();
-    if (allUsers.find(u => u.username === username))
-      throw new Error('اسم المستخدم مستخدم بالفعل');
-    if (email && allUsers.find(u => u.email === email))
-      throw new Error('البريد الإلكتروني مستخدم بالفعل');
-
     const newUser = await api.createUser({
       name, username, password,
       phone: phone || '', email: email || '',
@@ -126,11 +119,7 @@ export const AppProvider = ({ children }) => {
       createdAt: new Date().toISOString(),
     });
     setUsers(prev => [...prev, newUser]);
-
-    const { password: _, ...safe } = newUser;
-    setAuth(safe);
-    localStorage.setItem('jawhara_auth', JSON.stringify(safe));
-    return safe;
+    return login(username, password);
   };
 
   /* ── Products ── */
@@ -210,7 +199,7 @@ export const AppProvider = ({ children }) => {
   const cartTotalQty = cart.reduce((s, i) => s + i.qty, 0);
 
   /* ── Submit Order ── */
-  const submitOrder = async (orderData) => {
+  const submitOrder = async (orderData, options = {}) => {
     const ref = 'ORD-' + Date.now();
     const order = {
       ref,
@@ -221,37 +210,18 @@ export const AppProvider = ({ children }) => {
       date: new Date().toLocaleDateString('ar-EG'),
     };
     const saved = await api.createOrder(order);
-    setOrders(prev => [...prev, saved]);
+    const safeSaved = { ...saved };
+    delete safeSaved.tapPaymentToken;
+    setOrders(prev => [...prev, safeSaved]);
 
     /* ── Send confirmation email to customer ── */
-    try { await sendOrderConfirmationEmail(saved); } catch (e) { console.warn('Email not sent:', e); }
+    try { await sendOrderConfirmationEmail(safeSaved); } catch (e) { console.warn('Email not sent:', e); }
 
     /* ── Notify Al-Jawhara team of the new order ── */
-    try { await notifyTeamOfNewOrder(saved); } catch (e) { console.warn('Team notification not sent:', e); }
+    try { await notifyTeamOfNewOrder(safeSaved); } catch (e) { console.warn('Team notification not sent:', e); }
 
-    /* ── Auto-create customer account if new phone ── */
-    try {
-      const phone = orderData.phone?.replace(/\D/g, '') || '';
-      if (phone) {
-        const existing = users.find(u => u.phone?.replace(/\D/g, '') === phone);
-        if (!existing) {
-          const username = 'c_' + phone;
-          const newUser = await api.createUser({
-            name:     orderData.client || '',
-            username,
-            password: phone.slice(-4),     // كلمة المرور: آخر 4 أرقام
-            phone:    orderData.phone,
-            email:    orderData.email || '',
-            role:     'customer',
-            governorate: orderData.governorate || '',
-            createdAt: new Date().toISOString(),
-          });
-          setUsers(prev => [...prev, newUser]);
-        }
-      }
-    } catch {}
 
-    clearCart();
+    if (!options.preserveCart) clearCart();
     return saved;
   };
 

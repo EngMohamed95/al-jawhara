@@ -24,6 +24,7 @@ Thumbs.db
 
 # Email credentials (sensitive)
 public/api/email-config.php
+public/api/db-config.php
 
 # Tap Payments secret keys (sensitive)
 public/api/tap-config.php
@@ -37,3 +38,6 @@ public/videos/JawharaMovie.mp4
 # نسخ الفيديو الأصلية عالية الحجم — خارج مجلد النشر، للضغط قبل الاستخدام
 media-source/
 
+# Local deploy artifacts / portable tooling — not source, never committed
+.deploy/
+.tools/

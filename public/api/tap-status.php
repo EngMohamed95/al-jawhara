@@ -6,7 +6,6 @@
  * Tap directly (server-side, with our secret key) for the live charge status.
  */
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
@@ -18,6 +17,7 @@ require_once __DIR__ . '/tap-common.php';
 tapLoadConfig();
 
 $ref = trim($_GET['ref'] ?? '');
+$paymentToken = trim($_GET['token'] ?? '');
 if (!$ref) tapRespond(['error' => 'Missing ref'], 400);
 
 $stmt = $pdo->prepare("SELECT * FROM orders WHERE ref = :ref LIMIT 1");
@@ -25,6 +25,10 @@ $stmt->execute(['ref' => $ref]);
 $order = $stmt->fetch();
 
 if (!$order) tapRespond(['error' => 'Order not found'], 404);
+
+if (!tapOrderTokenIsValid($order, $paymentToken)) {
+    tapRespond(['error' => 'Invalid payment token'], 403);
+}
 
 // Webhook already settled it — no need to call Tap again.
 if (in_array($order['paymentStatus'], ['paid', 'failed'], true)) {
@@ -35,7 +39,9 @@ if (empty($order['tapChargeId'])) {
     tapRespond(['status' => $order['paymentStatus'] ?: 'pending', 'ref' => $ref]);
 }
 
-$testMode = tapIsTestMode($pdo);
+$testMode = isset($order['tapTestMode']) && $order['tapTestMode'] !== null
+    ? (bool)$order['tapTestMode']
+    : tapIsTestMode($pdo);
 $result = tapApiRequest('GET', 'charges/' . urlencode($order['tapChargeId']), tapSecretKey($testMode));
 
 if (!$result['ok'] || empty($result['data']['status'])) {
@@ -43,11 +49,21 @@ if (!$result['ok'] || empty($result['data']['status'])) {
 }
 
 $tapStatus = $result['data']['status'];
-$paymentStatus = $tapStatus === 'CAPTURED' ? 'paid' : ($tapStatus === 'FAILED' ? 'failed' : 'pending');
+$paymentStatus = tapPaymentStatus($tapStatus);
 
 if ($paymentStatus !== $order['paymentStatus']) {
-    $upd = $pdo->prepare("UPDATE orders SET paymentStatus = :ps WHERE id = :id");
-    $upd->execute(['ps' => $paymentStatus, 'id' => $order['id']]);
+    $upd = $pdo->prepare("UPDATE orders
+        SET paymentStatus = :ps,
+            status = CASE
+                WHEN :markPaid = 1 AND status = 'pending' THEN 'confirmed'
+                ELSE status
+            END
+        WHERE id = :id");
+    $upd->execute([
+        'ps' => $paymentStatus,
+        'markPaid' => $paymentStatus === 'paid' ? 1 : 0,
+        'id' => $order['id'],
+    ]);
 }
 
 tapRespond(['status' => $paymentStatus, 'ref' => $ref]);

@@ -2,11 +2,27 @@
 /**
  * Al-Jawhara Database Connection
  */
-define('DB_HOST', '127.0.0.1');
-define('DB_NAME', 'aljwhra');
-define('DB_USER', 'aljwhra');
-define('DB_PASS', 'r2Pt5XywMFjxryMc');
-define('DB_CHARSET', 'utf8mb4');
+$privateConfig = __DIR__ . '/db-config.php';
+if (file_exists($privateConfig)) require_once $privateConfig;
+
+$dbEnv = [
+    'DB_HOST' => getenv('DB_HOST'),
+    'DB_NAME' => getenv('DB_NAME'),
+    'DB_USER' => getenv('DB_USER'),
+    'DB_PASS' => getenv('DB_PASS'),
+    'DB_CHARSET' => getenv('DB_CHARSET') ?: 'utf8mb4',
+];
+foreach ($dbEnv as $name => $value) {
+    if (!defined($name) && is_string($value) && $value !== '') define($name, $value);
+}
+
+foreach (['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS', 'DB_CHARSET'] as $required) {
+    if (!defined($required)) {
+        http_response_code(503);
+        echo json_encode(['error' => 'Database configuration is incomplete']);
+        exit;
+    }
+}
 
 try {
     $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;

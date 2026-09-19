@@ -17,7 +17,7 @@ const req = async (path, opts = {}) => {
     ? `/api/index.php?path=${encodeURIComponent(path)}${isTunneled ? `&_method=${method}` : ''}`
     : `http://localhost:3001/${path}`;
 
-  const res = await fetch(url, { headers: h, ...fetchOpts });
+  const res = await fetch(url, { credentials: 'same-origin', headers: h, ...fetchOpts });
   const text = await res.text();
   if (!res.ok) {
     throw new Error(`API ${res.status}: ${text.slice(0, 300)}`);
@@ -34,7 +34,41 @@ const req = async (path, opts = {}) => {
   }
 };
 
+const reqAuth = async (action, data) => {
+  if (!IS_PROD) {
+    if (action === 'logout') return { success: true };
+    if (action === 'change-password') {
+      const user = await req(`users/${data.userId}`);
+      if (!user || user.password !== data.currentPassword) throw new Error('Current password is incorrect');
+      await req(`users/${data.userId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ ...user, password: data.newPassword }),
+      });
+      return { success: true };
+    }
+    const users = await req(`users?username=${encodeURIComponent(data.username)}`);
+    const user = users.find(u => u.username === data.username && u.password === data.password);
+    if (!user) throw new Error('Invalid username or password');
+    const safe = { ...user };
+    delete safe.password;
+    return safe;
+  }
+
+  const res = await fetch(`/api/auth.php?action=${encodeURIComponent(action)}`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: h,
+    body: JSON.stringify(data),
+  });
+  const payload = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(payload.error || 'Authentication failed');
+  return payload;
+};
+
 const api = {
+  login:  (username, password) => reqAuth('login', { username, password }),
+  logout: () => reqAuth('logout', {}),
+  changePassword: (currentPassword, newPassword, userId) => reqAuth('change-password', { currentPassword, newPassword, userId }),
   // Products
   getProducts:    ()       => req('products'),
   createProduct:  (data)   => req('products',      { method: 'POST',   body: JSON.stringify(data) }),

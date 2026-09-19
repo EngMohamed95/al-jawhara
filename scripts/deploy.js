@@ -10,12 +10,18 @@ const path = require('path');
 const fs   = require('fs');
 const { execSync } = require('child_process');
 
+const requiredEnv = (name) => {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing required environment variable: ${name}`);
+  return value;
+};
+
 const FTP = {
-  host: 'aljawhara.matix.one',
-  user: 'aljawharamatix',
-  password: '^!Z~-VWSpQe*,.lk',
+  host: requiredEnv('JAWAHARA_FTP_HOST'),
+  user: requiredEnv('JAWAHARA_FTP_USER'),
+  password: requiredEnv('JAWAHARA_FTP_PASSWORD'),
   secure: true,
-  secureOptions: { rejectUnauthorized: false },
+  secureOptions: { rejectUnauthorized: process.env.JAWAHARA_FTP_ALLOW_INSECURE !== '1' },
   port: 21,
 };
 
@@ -26,8 +32,10 @@ const LOCAL_BACKUP    = path.join(__dirname, '..', 'build', 'api', 'data.json');
 const LOCAL_TEMPLATE  = path.join(__dirname, '..', 'public', 'api', 'data.json');
 const REMOTE_UPLOADS  = '/public_html/api/uploads';
 const LOCAL_UPLOADS   = path.join(__dirname, '..', 'build', 'api', 'uploads');
-const REMOTE_DB_CONFIG = '/public_html/api/db.php';
-const LOCAL_DB_BACKUP  = path.join(__dirname, '..', 'build', 'api', 'db.php.live-backup');
+const REMOTE_DB_CONFIG = '/public_html/api/db-config.php';
+const LOCAL_DB_BACKUP  = path.join(__dirname, '..', 'build', 'api', 'db-config.php.live-backup');
+const REMOTE_TAP_CONFIG = '/public_html/api/tap-config.php';
+const LOCAL_TAP_BACKUP  = path.join(__dirname, '..', 'build', 'api', 'tap-config.php.live-backup');
 
 async function deploy() {
   const client = new ftp.Client();
@@ -106,9 +114,20 @@ async function deploy() {
     try {
       await client.downloadTo(LOCAL_DB_BACKUP, REMOTE_DB_CONFIG);
       serverDbConfigExists = true;
-      console.log('💾 Server db.php (DB credentials) backed up successfully');
+      console.log('Server db-config.php backed up successfully');
     } catch {
-      console.log('⚠️  No existing api/db.php on server — will use template');
+      console.log('No existing api/db-config.php on server');
+    }
+
+    // tap-config.php is intentionally excluded from git/build. Preserve it
+    // across clearWorkingDir(), just like the live database configuration.
+    let serverTapConfigExists = false;
+    try {
+      await client.downloadTo(LOCAL_TAP_BACKUP, REMOTE_TAP_CONFIG);
+      serverTapConfigExists = true;
+      console.log('Tap server configuration backed up successfully');
+    } catch {
+      console.log('No existing api/tap-config.php on server');
     }
 
     // ── 2. رفع الـ build كاملاً ──
@@ -135,9 +154,16 @@ async function deploy() {
     // ── 3c. إعادة رفع db.php المحفوظة (تحمي بيانات اتصال قاعدة البيانات الحقيقية) ──
     if (serverDbConfigExists) {
       await client.uploadFrom(LOCAL_DB_BACKUP, REMOTE_DB_CONFIG);
-      console.log('✅ Server db.php restored — DB credentials untouched\n');
+      console.log('Server db-config.php restored');
     } else {
-      console.log('✅ Template db.php uploaded\n');
+      console.log('WARNING: Database configuration is missing');
+    }
+
+    if (serverTapConfigExists) {
+      await client.uploadFrom(LOCAL_TAP_BACKUP, REMOTE_TAP_CONFIG);
+      console.log('Tap server configuration restored');
+    } else {
+      console.log('WARNING: Tap configuration is missing; online payment will remain unavailable');
     }
 
     console.log('✅ Server updated: https://aljawhara.matix.one\n');

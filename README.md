@@ -2,6 +2,24 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Tap Payments production setup
+
+1. Run `public/api/migrate.php` once after deploying a release that adds Tap
+   columns to the orders table.
+   Configure the database through server `DB_*` environment variables or the
+   gitignored `public/api/db-config.php` before running the migration.
+2. Configure `TAP_SECRET_KEY_TEST`, `TAP_SECRET_KEY_LIVE`, and `TAP_SITE_URL`
+   as server environment variables, or create the gitignored
+   `public/api/tap-config.php` from `tap-config.example.php`.
+3. Keep Tap in Test Mode in the dashboard until captured and declined test
+   payments both update the corresponding order correctly.
+4. Switch off Test Mode only after Tap has activated the merchant account and
+   the `sk_live_` key is installed on the server.
+
+The deployment script reads FTPS credentials from `JAWAHARA_FTP_HOST`,
+`JAWAHARA_FTP_USER`, and `JAWAHARA_FTP_PASSWORD`. See
+`.env.deploy.example`. It preserves the private Tap config during deployment.
+
 ## Available Scripts
 
 In the project directory, you can run:

@@ -33,6 +33,70 @@ $allowed = [
 ];
 $maxSize = 10 * 1024 * 1024; // 10MB
 
+// Shrinks an uploaded raster image in place: caps dimensions and re-compresses
+// so oversized camera/export images (often 5-30MB) don't ship to the site as-is.
+function jw_compress_image($path, $mimeType) {
+    if (!function_exists('gd_info')) return;
+
+    $maxDim = 1600;
+    switch ($mimeType) {
+        case 'image/jpeg':
+        case 'image/jpg':
+            $src = @imagecreatefromjpeg($path);
+            break;
+        case 'image/png':
+            $src = @imagecreatefrompng($path);
+            break;
+        case 'image/webp':
+            $src = function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($path) : false;
+            break;
+        case 'image/gif':
+            $src = @imagecreatefromgif($path);
+            break;
+        default:
+            return; // svg/bmp/unknown - leave untouched
+    }
+    if (!$src) return;
+
+    $width = imagesx($src);
+    $height = imagesy($src);
+    $hasAlpha = in_array($mimeType, ['image/png', 'image/webp', 'image/gif'], true);
+
+    if ($width > $maxDim || $height > $maxDim) {
+        $ratio = min($maxDim / $width, $maxDim / $height);
+        $newWidth = max(1, (int) round($width * $ratio));
+        $newHeight = max(1, (int) round($height * $ratio));
+
+        $resized = imagecreatetruecolor($newWidth, $newHeight);
+        if ($hasAlpha) {
+            imagealphablending($resized, false);
+            imagesavealpha($resized, true);
+            $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
+            imagefilledrectangle($resized, 0, 0, $newWidth, $newHeight, $transparent);
+        }
+        imagecopyresampled($resized, $src, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+        imagedestroy($src);
+        $src = $resized;
+    }
+
+    switch ($mimeType) {
+        case 'image/jpeg':
+        case 'image/jpg':
+            imagejpeg($src, $path, 82);
+            break;
+        case 'image/png':
+            imagepng($src, $path, 8);
+            break;
+        case 'image/webp':
+            if (function_exists('imagewebp')) imagewebp($src, $path, 82);
+            break;
+        case 'image/gif':
+            imagegif($src, $path);
+            break;
+    }
+    imagedestroy($src);
+}
+
 $results = [];
 $errors = [];
 
@@ -140,6 +204,7 @@ foreach ($files as $f) {
     $dest = $uploadDir . $name;
 
     if (move_uploaded_file($f['tmp_name'], $dest)) {
+        jw_compress_image($dest, $mimeType);
         $results[] = '/api/uploads/' . $name;
     } else {
         $errors[] = "فشل نقل الملف المرفوع '{$f['name']}' إلى المجلد النهائي. يرجى التحقق من صلاحيات المجلد. / Failed to move uploaded file. Check directory permissions.";

@@ -14,6 +14,13 @@ const STATUS_CONFIG = {
   delivered:  { ar: 'تم التسليم',    en: 'Delivered',  color: '#16a34a' },
   cancelled:  { ar: 'ملغي',          en: 'Cancelled',  color: '#ef4444' },
 };
+const PAYMENT_STATUS_CONFIG = {
+  unpaid:     { ar: 'غير مدفوع', en: 'Unpaid', color: '#64748b' },
+  initiating: { ar: 'جاري بدء الدفع', en: 'Starting', color: '#2563eb' },
+  pending:    { ar: 'جاري التحقق من الدفع', en: 'Payment processing', color: '#d97706' },
+  paid:       { ar: 'مدفوع', en: 'Paid', color: '#059669' },
+  failed:     { ar: 'فشل الدفع', en: 'Payment failed', color: '#dc2626' },
+};
 
 /* ── Toast ── */
 const Toast = ({ message, type, onClose }) => (
@@ -30,6 +37,7 @@ const Toast = ({ message, type, onClose }) => (
 const OrderRow = ({ order, lang }) => {
   const [open, setOpen] = useState(false);
   const status = STATUS_CONFIG[order.status] || { ar: order.status, en: order.status, color: '#64748b' };
+  const paymentStatus = PAYMENT_STATUS_CONFIG[order.paymentStatus] || PAYMENT_STATUS_CONFIG.unpaid;
 
   return (
     <div className="ma-order-card">
@@ -53,8 +61,14 @@ const OrderRow = ({ order, lang }) => {
           >
             {lang === 'ar' ? status.ar : status.en}
           </span>
+          <span
+            className="ma-status-badge"
+            style={{ background: paymentStatus.color + '20', color: paymentStatus.color, borderColor: paymentStatus.color + '40' }}
+          >
+            {lang === 'ar' ? paymentStatus.ar : paymentStatus.en}
+          </span>
           <span className="ma-order-total">
-            {order.total}
+            {order.grandTotal || order.total}
             <span className="ma-currency">{lang === 'ar' ? ' د.ك' : ' KWD'}</span>
           </span>
         </div>
@@ -182,8 +196,8 @@ const MyAccount = () => {
     setPwError('');
     setPwSuccess('');
 
-    if (pwForm.newPw.length < 4) {
-      setPwError(lang === 'ar' ? 'كلمة المرور الجديدة يجب أن تكون 4 أحرف على الأقل' : 'New password must be at least 4 characters');
+    if (pwForm.newPw.length < 8) {
+      setPwError(lang === 'ar' ? 'كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل' : 'New password must be at least 8 characters');
       return;
     }
     if (pwForm.newPw !== pwForm.confirm) {
@@ -193,13 +207,7 @@ const MyAccount = () => {
 
     setPwLoading(true);
     try {
-      const users = await api.findUser(auth.username);
-      const user  = users.find(u => u.username === auth.username && u.password === pwForm.current);
-      if (!user) {
-        setPwError(lang === 'ar' ? 'كلمة المرور الحالية غير صحيحة' : 'Current password is incorrect');
-        return;
-      }
-      await api.updateUser(auth.id, { ...user, password: pwForm.newPw });
+      await api.changePassword(pwForm.current, pwForm.newPw, auth.id);
       setPwForm({ current: '', newPw: '', confirm: '' });
       setPwSuccess(lang === 'ar' ? 'تم تغيير كلمة المرور بنجاح' : 'Password changed successfully');
     } catch {

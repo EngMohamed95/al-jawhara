@@ -8,6 +8,7 @@
  * it must only ever live in this file, on the server.
  */
 
+// Environment variables with the same names can be used instead of this file.
 // From Tap Dashboard, Test mode — starts with sk_test_
 define('TAP_SECRET_KEY_TEST', 'REPLACE_WITH_YOUR_TAP_TEST_SECRET_KEY');
 

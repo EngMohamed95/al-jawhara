@@ -26,6 +26,10 @@ jobs:
             npm run build
             cp -rf build/* /www/wwwroot/al-jawhara.com/
 
+            # Apply any new tables/columns migrate.php defines (idempotent: only
+            # creates what's missing, never touches existing data).
+            php /www/wwwroot/al-jawhara.com/api/migrate.php || true
+
             # Configure Nginx rewrite rule for React SPA in aaPanel
             REWRITE_CONF="/www/server/panel/vhost/rewrite/al-jawhara.com.conf"
             if [ -d "/www/server/panel/vhost/rewrite" ]; then

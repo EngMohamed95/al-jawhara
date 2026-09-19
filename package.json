@@ -44,6 +44,7 @@
   "devDependencies": {
     "basic-ftp": "^5.2.0",
     "concurrently": "^9.2.1",
-    "json-server": "^0.17.4"
+    "json-server": "^0.17.4",
+    "sharp": "^0.35.4"
   }
 }
