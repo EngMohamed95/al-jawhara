@@ -36,6 +36,14 @@ jobs:
               echo "Setting up Nginx URL rewrite in aaPanel..."
               echo 'location / {
                 try_files $uri $uri/ /index.html;
+              }
+
+              # index.html must never be cached, or browsers keep loading a stale
+              # build (old JS/CSS bundle hashes) until a manual hard refresh.
+              location = /index.html {
+                add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+                add_header Pragma "no-cache" always;
+                expires -1;
               }' > "$REWRITE_CONF"
             fi
             
