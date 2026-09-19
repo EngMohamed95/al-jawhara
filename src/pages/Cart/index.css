@@ -119,6 +119,18 @@
   .cart-layout { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
-  .cart-row { flex-wrap: wrap; }
-  .cart-row-total { min-width: unset; }
+  .cart-row {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    grid-template-areas:
+      "icon info remove"
+      "qty  qty  total";
+    gap: 10px 12px;
+    align-items: center;
+  }
+  .cart-row-icon { grid-area: icon; }
+  .cart-row-info { grid-area: info; min-width: 0; }
+  .cart-row-remove { grid-area: remove; }
+  .cart-qty-ctrl { grid-area: qty; justify-self: start; }
+  .cart-row-total { grid-area: total; justify-self: end; min-width: unset; }
 }
